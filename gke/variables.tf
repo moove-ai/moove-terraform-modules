@@ -194,7 +194,23 @@ variable "master_authorized_networks" {
   ]
 }
 
-variable "argo_vales" {
+# Helm Values
+variable "argo_cd_values" {
   type = string
   description = "ArgoCD Helm values"
+}
+
+variable "cert_manager_values" {
+  type = string
+  description = "Cert Manager Helm Values"
+}
+
+variable "external_dns_values" {
+  type = string
+  description = "External DNS Helm Values"
+}
+
+variable "external_secrets_values" {
+  type = string
+  description = "External Secrets Helm Values"
 }
