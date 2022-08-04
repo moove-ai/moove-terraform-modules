@@ -214,3 +214,21 @@ variable "external_secrets_values" {
   type = string
   description = "External Secrets Helm Values"
 }
+
+variable "helm_blackbox_exporter" {
+  type = bool
+  description = "Enables or disables the blackbox expoter"
+  default = false
+}
+
+variable "helm_pushgateway" {
+  type = bool
+  description = "Enables or disables prometheus pushgateway"
+  default = false
+}
+
+variable "helm_stackdriver_exporter" {
+  type = bool
+  description = "Enables or disables the stackdriver expoter"
+  default = false
+}
