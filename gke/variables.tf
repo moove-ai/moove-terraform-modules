@@ -232,3 +232,23 @@ variable "helm_stackdriver_exporter" {
   description = "Enables or disables the stackdriver expoter"
   default = false
 }
+
+variable "kube_prometheus_stack_values" {
+  
+}
+
+variable "prometheus_blackbox_exporter_values" {
+  
+}
+
+variable "prometheus_pushgateway_values" {
+  
+}
+
+variable "prometheus_stackdriver_exporter_values" {
+  
+}
+
+variable "thanos_values" {
+  
+}
