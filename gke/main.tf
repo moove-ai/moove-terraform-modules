@@ -46,4 +46,5 @@ module "gke" {
   node_pools_tags            = var.node_pools_tags
   node_pools_metadata        = var.node_pools_metadata
   cluster_resource_labels   = var.cluster_labels
+  master_authorized_networks = var.master_authorized_networks
 }

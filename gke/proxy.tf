@@ -45,7 +45,7 @@ data "google_dns_managed_zone" "moove" {
 }
 
 resource "google_dns_record_set" "proxy" {
-  name = "${var.proxy_dns}.${data.google_dns_managed_zone.moove.name}"
+  name = "${var.proxy_dns}.${data.google_dns_managed_zone.moove.dns_name}"
   project = data.google_dns_managed_zone.moove.project
   managed_zone = data.google_dns_managed_zone.moove.name
   type = "A"

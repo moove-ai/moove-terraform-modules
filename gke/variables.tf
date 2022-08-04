@@ -177,3 +177,24 @@ variable "proxy_dns" {
   type = string
   description = "The DNS name of the GKE proxy"
 }
+
+variable "image_type" {
+  type = string
+  description = "The image type for the cluster"
+  default = "COS_CONTAINERD"
+}
+
+variable "master_authorized_networks" {
+  type = list(object({ cidr_block = string, display_name = string }))
+  description = "List of networks allowed to access the cluster"
+  default = [{
+      cidr_block   = "10.80.64.0/20",
+      display_name = "mgmt_us-central1"
+    }
+  ]
+}
+
+variable "argo_vales" {
+  type = string
+  description = "ArgoCD Helm values"
+}
