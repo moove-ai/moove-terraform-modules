@@ -48,3 +48,9 @@ module "gke" {
   cluster_resource_labels   = var.cluster_labels
   master_authorized_networks = var.master_authorized_networks
 }
+
+module "thanos" {
+  source = "../thanos"
+  project_id = var.project_id
+  cluster_name = var.cluster_name
+}
