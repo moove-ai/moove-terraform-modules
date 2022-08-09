@@ -11,7 +11,19 @@ provider "kubernetes" {
   host                   = "https://${module.gke.endpoint}"
   token                  = data.google_client_config.default.access_token
   cluster_ca_certificate = base64decode(module.gke.ca_certificate)
+  proxy_url = "http://${var.proxy_dns}.${data.google_dns_managed_zone.moove.dns_name}:8888"
 }
+
+#module "gcloud" {
+#  source  = "terraform-google-modules/gcloud/google"
+#  version = "~> 0.5"
+#
+#  platform = "linux"
+#
+#  create_cmd_entrypoint  = "gcloud"
+#  create_cmd_body        = "container clusters get-credentials ${module.gke.name} --region=${var.region}"
+#}
+
 
 module "gke" {
   source                     = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster-update-variant"

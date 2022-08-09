@@ -1,38 +1,26 @@
 provider "helm" {
   kubernetes {
     config_path = "~/.kube/config"
-    proxy_url = "${var.proxy_dns}.${data.google_dns_managed_zone.moove.dns_name}"
+    proxy_url = "http://${var.proxy_dns}.${data.google_dns_managed_zone.moove.dns_name}:8888"
     config_context = module.gke.name
   }
 }
 
-resource "kubernetes_namespace" "monitoring" {
-  metadata {
-    name = "monitoring"
-
-    labels = {
-      monitoring = "enabled"
-    }
-  }
+data "google_secret_manager_secret_version" "helm-key" {
+  project = "moove-systems"
+  secret = "helm_github-token"
 }
 
-resource "kubernetes_namespace" "default" {
-  metadata {
-    name = "default"
 
-    labels = {
-      monitoring = "enabled"
-    }
-  }
-}
-
-resource "kubernetes_namespace" "environment" {
-  metadata {
-    name = var.environment
-
-    labels = {
-      monitoring = "enabled"
-    }
+resource "helm_release" "prometheus-pilot" {
+  name = "prometheus-pilot"
+  version = "0.1.0"
+  namespace = "monitoring"
+  repository = "https://${data.google_secret_manager_secret_version.helm-key.secret_data}@raw.githubusercontent.com/moove-ai/moove-helm/main/"
+  chart = "prometheus-pilot"
+  set {
+    name = "thanosSecretProject"
+    value = var.project_id
   }
 }
 
