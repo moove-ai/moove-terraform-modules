@@ -1,8 +1,8 @@
 provider "helm" {
   kubernetes {
     config_path = "~/.kube/config"
-    proxy_url = "http://${var.proxy_dns}.${data.google_dns_managed_zone.moove.dns_name}:8888"
-    config_context = module.gke.name
+    proxy_url = "http://${var.proxy_dns}.${data.google_dns_managed_zone.moove-internal.dns_name}:8888"
+    config_context = "gke_${var.project_id}_${var.region}_${module.gke.name}"
   }
 }
 

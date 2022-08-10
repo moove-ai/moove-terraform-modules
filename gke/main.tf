@@ -11,23 +11,24 @@ provider "kubernetes" {
   host                   = "https://${module.gke.endpoint}"
   token                  = data.google_client_config.default.access_token
   cluster_ca_certificate = base64decode(module.gke.ca_certificate)
-  proxy_url = "http://${var.proxy_dns}.${data.google_dns_managed_zone.moove.dns_name}:8888"
 }
 
-#module "gcloud" {
-#  source  = "terraform-google-modules/gcloud/google"
-#  version = "~> 0.5"
-#
-#  platform = "linux"
-#
-#  create_cmd_entrypoint  = "gcloud"
-#  create_cmd_body        = "container clusters get-credentials ${module.gke.name} --region=${var.region}"
-#}
+module "gcloud" {
+  source  = "terraform-google-modules/gcloud/google"
+  version = "~> 2.0"
+
+  platform = "darwin"
+    additional_components = ["kubectl", "beta"]
+
+
+  create_cmd_entrypoint  = "gcloud"
+  create_cmd_body        = "container clusters get-credentials ${module.gke.name} --region=${var.region} --project=${var.project_id}"
+}
 
 
 module "gke" {
   source                     = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster-update-variant"
-  version                    = "22.0.0"
+  version                    = "22.1.0"
   project_id                 = var.project_id
   name                       = var.cluster_name
   region                     = var.region
@@ -59,10 +60,4 @@ module "gke" {
   node_pools_metadata        = var.node_pools_metadata
   cluster_resource_labels   = var.cluster_labels
   master_authorized_networks = var.master_authorized_networks
-}
-
-module "thanos" {
-  source = "../thanos"
-  project_id = var.project_id
-  cluster_name = var.cluster_name
 }

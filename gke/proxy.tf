@@ -39,15 +39,15 @@ resource "google_compute_instance" "gke-proxy" {
   }
 }
 
-data "google_dns_managed_zone" "moove" {
-  name = "moove-ai"
+data "google_dns_managed_zone" "moove-internal" {
+  name = "moove-internal"
   project = "moove-systems"
 }
 
 resource "google_dns_record_set" "proxy" {
-  name = "${var.proxy_dns}.${data.google_dns_managed_zone.moove.dns_name}"
-  project = data.google_dns_managed_zone.moove.project
-  managed_zone = data.google_dns_managed_zone.moove.name
+  name = "${var.proxy_dns}.${data.google_dns_managed_zone.moove-internal.dns_name}"
+  project = data.google_dns_managed_zone.moove-internal.project
+  managed_zone = data.google_dns_managed_zone.moove-internal.name
   type = "A"
   rrdatas = [ google_compute_instance.gke-proxy.network_interface.0.network_ip ]
 }
