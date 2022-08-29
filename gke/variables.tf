@@ -48,31 +48,31 @@ variable "ip_range_services" {
   description = "The name of the Secondary Range that services will default to"
 }
 
-variable "gce_pd_csi_driver_enabled" {
+variable "gce_pd_csi_driver" {
   type = bool
   description = "Enables the GCE Disk CSI Driver."
   default = true
 }
 
-variable "http_load_balancing_enabled" {
+variable "http_load_balancing" {
   type = bool
   description = "Enables HTTP Load Balancing"
   default = true
 }
 
-variable "network_policy_enabled" {
+variable "network_policy" {
   type = bool
   description = "Enables Network Policy"
   default = true
 }
 
-variable "horizontal_pod_autoscaling_enabled" {
+variable "horizontal_pod_autoscaling" {
   type = bool
   description = "Enables Horizontal Pod Autoscaling"
   default = true
 }
 
-variable "filestore_csi_driver_enabled" {
+variable "filestore_csi_driver" {
   type = bool
   description = "Enables the Firestore CSI Driver"
   default = false
@@ -95,20 +95,20 @@ variable "master_ipv4_cidr_block" {
   description = "The IPv4 CIDR block to give for the cluster."
 }
 
-variable "istio_enabled" {
+variable "istio" {
   type = bool
   description = "Enables ISTIO on this cluster"
   default = false
 }
 
-variable "cloudrun_enabeld" {
+variable "cloudrun" {
   type = bool
   description = "Enables Cloud Run"
   default = false
 }
 
 
-variable "dns_cache_enabled" {
+variable "dns_cache" {
   type = bool
   description = "Enables DNS Caching"
   default = false
@@ -158,10 +158,10 @@ variable "enable_network_egress_export" {
   default = true
 }
 
-variable "resource_usage_export_dataset_id" {
-  type = string
-  description = "The name of the BQ dataset ID to store billing report data in"
-}
+#variable "resource_usage_export_dataset_id" {
+#  type = string
+#  description = "The name of the BQ dataset ID to store billing report data in"
+#}
 
 variable "cluster_labels" {
   type        = map(string)
@@ -215,19 +215,19 @@ variable "external_secrets_values" {
   description = "External Secrets Helm Values"
 }
 
-variable "helm_blackbox_exporter" {
+variable "blackbox_exporter_values" {
   type = bool
   description = "Enables or disables the blackbox expoter"
   default = false
 }
 
-variable "helm_pushgateway" {
+variable "pushgateway_values" {
   type = bool
   description = "Enables or disables prometheus pushgateway"
   default = false
 }
 
-variable "helm_stackdriver_exporter" {
+variable "stackdriver_exporter_values" {
   type = bool
   description = "Enables or disables the stackdriver expoter"
   default = false

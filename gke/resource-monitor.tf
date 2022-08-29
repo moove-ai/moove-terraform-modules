@@ -1,6 +1,11 @@
+locals {
+  _cluster_name = replace(var.cluster_name, "-", "_")
+}
+
+
 resource "google_bigquery_dataset" "resource-monitor" {
     project = var.project_id
-    dataset_id = var.resource_usage_export_dataset_id
+    dataset_id = "${local._cluster_name}_export"
     friendly_name = "Kubernetes Usage Export for ${var.cluster_name}"
     location = "US"
     labels = {

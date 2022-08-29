@@ -22,6 +22,9 @@ resource "helm_release" "prometheus-pilot" {
     name = "thanosSecretProject"
     value = var.project_id
   }
+  depends_on = [
+    google_compute_instance.gke-proxy
+  ]
 }
 
 resource "helm_release" "argo-cd" {
@@ -32,6 +35,9 @@ resource "helm_release" "argo-cd" {
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
   values = [var.argo_cd_values]
+  depends_on = [
+    google_compute_instance.gke-proxy
+  ]
 }
 
 resource "helm_release" "cert-manager" {
@@ -42,6 +48,9 @@ resource "helm_release" "cert-manager" {
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
   values = [var.cert_manager_values]
+  depends_on = [
+    google_compute_instance.gke-proxy
+  ]
 }
 
 resource "helm_release" "external-dns" {
@@ -52,6 +61,9 @@ resource "helm_release" "external-dns" {
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "external-dns"
   values = [var.external_dns_values]
+  depends_on = [
+    google_compute_instance.gke-proxy
+  ]
 }
 
 resource "helm_release" "external-secrets" {
@@ -62,6 +74,9 @@ resource "helm_release" "external-secrets" {
   repository = "https://charts.external-secrets.io"
   chart      = "external-secrets"
   values = [var.external_secrets_values]
+  depends_on = [
+    google_compute_instance.gke-proxy
+  ]
 }
 
 resource "helm_release" "kube-prometheus-stack" {
@@ -72,10 +87,13 @@ resource "helm_release" "kube-prometheus-stack" {
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
   values = [var.kube_prometheus_stack_values]
+  depends_on = [
+    google_compute_instance.gke-proxy
+  ]
 }
 
 resource "helm_release" "blackbox-exporter" {
-  count = var.helm_blackbox_exporter ? 1 : 0
+  count = var.prometheus_blackbox_exporter_values ? 1 : 0
   name       = "prometheus-blackbox-exporter"
   version = "5.8.1"
   namespace = "monitoring"
@@ -83,10 +101,13 @@ resource "helm_release" "blackbox-exporter" {
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-blackbox-exporter"
   values = [var.prometheus_blackbox_exporter_values]
+  depends_on = [
+    google_compute_instance.gke-proxy
+  ]
 }
 
 resource "helm_release" "pushgateway" {
-  count = var.helm_pushgateway ? 1 : 0
+  count = var.prometheus_pushgateway_values ? 1 : 0
   name       = "prometheus-pushgateway"
   version = "1.16.1"
   namespace = "monitoring"
@@ -94,10 +115,13 @@ resource "helm_release" "pushgateway" {
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-pushgateway"
   values = [var.prometheus_pushgateway_values]
+  depends_on = [
+    google_compute_instance.gke-proxy
+  ]
 }
 
 resource "helm_release" "stackdriver-exporter" {
-  count = var.helm_stackdriver_exporter ? 1 : 0
+  count = var.prometheus_stackdriver_exporter_values ? 1 : 0
   name       = "prometheus-stackdriver-exporter"
   version = "1.16.1"
   namespace = "monitoring"
@@ -105,6 +129,9 @@ resource "helm_release" "stackdriver-exporter" {
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-stackdriver-exporter"
   values = [var.prometheus_stackdriver_exporter_values]
+  depends_on = [
+    google_compute_instance.gke-proxy
+  ]
 }
 
 resource "helm_release" "thanos" {
@@ -115,4 +142,7 @@ resource "helm_release" "thanos" {
   repository = "https://charts.bitnami.com/bitnami"
   chart = "thanos"
   values = [var.thanos_values]
+  depends_on = [
+    google_compute_instance.gke-proxy
+  ]
 }
