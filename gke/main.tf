@@ -12,8 +12,8 @@ module "gcloud" {
   source  = "terraform-google-modules/gcloud/google"
   version = "~> 2.0"
 
-  platform = "darwin"
-    additional_components = ["kubectl", "beta"]
+  platform = "linux"
+  additional_components = ["kubectl", "beta"]
 
 
   create_cmd_entrypoint  = "gcloud"
