@@ -21,7 +21,7 @@ variable "shared_vpc_host" {
 
 variable "routing_mode" {
     type = string
-    desdescription = "The routing mode for this VPC"
+    description = "The routing mode for this VPC"
     default = "GLOBAL"
 }
 
