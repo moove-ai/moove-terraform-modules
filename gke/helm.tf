@@ -1,9 +1,16 @@
 provider "helm" {
   kubernetes {
     config_path = "~/.kube/config"
-    proxy_url = "http://${var.proxy_dns}.${data.google_dns_managed_zone.moove-internal.dns_name}:8888"
+    proxy_url = "http://${google_compute_instance.gke-proxy.network_interface.0.network_ip}:8888"
     config_context = "gke_${var.project_id}_${var.region}_${module.gke.name}"
   }
+}
+
+provider "kubernetes" {
+  alias = "internal"
+  config_path = "~/.kube/config"
+  proxy_url = "http://${google_compute_instance.gke-proxy.network_interface.0.network_ip}:8888"
+  config_context_cluster = "gke_${var.project_id}_${var.region}_${module.gke.name}"
 }
 
 data "google_secret_manager_secret_version" "helm-key" {
@@ -11,19 +18,61 @@ data "google_secret_manager_secret_version" "helm-key" {
   secret = "helm_github-token"
 }
 
-
-resource "helm_release" "prometheus-pilot" {
-  name = "prometheus-pilot"
-  version = "0.1.0"
-  namespace = "monitoring"
-  repository = "https://${data.google_secret_manager_secret_version.helm-key.secret_data}@raw.githubusercontent.com/moove-ai/moove-helm/main/"
-  chart = "prometheus-pilot"
-  set {
-    name = "thanosSecretProject"
-    value = var.project_id
+resource "kubernetes_namespace" "monitoring" {
+  provider = kubernetes.internal
+  metadata {
+    name = "monitoring"
+    labels = {
+      monitoring = "enabled"
+    }
   }
   depends_on = [
-    google_compute_instance.gke-proxy
+    google_compute_instance.gke-proxy,
+    module.gcloud
+  ]
+}
+
+resource "kubernetes_namespace" "default" {
+  provider = kubernetes.internal
+  metadata {
+    name = "default"
+    labels = {
+      monitoring = "enabled"
+    }
+  }
+  depends_on = [
+    google_compute_instance.gke-proxy,
+    module.gcloud
+  ]
+}
+
+resource "kubernetes_namespace" "environment" {
+  provider = kubernetes.internal
+  metadata {
+    name = var.environment
+    labels = {
+      monitoring = "enabled"
+    }
+  }
+  depends_on = [
+    google_compute_instance.gke-proxy,
+    module.gcloud
+  ]
+}
+
+resource "kubernetes_secret" "prometheus-secrets" {
+  provider = kubernetes.internal
+  metadata {
+    name = "prometheus-secrets"
+  }
+
+  type = "Opaque"
+  data = {
+    "objstore.yml" = google_secret_manager_secret_version.thanos-object-store-config.secret_data
+  }
+  depends_on = [
+    google_compute_instance.gke-proxy,
+    module.gcloud
   ]
 }
 
@@ -36,7 +85,8 @@ resource "helm_release" "argo-cd" {
   chart      = "argo-cd"
   values = [var.argo_cd_values]
   depends_on = [
-    google_compute_instance.gke-proxy
+    google_compute_instance.gke-proxy,
+    module.gcloud
   ]
 }
 
@@ -49,7 +99,8 @@ resource "helm_release" "cert-manager" {
   chart      = "cert-manager"
   values = [var.cert_manager_values]
   depends_on = [
-    google_compute_instance.gke-proxy
+    google_compute_instance.gke-proxy,
+    module.gcloud
   ]
 }
 
@@ -62,7 +113,8 @@ resource "helm_release" "external-dns" {
   chart      = "external-dns"
   values = [var.external_dns_values]
   depends_on = [
-    google_compute_instance.gke-proxy
+    google_compute_instance.gke-proxy,
+    module.gcloud
   ]
 }
 
@@ -75,7 +127,8 @@ resource "helm_release" "external-secrets" {
   chart      = "external-secrets"
   values = [var.external_secrets_values]
   depends_on = [
-    google_compute_instance.gke-proxy
+    google_compute_instance.gke-proxy,
+    module.gcloud
   ]
 }
 
@@ -88,7 +141,8 @@ resource "helm_release" "kube-prometheus-stack" {
   chart      = "kube-prometheus-stack"
   values = [var.kube_prometheus_stack_values]
   depends_on = [
-    google_compute_instance.gke-proxy
+    google_compute_instance.gke-proxy,
+    module.gcloud
   ]
 }
 
@@ -102,7 +156,8 @@ resource "helm_release" "blackbox-exporter" {
   chart      = "prometheus-blackbox-exporter"
   values = [var.prometheus_blackbox_exporter_values]
   depends_on = [
-    google_compute_instance.gke-proxy
+    google_compute_instance.gke-proxy,
+    module.gcloud
   ]
 }
 
@@ -116,7 +171,8 @@ resource "helm_release" "pushgateway" {
   chart      = "prometheus-pushgateway"
   values = [var.prometheus_pushgateway_values]
   depends_on = [
-    google_compute_instance.gke-proxy
+    google_compute_instance.gke-proxy,
+    module.gcloud
   ]
 }
 
@@ -130,7 +186,8 @@ resource "helm_release" "stackdriver-exporter" {
   chart      = "prometheus-stackdriver-exporter"
   values = [var.prometheus_stackdriver_exporter_values]
   depends_on = [
-    google_compute_instance.gke-proxy
+    google_compute_instance.gke-proxy,
+    module.gcloud
   ]
 }
 
@@ -143,6 +200,7 @@ resource "helm_release" "thanos" {
   chart = "thanos"
   values = [var.thanos_values]
   depends_on = [
-    google_compute_instance.gke-proxy
+    google_compute_instance.gke-proxy,
+    module.gcloud
   ]
 }

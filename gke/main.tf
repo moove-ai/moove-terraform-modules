@@ -17,7 +17,7 @@ module "gcloud" {
 
 
   create_cmd_entrypoint  = "gcloud"
-  create_cmd_body        = "container clusters get-credentials ${module.gke.name} --region=${var.region} --project=${var.project_id}"
+  create_cmd_body        = "container clusters get-credentials ${module.gke.name} --internal-ip --region=${var.region} --project=${var.project_id}"
 }
 
 
