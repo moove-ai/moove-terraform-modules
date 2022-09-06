@@ -194,61 +194,24 @@ variable "master_authorized_networks" {
   ]
 }
 
-# Helm Values
-variable "argo_cd_values" {
-  type = string
-  description = "ArgoCD Helm values"
-}
-
-variable "cert_manager_values" {
-  type = string
-  description = "Cert Manager Helm Values"
-}
-
-variable "external_dns_values" {
-  type = string
-  description = "External DNS Helm Values"
-}
-
-variable "external_secrets_values" {
-  type = string
-  description = "External Secrets Helm Values"
-}
-
-variable "blackbox_exporter_values" {
-  type = bool
-  description = "Enables or disables the blackbox expoter"
-  default = false
-}
-
-variable "pushgateway_values" {
-  type = bool
-  description = "Enables or disables prometheus pushgateway"
-  default = false
-}
-
-variable "stackdriver_exporter_values" {
-  type = bool
-  description = "Enables or disables the stackdriver expoter"
-  default = false
-}
-
-variable "kube_prometheus_stack_values" {
-  
-}
-
-variable "prometheus_blackbox_exporter_values" {
-  
-}
-
-variable "prometheus_pushgateway_values" {
-  
-}
-
-variable "prometheus_stackdriver_exporter_values" {
-  
-}
-
-variable "thanos_values" {
-  
-}
+## Helm Values
+#variable "argo_cd_values" {
+#  type = string
+#  description = "ArgoCD Helm values"
+#}
+#
+#variable "cert_manager_values" {
+#  type = string
+#  description = "Cert Manager Helm Values"
+#}
+#
+#variable "external_dns_values" {
+#  type = string
+#  description = "External DNS Helm Values"
+#}
+#
+#variable "external_secrets_values" {
+#  type = string
+#  description = "External Secrets Helm Values"
+#}
+#

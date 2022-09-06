@@ -80,7 +80,8 @@ module "proxy-firewall" {
         {
           protocol = "tcp"
           ports    = [
-            "8888"
+            "8888",
+            "22"
             ]
         }
       ]
