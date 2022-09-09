@@ -1,3 +1,8 @@
+data "google_compute_network" "systems" {
+  project = "moove-systems"
+  name = "mgmt-vpc"
+}
+
 module "vpc" {
   source  = "terraform-google-modules/network/google"
   version = "~> 4.0"
@@ -10,6 +15,18 @@ module "vpc" {
   subnets = var.vpc_subnets
   secondary_ranges = var.secondary_ranges
   routes = var.routes 
+}
+
+resource "google_compute_network_peering" "vpc-to-mgmt" {
+  name         = "peering1"
+  network      = module.vpc.network_self_link
+  peer_network = data.google_compute_network.systems.self_link
+}
+
+resource "google_compute_network_peering" "mgmt-to-vpc" {
+  name         = "peering2"
+  network = data.google_compute_network.systems.self_link
+  peer_network = module.vpc.network_self_link
 }
 
 module "router" {
