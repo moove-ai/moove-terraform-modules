@@ -199,7 +199,7 @@ locals {
   prometheus:
     enabled: true
     servicemonitor:
-      enabled: true
+      enabled: false
       prometheusInstance: prometheus
       targetPort: 9402
       path: /metrics

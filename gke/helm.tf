@@ -59,7 +59,8 @@ resource "kubernetes_secret" "prometheus-secrets" {
   }
   depends_on = [
     google_compute_instance.gke-proxy,
-    module.gcloud
+    module.gcloud,
+    kubernetes_namespace.monitoring
   ]
 }
 
