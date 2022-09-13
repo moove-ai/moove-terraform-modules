@@ -32,7 +32,7 @@ resource "google_cloudbuild_trigger" "cloudfunction" {
       }
       secret_manager {
         env = "SLACK_HOOK"
-        version_name = "projects/moove-secrets/secrets/cloud_build_notification-slack-webhook/versions/latest"
+        version_name = "projects/moove-secrets/secrets/ci-cd_slack-webhook-token-cf-build-notification/versions/latest"
       }
     }
 
