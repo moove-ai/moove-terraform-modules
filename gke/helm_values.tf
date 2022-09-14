@@ -6,6 +6,7 @@ locals {
       annotations:
         external-dns.alpha.kubernetes.io/hostname: "${var.environment}.deployments.moove.co.in"
         cloud.google.com/load-balancer-type: Internal
+
     resources:
       limits:
         cpu: 4
@@ -13,8 +14,13 @@ locals {
       requests:
         cpu: 500m
         memory: 512Mi
+
     config:
       url: "https://${var.environment}.deployments.moove.co.in"
+      accounts.moove: apiKey, login
+
+    extraArgs:
+      - --insecure
 
     rbacConfig:
       policy.csv: |
