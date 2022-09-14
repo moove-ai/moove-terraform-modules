@@ -4,12 +4,17 @@ provider "kubernetes" {
   config_context_cluster = "gke_${var.project_id}_${var.region}_${var.environment}-${var.region}"
 }
 
+data "google_service_account" "build_service_account" {
+  project = var.project_id
+  account_id = var.service_account
+}
+
 resource "google_cloudbuild_trigger" "k8s-build-trigger" {
   provider    = google-beta
   project     = var.project_id
   name        = "${var.prefix}-${var.region}-app-${var.app_name}"
-  description = "Deploys the ${var.app_name} Application to the ${var.environment} GKE cluster(s)"
-  service_account = var.service_account
+  description = "Deploys the ${var.app_name} Application to the ${var.environment}-${var.region} GKE cluster"
+  service_account = data.google_service_account.build_service_account.id
 
   tags = concat([
     "k8s",
