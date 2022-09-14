@@ -18,6 +18,19 @@ data "google_secret_manager_secret_version" "helm-key" {
   secret  = "helm_github-token"
 }
 
+data "google_secret_manager_secret_version" "devops-bots-ssh-key" {
+  project = "moove-secrets"
+  secret  = "devops-bots-ssh-key"
+
+data "google_secret_manager_secret_version" "argo-cd_k8s-git-ops-repo-url" {
+  project = "moove-secrets"
+  secret  = "argo-cd_k8s-git-ops-repo-url"
+
+data "google_secret_manager_secret_version" "argo-cd_git-type" {
+  project = "moove-secrets"
+  secret  = "argo-cd_git-type"
+}
+
 resource "kubernetes_namespace" "monitoring" {
   provider = kubernetes.internal
   metadata {
@@ -57,6 +70,31 @@ resource "kubernetes_secret" "prometheus-secrets" {
   data = {
     "objstore.yml" = google_secret_manager_secret_version.thanos-object-store-config.secret_data
   }
+  depends_on = [
+    google_compute_instance.gke-proxy,
+    module.gcloud,
+    kubernetes_namespace.monitoring
+  ]
+}
+
+resource "kubernetes_secret" "argocd-secrets" {
+  provider = kubernetes.internal
+  metadata {
+    name      = "k8s-git-ops-repo"
+    namespace = "default"
+    labels = {
+      "app" = "argocd"
+      "argocd.argoproj.io/secret-type" = "repository"
+    }
+  }
+
+  type = "Opaque"
+  data = {
+    "sshprivatekey" = data.google_secret_manager_secret_version.devops-bots-ssh-key.secret_data
+    "url" = data.google_secret_manager_secret_version.argo-cd_k8s-git-ops-repo-url.secret_data
+    "type" = data.google_secret_manager_secret_version.argo-cd_git-type.secret_data
+  }
+
   depends_on = [
     google_compute_instance.gke-proxy,
     module.gcloud,
