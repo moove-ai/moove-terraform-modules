@@ -21,10 +21,12 @@ data "google_secret_manager_secret_version" "helm-key" {
 data "google_secret_manager_secret_version" "devops-bots-ssh-key" {
   project = "moove-secrets"
   secret  = "devops-bots-ssh-key"
+}
 
 data "google_secret_manager_secret_version" "argo-cd_k8s-git-ops-repo-url" {
   project = "moove-secrets"
   secret  = "argo-cd_k8s-git-ops-repo-url"
+}
 
 data "google_secret_manager_secret_version" "argo-cd_git-type" {
   project = "moove-secrets"
