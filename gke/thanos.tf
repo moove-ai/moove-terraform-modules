@@ -1,6 +1,6 @@
 resource "google_service_account" "object-store-sa" {
   account_id = "k8s-thanos"
-  project = var.project_id
+  project    = var.project_id
 }
 
 resource "google_service_account_key" "object-store-key" {
@@ -8,13 +8,13 @@ resource "google_service_account_key" "object-store-key" {
 }
 
 resource "google_storage_bucket" "thanos-object-store" {
-  project = var.project_id
+  project  = var.project_id
   location = "US"
   name     = "moove-${var.cluster_name}-metric-store"
 }
 
 resource "google_secret_manager_secret" "thanos-object-store-config" {
-  project = var.project_id
+  project   = var.project_id
   secret_id = "thanos-object-store-config"
   replication {
     automatic = true
