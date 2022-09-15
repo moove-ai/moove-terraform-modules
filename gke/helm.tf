@@ -85,7 +85,7 @@ resource "kubernetes_secret" "argocd-secrets" {
     name      = "k8s-git-ops-repo"
     namespace = "default"
     labels = {
-      "app" = "argocd"
+      "app"                            = "argocd"
       "argocd.argoproj.io/secret-type" = "repository"
     }
   }
@@ -93,8 +93,8 @@ resource "kubernetes_secret" "argocd-secrets" {
   type = "Opaque"
   data = {
     "sshprivatekey" = data.google_secret_manager_secret_version.devops-bots-ssh-key.secret_data
-    "url" = data.google_secret_manager_secret_version.argo-cd_k8s-git-ops-repo-url.secret_data
-    "type" = data.google_secret_manager_secret_version.argo-cd_git-type.secret_data
+    "url"           = data.google_secret_manager_secret_version.argo-cd_k8s-git-ops-repo-url.secret_data
+    "type"          = data.google_secret_manager_secret_version.argo-cd_git-type.secret_data
   }
 
   depends_on = [
