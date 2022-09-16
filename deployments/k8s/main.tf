@@ -1,19 +1,19 @@
 provider "kubernetes" {
-  config_path = "~/.kube/config"
-  proxy_url = "http://${var.environment}-${var.region}.gke.moove.co.in:8888"
+  config_path            = "~/.kube/config"
+  proxy_url              = "http://${var.environment}-${var.region}.gke.moove.co.in:8888"
   config_context_cluster = "gke_${var.project_id}_${var.region}_${var.environment}-${var.region}"
 }
 
 data "google_service_account" "build_service_account" {
-  project = var.project_id
+  project    = var.project_id
   account_id = var.service_account
 }
 
 resource "google_cloudbuild_trigger" "k8s-build-trigger" {
-  provider    = google-beta
-  project     = var.project_id
-  name        = "${var.prefix}-${var.region}-app-${var.app_name}"
-  description = "Deploys the ${var.app_name} Application to the ${var.environment}-${var.region} GKE cluster"
+  provider        = google-beta
+  project         = var.project_id
+  name            = "${var.prefix}-${var.region}-app-${var.app_name}"
+  description     = "Deploys the ${var.app_name} Application to the ${var.environment}-${var.region} GKE cluster"
   service_account = data.google_service_account.build_service_account.id
 
   tags = concat([
@@ -50,36 +50,36 @@ resource "google_cloudbuild_trigger" "k8s-build-trigger" {
     }
 
     step {
-      id = "clone-ops-repo"
-      name = "gcr.io/cloud-builders/git"
+      id         = "clone-ops-repo"
+      name       = "gcr.io/cloud-builders/git"
       entrypoint = "bash"
       args = [
         "-c",
         "git clone --depth 1 --branch main --single-branch https://$$GITHUB_TOKEN@github.com/moove-ai/k8s-git-ops.git /workspace/k8s-git-ops",
-        ]
-      secret_env = [
-        "GITHUB_TOKEN",
-        ]
-    }
-
-    step {
-      id = "clear-existing-templates"
-      wait_for = ["clone-ops-repo"]
-      name = "gcr.io/cloud-builders/gcloud"
-      entrypoint = "bash"
-      args = [
-        "-c",
-        "rm -fr /workspace/k8s-git-ops/${var.gke_cluster}/apps/${var.app_name}/*",
-        ]
+      ]
       secret_env = [
         "GITHUB_TOKEN",
       ]
     }
 
     step {
-      id = "render-template"
-      wait_for = ["clear-existing-templates"]
-      name = "${var.helmfile_image}:${var.helmfile_image_tag}"
+      id         = "clear-existing-templates"
+      wait_for   = ["clone-ops-repo"]
+      name       = "gcr.io/cloud-builders/gcloud"
+      entrypoint = "bash"
+      args = [
+        "-c",
+        "rm -fr /workspace/k8s-git-ops/${var.gke_cluster}/apps/${var.app_name}/*",
+      ]
+      secret_env = [
+        "GITHUB_TOKEN",
+      ]
+    }
+
+    step {
+      id         = "render-template"
+      wait_for   = ["clear-existing-templates"]
+      name       = "${var.helmfile_image}:${var.helmfile_image_tag}"
       entrypoint = "bash"
       env = [
         "KUSTOMIZE_PLUGIN_HOME=/root/",
@@ -95,9 +95,9 @@ resource "google_cloudbuild_trigger" "k8s-build-trigger" {
     }
 
     step {
-      id = "trigger-cd"
-      wait_for = ["render-template"]
-      name = "gcr.io/cloud-builders/git"
+      id         = "trigger-cd"
+      wait_for   = ["render-template"]
+      name       = "gcr.io/cloud-builders/git"
       entrypoint = "bash"
       args = [
         "-c",

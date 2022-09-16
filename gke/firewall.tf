@@ -13,22 +13,22 @@ module "agrocd-ingress" {
   ssh_source_ranges       = []
   custom_rules = {
     ingress-allow-http-https-argocd = {
-      description          = "Allows http and https ingress to GKE nodes"
-      direction            = "INGRESS"
-      action               = "allow"
-      ranges               = [
-                              "10.80.0.0/16"
-                              ]
+      description = "Allows http and https ingress to GKE nodes"
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "10.80.0.0/16"
+      ]
       sources              = []
       targets              = ["private", "gke"]
       use_service_accounts = false
       rules = [
         {
           protocol = "tcp"
-          ports    = [
+          ports = [
             "80",
             "443"
-            ]
+          ]
         }
       ]
       extra_attributes = {}

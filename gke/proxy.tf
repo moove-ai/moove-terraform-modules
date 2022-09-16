@@ -40,23 +40,23 @@ resource "google_compute_instance" "gke-proxy" {
 }
 
 data "google_dns_managed_zone" "moove-internal" {
-  name = "moove-internal"
+  name    = "moove-internal"
   project = "moove-systems"
 }
 
 resource "google_dns_record_set" "proxy" {
-  name = "${var.proxy_dns}.${data.google_dns_managed_zone.moove-internal.dns_name}"
-  project = data.google_dns_managed_zone.moove-internal.project
+  name         = "${var.proxy_dns}.${data.google_dns_managed_zone.moove-internal.dns_name}"
+  project      = data.google_dns_managed_zone.moove-internal.project
   managed_zone = data.google_dns_managed_zone.moove-internal.name
-  type = "A"
-  rrdatas = [ google_compute_instance.gke-proxy.network_interface.0.network_ip ]
+  type         = "A"
+  rrdatas      = [google_compute_instance.gke-proxy.network_interface.0.network_ip]
 }
 
 module "proxy-firewall" {
   source                  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
   project_id              = var.cluster_network_project_id
   network                 = var.cluster_network
-  internal_ranges_enabled = false 
+  internal_ranges_enabled = false
   internal_ranges         = []
   internal_target_tags    = []
   http_target_tags        = []
@@ -67,22 +67,22 @@ module "proxy-firewall" {
   ssh_source_ranges       = []
   custom_rules = {
     ingress-allow-http-proxy = {
-      description          = "Allows access to the GKE proxy to access private clusters"
-      direction            = "INGRESS"
-      action               = "allow"
-      ranges               = [
-                              "0.0.0.0/0"
-                              ]
+      description = "Allows access to the GKE proxy to access private clusters"
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "0.0.0.0/0"
+      ]
       sources              = []
       targets              = ["gke-proxy"]
       use_service_accounts = false
       rules = [
         {
           protocol = "tcp"
-          ports    = [
+          ports = [
             "8888",
             "22"
-            ]
+          ]
         }
       ]
       extra_attributes = {}
