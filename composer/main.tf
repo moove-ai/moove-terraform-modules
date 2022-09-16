@@ -54,8 +54,8 @@ data "google_project" "project" {
 }
 
 data "google_service_account" "serviceaccount" {
-  count  = var.create_service_account ? 0 : 1
-  project = var.project_id
+  count      = var.create_service_account ? 0 : 1
+  project    = var.project_id
   account_id = var.service_account_name
 }
 
