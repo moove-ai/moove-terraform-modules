@@ -71,7 +71,7 @@ variable "environment_size" {
 variable "composer_service_account" {
   type        = string
   description = "The email of the composer service account"
-  default = ""
+  default     = ""
 }
 
 variable "labels" {
@@ -89,20 +89,20 @@ variable "worker_resources" {
     max_count  = number
   })
   default = {
-  "cpu": 2,
-  "max_count": 6,
-  "memory_gb": 7.5,
-  "min_count": 2,
-  "storage_gb": 5
+    "cpu" : 2,
+    "max_count" : 6,
+    "memory_gb" : 7.5,
+    "min_count" : 2,
+    "storage_gb" : 5
   }
 }
 
 variable "create_service_account" {
-  type = bool
+  type        = bool
   description = "If true, creates a service account for the cluster to use. Default service account is '$composer_env_name@$PROEJCT_ID'"
 }
 
 variable "service_account_name" {
-  type = string
+  type    = string
   default = ""
 }
