@@ -9,7 +9,7 @@ output "builder_sa_name" {
 }
 
 output "logs-bucket" {
-  value = google_storage_bucket.build-logs.name
+  value       = google_storage_bucket.build-logs.name
   description = "The bucket holding the build logs for this environment"
-  
+
 }

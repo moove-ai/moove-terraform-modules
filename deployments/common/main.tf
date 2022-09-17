@@ -13,14 +13,14 @@ resource "google_service_account" "privileged-builder" {
 }
 
 resource "google_storage_bucket" "build-logs" {
-  name = "moove-${var.environment}-build-logs"
-  project = var.project_id
-  location = "US"
+  name                        = "moove-${var.environment}-build-logs"
+  project                     = var.project_id
+  location                    = "US"
   uniform_bucket_level_access = true
 
   labels = {
     "environment" = var.environment
-    "function" = "build-logs"
+    "function"    = "build-logs"
   }
 
   lifecycle_rule {

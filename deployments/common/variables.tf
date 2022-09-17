@@ -10,6 +10,6 @@ variable "secret_project_id" {
 }
 
 variable "environment" {
-  type = string
+  type        = string
   description = "The environment for the build setup"
 }
