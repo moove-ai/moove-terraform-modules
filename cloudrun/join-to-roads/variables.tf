@@ -59,3 +59,12 @@ variable "create_output_bucket" {
   description = "Set to true to create the output bucket."
   default     = true
 }
+
+variable "aerospike_host" {
+  type = string
+}
+
+variable "enable_bucket_notification" {
+  type        = bool
+  description = "Enables notifications on the input bucket. If this is set to false, JTR will not process any incoming data"
+}

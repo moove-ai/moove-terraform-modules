@@ -12,41 +12,42 @@ resource "google_cloud_run_service" "service" {
     spec {
       containers {
         image = local.image
-        #env = {
-        #  name  = "BATCH_SIZE"
-        #  value = "10000"
-
-        #  name =  "MESSAGE_QUEUE_SIZE"
-        #  value = "1"
-        #}
-        #env = {
-        #  name =  "MESSAGE_QUEUE_SIZE"
-        #  value = "1"
-        #}           
-        #env = {
-        #  name =  "MESSAGE_QUEUE_TIMEOUT"
-        #  value = "540"
-        #}           
-        #env = {
-        #  name =  "EXECUTOR_COUNT"
-        #  value = "10"
-        #}           
-        #env = {
-        #  name =  "SUBSCRIPTION_PROJECT"
-        #  value = var.project_id
-        #}           
-        #env = {
-        #  name =  "SUBSCRIPTION_ID"
-        #  value = google_pubsub_subscription.input-subscription.name
-        #}           
-        #env = {
-        #  name =  "AEROSPIKE_HOST"
-        #  value = var.aerospike_host
-        #}           
-        #env = {
-        #  name =  "OUTPUT_BUCKET"
-        #  value = var.create_output_bucket == false ? data.google_storage_bucket.output-bucket.name : google_storage_bucket.output-bucket.name
-        #}           
+        env {
+          name  = "BATCH_SIZE"
+          value = "10000"
+        }
+        env {
+          name  = "MESSAGE_QUEUE_SIZE"
+          value = "1"
+        }
+        env {
+          name  = "MESSAGE_QUEUE_SIZE"
+          value = "1"
+        }
+        env {
+          name  = "MESSAGE_QUEUE_TIMEOUT"
+          value = "540"
+        }
+        env {
+          name  = "EXECUTOR_COUNT"
+          value = "10"
+        }
+        env {
+          name  = "SUBSCRIPTION_PROJECT"
+          value = var.project_id
+        }
+        env {
+          name  = "SUBSCRIPTION_ID"
+          value = "${google_pubsub_topic.input-notification-topic.name}-join-to-roads"
+        }
+        env {
+          name  = "AEROSPIKE_HOST"
+          value = var.aerospike_host
+        }
+        env {
+          name  = "OUTPUT_BUCKET"
+          value = var.create_output_bucket == false ? data.google_storage_bucket.output-bucket[0].name : google_storage_bucket.output-bucket[0].name
+        }
       }
     }
   }
