@@ -8,11 +8,6 @@ variable "region" {
   description = "The GCP region to deploy this Cloud Run service to."
 }
 
-variable "image" {
-  type = string
-  description = "The Docker image this service uses"
-}
-
 variable "environment" {
   type = string
   description = "The environment this service is running in"
