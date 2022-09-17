@@ -11,3 +11,25 @@ resource "google_service_account" "privileged-builder" {
   description  = "Service account used to run Cloud Build with access to secrets"
   project      = var.project_id
 }
+
+resource "google_storage_bucket" "build-logs" {
+  name = "moove-${var.environment}-build-logs"
+  project = var.project_id
+  location = "US"
+  uniform_bucket_level_access = true
+
+  labels = {
+    "environment" = var.environment
+    "function" = "build-logs"
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 730
+    }
+
+    action {
+      type = "Delete"
+    }
+  }
+}

@@ -8,3 +8,8 @@ variable "secret_project_id" {
   description = "The project holding common cloudbuild secrets"
   default     = "moove-secrets"
 }
+
+variable "environment" {
+  type = string
+  description = "The environment for the build setup"
+}
