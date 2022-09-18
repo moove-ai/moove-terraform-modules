@@ -63,3 +63,8 @@ variable "ignored_files" {
   description = "List of files to exclude for the build trigger."
   default     = []
 }
+
+variable "enable_cache" {
+  type        = string
+  description = "If set to true, this build will use existing build cache"
+}

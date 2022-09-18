@@ -7,7 +7,18 @@ locals {
 ## Cloud Run Service
 resource "google_cloud_run_service" "service" {
   name     = var.service_name
+  project  = var.project_id
   location = var.region
+
+  metadata {
+    annotations = {
+      "autoscaling.knative.dev/maxScale"        = "5"
+      "run.googleapis.com/vpc-access-egress"    = "all"
+      "run.googleapis.com/vpc-access-connector" = "${var.environment}-${var.region}"
+      "run.googleapis.com/client-name"          = "terraform"
+    }
+  }
+
   template {
     spec {
       containers {
@@ -52,11 +63,6 @@ resource "google_cloud_run_service" "service" {
     }
   }
 
-  metadata {
-    annotations = {
-      "run.googleapis.com/vpc-access-connector" = "${var.environment}-${var.region}"
-    }
-  }
 
   traffic {
     percent         = 100
@@ -65,6 +71,7 @@ resource "google_cloud_run_service" "service" {
 }
 
 resource "google_service_account" "sa" {
+  project      = var.project_id
   account_id   = var.service_account_id
   display_name = local.service_account_display_name
 }

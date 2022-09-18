@@ -29,7 +29,8 @@ resource "google_cloudbuild_trigger" "trigger" {
   }
 
   substitutions = {
-    _ENVIRONMENT = var.environment
+    _ENVIRONMENT  = var.environment
+    _ENABLE_CACHE = var.enable_cache
   }
 
 }
