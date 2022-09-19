@@ -79,7 +79,6 @@ resource "google_cloud_run_service" "service" {
           value = var.create_output_bucket == false ? data.google_storage_bucket.output-bucket[0].name : google_storage_bucket.output-bucket[0].name
         }
         ports {
-          protocol = "TCP"
           container_port = "9090"
         }
       }
@@ -100,6 +99,7 @@ resource "google_service_account" "sa" {
 }
 
 resource "google_cloud_run_service_iam_binding" "binding" {
+  project  = var.project_id
   location = google_cloud_run_service.service.location
   service  = google_cloud_run_service.service.name
   role     = "roles/run.invoker"

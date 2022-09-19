@@ -77,7 +77,6 @@ resource "google_pubsub_subscription" "input-subscription" {
   depends_on = [google_pubsub_topic.input-notification-topic]
 }
 
-
 # Notifications
 resource "google_storage_notification" "input-notification" {
   count          = var.enable_bucket_notification == false ? 0 : 1

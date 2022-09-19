@@ -106,3 +106,9 @@ variable "service_account_name" {
   type    = string
   default = ""
 }
+
+variable "pypi_packages" {
+  type        = map(string)
+  description = " Custom Python Package Index (PyPI) packages to be installed in the environment. Keys refer to the lowercase package name (e.g. \"numpy\")."
+  default     = {}
+}
