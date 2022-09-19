@@ -68,3 +68,8 @@ variable "enable_bucket_notification" {
   type        = bool
   description = "Enables notifications on the input bucket. If this is set to false, JTR will not process any incoming data"
 }
+
+variable "network_project" {
+  type = string
+  description = "The project hosting the shared vpc"
+}
