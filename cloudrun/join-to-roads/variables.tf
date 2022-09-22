@@ -73,3 +73,19 @@ variable "network_project" {
   type = string
   description = "The project hosting the shared vpc"
 }
+
+variable "container_port" {
+  type = string
+  description = "The port the container is listening on"
+}
+
+variable "max_scale" {
+  type = string
+  description = "The maximum number of instances this can scale"
+}
+
+variable "allow_unauthenticated" {
+  type = bool
+  description = "Allow unauthenticated calls to this service"
+  default = false
+}

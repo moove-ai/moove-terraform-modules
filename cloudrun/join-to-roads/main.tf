@@ -32,8 +32,8 @@ resource "google_cloud_run_service" "service" {
   template {
     metadata {
       annotations = {
-        "autoscaling.knative.dev/maxScale"        = "5"
-        "run.googleapis.com/vpc-access-egress"    = "all"
+        "autoscaling.knative.dev/maxScale"        = var.max_scale
+        "run.googleapis.com/vpc-access-egress"    = "private-ranges-only"
         "run.googleapis.com/vpc-access-connector" = "projects/${var.network_project}/locations/${var.region}/connectors/${var.environment}-${var.region}"
         "run.googleapis.com/client-name"          = "terraform"
       }
@@ -41,7 +41,7 @@ resource "google_cloud_run_service" "service" {
 
     spec {
       containers {
-        image = local.image
+        image = var.image_name
         env {
           name  = "BATCH_SIZE"
           value = "10000"
@@ -79,7 +79,7 @@ resource "google_cloud_run_service" "service" {
           value = var.create_output_bucket == false ? data.google_storage_bucket.output-bucket[0].name : google_storage_bucket.output-bucket[0].name
         }
         ports {
-          container_port = "9090"
+          container_port = var.container_port
         }
       }
     }
@@ -104,6 +104,15 @@ resource "google_cloud_run_service_iam_binding" "binding" {
   service  = google_cloud_run_service.service.name
   role     = "roles/run.invoker"
   members  = ["serviceAccount:${google_service_account.sa.email}"]
+}
+
+resource "google_cloud_run_service_iam_binding" "unauthenitcated" {
+  count    = var.allow_unauthenticated ? 1 : 0
+  project  = var.project_id
+  location = google_cloud_run_service.service.location
+  service  = google_cloud_run_service.service.name
+  role     = "roles/run.invoker"
+  members  = ["allUsers"]
 }
 
 resource "google_project_iam_binding" "project" {
