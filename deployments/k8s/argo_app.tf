@@ -13,7 +13,7 @@ resource "kubernetes_manifest" "app" {
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
-      project: apps
+      project: ${var.type}
       revisionHistoryLimit: ${var.revision_history}
       source:
         path: "${var.gke_cluster}/${var.type}/${var.app_path}"
