@@ -12,7 +12,7 @@ data "google_service_account" "build_service_account" {
 resource "google_cloudbuild_trigger" "k8s-build-trigger" {
   provider        = google-beta
   project         = var.project_id
-  name            = "${var.prefix}-${var.region}-${var.type}-${var.app_name}"
+  name            = "${var.prefix}-${var.type}-${var.region}-${var.app_name}"
   description     = "Deploys the ${var.app_name} Application to the ${var.environment}-${var.region} GKE cluster"
   service_account = data.google_service_account.build_service_account.id
 
