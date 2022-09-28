@@ -19,16 +19,16 @@ resource "google_cloudbuild_trigger" "k8s-build-trigger" {
   tags = concat([
     "k8s",
     "deploy",
-    "apps",
+    "${var.type}",
     var.app_name
   ], var.tags)
 
   included_files = [
-    "releases/apps/${var.app_name}/configs/${var.environment}/**",
-    "releases/apps/${var.app_name}/values/values.yaml",
-    "releases/apps/${var.app_name}/values/${var.environment}.yaml",
-    "releases/apps/${var.app_name}/values/${var.environment}-pilot.yaml",
-    "releases/apps/${var.app_name}/helmfile.yaml",
+    "releases/${var.type}/${var.app_name}/configs/${var.environment}/**",
+    "releases/${var.type}/${var.app_name}/values/values.yaml",
+    "releases/${var.type}/${var.app_name}/values/${var.environment}.yaml",
+    "releases/${var.type}/${var.app_name}/values/${var.environment}-pilot.yaml",
+    "releases/${var.type}/${var.app_name}/helmfile.yaml",
   ]
 
   github {
@@ -69,7 +69,7 @@ resource "google_cloudbuild_trigger" "k8s-build-trigger" {
       entrypoint = "bash"
       args = [
         "-c",
-        "rm -fr /workspace/k8s-git-ops/${var.gke_cluster}/apps/${var.app_name}/*",
+        "rm -fr /workspace/k8s-git-ops/${var.gke_cluster}/${var.type}/${var.app_name}/*",
       ]
       secret_env = [
         "GITHUB_TOKEN",
@@ -87,7 +87,7 @@ resource "google_cloudbuild_trigger" "k8s-build-trigger" {
       ]
       args = [
         "-c",
-        "helmfile --environment ${var.environment} --file releases/apps/${var.app_name}/helmfile.yaml template --output-dir-template /workspace/k8s-git-ops/${var.gke_cluster}/apps/${var.app_name}",
+        "helmfile --environment ${var.environment} --file releases/${var.type}/${var.app_name}/helmfile.yaml template --output-dir-template /workspace/k8s-git-ops/${var.gke_cluster}/${var.type}/${var.app_name}",
       ]
       secret_env = [
         "GITHUB_TOKEN",
@@ -101,7 +101,7 @@ resource "google_cloudbuild_trigger" "k8s-build-trigger" {
       entrypoint = "bash"
       args = [
         "-c",
-        "cd /workspace/k8s-git-ops/ && git config user.name moove-devopsbot && git config user.email ${var.service_account} && git pull && git add -A ${var.gke_cluster}/apps/ && git commit -m \"deploys ${var.app_name} to ${var.environment}\" && git push origin main"
+        "cd /workspace/k8s-git-ops/ && git config user.name moove-devopsbot && git config user.email ${var.service_account} && git pull && git add -A ${var.gke_cluster}/${var.type}/ && git commit -m \"deploys ${var.app_name} to ${var.environment}\" && git push origin main"
       ]
     }
   }
