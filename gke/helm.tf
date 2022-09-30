@@ -111,7 +111,6 @@ resource "kubernetes_manifest" "common-secret-store" {
     "kind"       = "ClusterSecretStore"
     "metadata" = {
       "name"      = "moove-secrets"
-      "namespace" = "default"
     }
     spec = {
       provider = {
