@@ -104,6 +104,24 @@ resource "kubernetes_secret" "argocd-secrets" {
   ]
 }
 
+resource "kubernetes_manifest" "common-secret-store" {
+  manifest = {
+    "apiVersion" = "external-secrets.io/v1alpha1"
+    "kind"       = "ClusterSecretStore"
+    "metadata" = {
+      "name"      = "moove-secrets"
+      "namespace" = "default"
+    }
+    spec = {
+      provider = {
+        gcpsm = {
+          projectID = "moove-secrets"
+        }
+      }
+    }
+  }
+}
+
 resource "helm_release" "argo-cd" {
   name             = "argo-cd"
   version          = "4.9.7"
