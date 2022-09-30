@@ -105,6 +105,7 @@ resource "kubernetes_secret" "argocd-secrets" {
 }
 
 resource "kubernetes_manifest" "common-secret-store" {
+  provider = kubernetes.internal
   manifest = {
     "apiVersion" = "external-secrets.io/v1alpha1"
     "kind"       = "ClusterSecretStore"
