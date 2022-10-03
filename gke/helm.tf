@@ -122,6 +122,24 @@ resource "kubernetes_manifest" "common-secret-store" {
   }
 }
 
+resource "kubernetes_manifest" "platform-secret-store" {
+  provider = kubernetes.internal
+  manifest = {
+    "apiVersion" = "external-secrets.io/v1alpha1"
+    "kind"       = "ClusterSecretStore"
+    "metadata" = {
+      "name"      = var.project_id
+    }
+    spec = {
+      provider = {
+        gcpsm = {
+          projectID = var.project_id
+        }
+      }
+    }
+  }
+}
+
 resource "helm_release" "argo-cd" {
   name             = "argo-cd"
   version          = "4.9.7"
