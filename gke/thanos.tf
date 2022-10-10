@@ -1,3 +1,13 @@
+locals {
+  object_store_config = <<-EOT
+  type: GCS
+  config:
+    bucket: "${google_storage_bucket.thanos-object-store.name}"
+    service_account: |-
+      ${indent(4, base64decode(google_service_account_key.object-store-key.private_key))}
+  EOT
+}
+
 resource "google_service_account" "object-store-sa" {
   account_id = "k8s-thanos"
   project    = var.project_id
@@ -32,12 +42,9 @@ resource "google_storage_bucket_iam_member" "thanos-object-store-iam" {
   role   = "roles/storage.objectAdmin"
 }
 
-locals {
-  object_store_config = <<-EOT
-  type: GCS
-  config:
-    bucket: "${google_storage_bucket.thanos-object-store.name}"
-    service_account: |-
-      ${indent(4, base64decode(google_service_account_key.object-store-key.private_key))}
-  EOT
+resource "google_secret_manager_secret_iam_member" "thanos-object-store-config-iam" {
+  project = var.project_id
+  secret_id = google_secret_manager_secret.thanos-object-store-config.secret_id
+  role = "roles/secretmanager.secretAccessor"
+  member = "serviceAccount:${google_service_account.k8s-secrets.email}"
 }
