@@ -110,7 +110,7 @@ resource "kubernetes_manifest" "common-secret-store" {
     "apiVersion" = "external-secrets.io/v1alpha1"
     "kind"       = "ClusterSecretStore"
     "metadata" = {
-      "name"      = "moove-secrets"
+      "name" = "moove-secrets"
     }
     spec = {
       provider = {
@@ -128,7 +128,7 @@ resource "kubernetes_manifest" "platform-secret-store" {
     "apiVersion" = "external-secrets.io/v1alpha1"
     "kind"       = "ClusterSecretStore"
     "metadata" = {
-      "name"      = var.project_id
+      "name" = var.project_id
     }
     spec = {
       provider = {

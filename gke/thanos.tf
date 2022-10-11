@@ -43,8 +43,8 @@ resource "google_storage_bucket_iam_member" "thanos-object-store-iam" {
 }
 
 resource "google_secret_manager_secret_iam_member" "thanos-object-store-config-iam" {
-  project = var.project_id
+  project   = var.project_id
   secret_id = google_secret_manager_secret.thanos-object-store-config.secret_id
-  role = "roles/secretmanager.secretAccessor"
-  member = "serviceAccount:${google_service_account.k8s-secrets.email}"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.k8s-secrets.email}"
 }
