@@ -58,3 +58,29 @@ resource "kubernetes_manifest" "atlantis_git-config-secret" {
   EOT
   )
 }
+
+resource "kubernetes_manifest" "atlantis-gcp-sa-key" {
+  manifest = yamldecode(<<-EOT
+    apiVersion: external-secrets.io/v1alpha1
+    kind: ExternalSecret
+    metadata:
+      name: atlantis-gcp-sa-key
+      namespace: ${var.deployment_namespace}
+      labels:
+        app: atlantis
+        source: gcpsm
+    spec:
+      refreshInterval: 12h
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: ${var.secret_project_id}
+      target:
+        name: atlantis-terraform-gcp-sa-key
+        creationPolicy: Owner
+      data:
+      - secretKey: gitconfig
+        remoteRef:
+          key: atlantis_gcp-sa-key
+  EOT
+  )
+}
