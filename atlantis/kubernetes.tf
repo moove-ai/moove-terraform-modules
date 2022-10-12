@@ -23,12 +23,38 @@ resource "kubernetes_manifest" "atlantis-vcs-secrets" {
         name: atlantis-vcs-secrets
         creationPolicy: Owner
       data:
-      - secretKey: atlantis_github-token
+      - secretKey: github_token
         remoteRef:
           key: atlantis_github-token
-      - secretKey: atlantis_github-secret
+      - secretKey: github_secret
         remoteRef:
           key: atlantis_github-secret
+  EOT
+  )
+}
+
+resource "kubernetes_manifest" "atlantis_git-config-secret" {
+  manifest = yamldecode(<<-EOT
+    apiVersion: external-secrets.io/v1alpha1
+    kind: ExternalSecret
+    metadata:
+      name: atlantis-git-config-secret
+      namespace: ${var.deployment_namespace}
+      labels:
+        app: atlantis
+        source: gcpsm
+    spec:
+      refreshInterval: 12h
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: ${var.secret_project_id}
+      target:
+        name: atlantis-git-config-secret
+        creationPolicy: Owner
+      data:
+      - secretKey: gitconfig
+        remoteRef:
+          key: atlantis_git-config-secret
   EOT
   )
 }

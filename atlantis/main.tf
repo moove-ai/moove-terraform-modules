@@ -7,9 +7,9 @@ resource "google_service_account" "atlantis" {
 }
 
 ## Secrets
-resource "google_secret_manager_secret" "atlantis-git-config-secret" {
+resource "google_secret_manager_secret" "atlantis_git-config-secret" {
   project   = var.secret_project_id
-  secret_id = "atlantis-git-config-secret"
+  secret_id = "atlantis_git-config-secret"
 
   labels = {
     environment = var.environment
@@ -59,9 +59,9 @@ resource "google_secret_manager_secret" "atlantis_github-secret" {
 }
 
 ## Secrets IAM
-resource "google_secret_manager_secret_iam_member" "atlantis-git-config-secret-iam" {
-  project = google_secret_manager_secret.atlantis-git-config-secret.project
-  secret_id = google_secret_manager_secret.atlantis-git-config-secret.secret_id
+resource "google_secret_manager_secret_iam_member" "atlantis_git-config-secret-iam" {
+  project = google_secret_manager_secret.atlantis_git-config-secret.project
+  secret_id = google_secret_manager_secret.atlantis_git-config-secret.secret_id
   role = "roles/secretmanager.secretAccessor"
   member = "serviceAccount:k8s-secrets@${var.project_id}.iam.gserviceaccount.com"
 }
