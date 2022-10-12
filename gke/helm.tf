@@ -195,3 +195,41 @@ resource "helm_release" "external-secrets" {
     module.gcloud
   ]
 }
+
+resource "kubernetes_manifest" "cert-manager-cluster-issuer" {
+  manifest = yamldecode(<<-EOT
+    apiVersion: cert-manager.io/v1
+    kind: ClusterIssuer
+    metadata:
+      name: letsencrypt
+    spec:
+      acme:
+        server: https://acme-v02.api.letsencrypt.org/directory
+        email: systems@moove.ai
+        privateKeySecretRef:
+          name: letsencrypt
+        solvers:
+        - dns01:
+            cloudDNS:
+              project: moove-systems
+EOT
+}
+
+resource "kubernetes_manifest" "cert-manager-cluster-issuer-staging" {
+  manifest = yamldecode(<<-EOT
+    apiVersion: cert-manager.io/v1
+    kind: ClusterIssuer
+    metadata:
+      name: letsencrypt-staging
+    spec:
+      acme:
+        server: https://acme-staging-v02.api.letsencrypt.org/directory
+        email: systems@moove.ai
+        privateKeySecretRef:
+          name: letsencrypt
+        solvers:
+        - dns01:
+            cloudDNS:
+              project: moove-systems
+EOT
+}

@@ -75,7 +75,7 @@ resource "kubernetes_manifest" "atlantis-gcp-sa-key" {
         kind: ClusterSecretStore
         name: ${var.secret_project_id}
       target:
-        name: atlantis-terraform-gcp-sa-key
+        name: atlantis-gcp-sa-key
         creationPolicy: Owner
       data:
       - secretKey: gitconfig
