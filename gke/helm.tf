@@ -197,6 +197,7 @@ resource "helm_release" "external-secrets" {
 }
 
 resource "kubernetes_manifest" "cert-manager-cluster-issuer" {
+  provider = kubernetes.internal
   manifest = yamldecode(<<-EOT
     apiVersion: cert-manager.io/v1
     kind: ClusterIssuer
@@ -212,10 +213,12 @@ resource "kubernetes_manifest" "cert-manager-cluster-issuer" {
         - dns01:
             cloudDNS:
               project: moove-systems
-EOT
+    EOT
+  )
 }
 
 resource "kubernetes_manifest" "cert-manager-cluster-issuer-staging" {
+  provider = kubernetes.internal
   manifest = yamldecode(<<-EOT
     apiVersion: cert-manager.io/v1
     kind: ClusterIssuer
@@ -231,5 +234,6 @@ resource "kubernetes_manifest" "cert-manager-cluster-issuer-staging" {
         - dns01:
             cloudDNS:
               project: moove-systems
-EOT
+    EOT
+  )
 }
