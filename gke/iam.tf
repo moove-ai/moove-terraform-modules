@@ -85,8 +85,15 @@ data "google_service_account" "dns-admin" {
   project    = "moove-systems"
 }
 
-resource "google_service_account_iam_member" "dns-admin-data-pipelines-workload-identity" {
+resource "google_service_account_iam_member" "dns-admin-external-dns-workload-identity" {
   member             = "serviceAccount:${var.project_id}.svc.id.goog[default/external-dns]"
+  role               = "roles/iam.workloadIdentityUser"
+  service_account_id = data.google_service_account.dns-admin.name
+}
+
+# Cert Manager 
+resource "google_service_account_iam_member" "dns-admin-cert-manager-workload-identity" {
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[default/cert-manager]"
   role               = "roles/iam.workloadIdentityUser"
   service_account_id = data.google_service_account.dns-admin.name
 }

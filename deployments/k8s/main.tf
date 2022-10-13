@@ -9,6 +9,18 @@ data "google_service_account" "build_service_account" {
   account_id = var.service_account
 }
 
+module "gcloud" {
+  source  = "terraform-google-modules/gcloud/google"
+  version = "~> 2.0"
+
+  platform              = "linux"
+  additional_components = ["kubectl", "beta"]
+
+
+  create_cmd_entrypoint = "gcloud"
+  create_cmd_body       = "container clusters get-credentials ${var.environment}-${var.region} --internal-ip --region=${var.region} --project=${var.project_id}"
+}
+
 resource "google_cloudbuild_trigger" "k8s-build-trigger" {
   provider        = google-beta
   project         = var.project_id

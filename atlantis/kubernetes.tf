@@ -78,7 +78,7 @@ resource "kubernetes_manifest" "atlantis-gcp-sa-key" {
         name: atlantis-gcp-sa-key
         creationPolicy: Owner
       data:
-      - secretKey: gitconfig
+      - secretKey: key.json
         remoteRef:
           key: atlantis_gcp-sa-key
   EOT

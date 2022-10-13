@@ -6,6 +6,11 @@ resource "google_service_account" "atlantis" {
   description  = "Service account that runs Atlantis"
 }
 
+data "google_service_account" "terraform" {
+  project    = "moove-systems"
+  account_id = "terraform"
+}
+
 ## Secrets
 resource "google_secret_manager_secret" "atlantis_git-config-secret" {
   project   = var.secret_project_id
@@ -80,36 +85,41 @@ resource "google_service_account_key" "atlantis-key" {
   public_key_type    = "TYPE_X509_PEM_FILE"
 }
 
+resource "google_service_account_key" "terraform" {
+  service_account_id = data.google_service_account.terraform.name
+  public_key_type    = "TYPE_X509_PEM_FILE"
+}
+
 resource "google_secret_manager_secret_version" "atlantis_gcp-sa-key-data" {
-  secret = google_secret_manager_secret.atlantis_gcp-sa-key.id
-  secret_data = base64decode(google_service_account_key.atlantis-key.private_key)
+  secret      = google_secret_manager_secret.atlantis_gcp-sa-key.id
+  secret_data = base64decode(google_service_account_key.terraform.private_key)
 }
 
 ## Secrets IAM
 resource "google_secret_manager_secret_iam_member" "atlantis_git-config-secret-iam" {
-  project = google_secret_manager_secret.atlantis_git-config-secret.project
+  project   = google_secret_manager_secret.atlantis_git-config-secret.project
   secret_id = google_secret_manager_secret.atlantis_git-config-secret.secret_id
-  role = "roles/secretmanager.secretAccessor"
-  member = "serviceAccount:k8s-secrets@${var.project_id}.iam.gserviceaccount.com"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:k8s-secrets@${var.project_id}.iam.gserviceaccount.com"
 }
 
 resource "google_secret_manager_secret_iam_member" "atlantis_github-token-iam" {
-  project = google_secret_manager_secret.atlantis_github-token.project
+  project   = google_secret_manager_secret.atlantis_github-token.project
   secret_id = google_secret_manager_secret.atlantis_github-token.secret_id
-  role = "roles/secretmanager.secretAccessor"
-  member = "serviceAccount:k8s-secrets@${var.project_id}.iam.gserviceaccount.com"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:k8s-secrets@${var.project_id}.iam.gserviceaccount.com"
 }
 
 resource "google_secret_manager_secret_iam_member" "atlantis_github-secret-iam" {
-  project = google_secret_manager_secret.atlantis_github-secret.project
+  project   = google_secret_manager_secret.atlantis_github-secret.project
   secret_id = google_secret_manager_secret.atlantis_github-secret.secret_id
-  role = "roles/secretmanager.secretAccessor"
-  member = "serviceAccount:k8s-secrets@${var.project_id}.iam.gserviceaccount.com"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:k8s-secrets@${var.project_id}.iam.gserviceaccount.com"
 }
 
 resource "google_secret_manager_secret_iam_member" "atlantis_gcp-sa-key-iam" {
-  project = google_secret_manager_secret.atlantis_gcp-sa-key.project
+  project   = google_secret_manager_secret.atlantis_gcp-sa-key.project
   secret_id = google_secret_manager_secret.atlantis_gcp-sa-key.secret_id
-  role = "roles/secretmanager.secretAccessor"
-  member = "serviceAccount:k8s-secrets@${var.project_id}.iam.gserviceaccount.com"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:k8s-secrets@${var.project_id}.iam.gserviceaccount.com"
 }

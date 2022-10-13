@@ -1,4 +1,5 @@
 resource "kubernetes_manifest" "app" {
+  depends_on = [module.gcloud]
   manifest = yamldecode(<<-EOT
     apiVersion: argoproj.io/v1alpha1
     kind: Application
