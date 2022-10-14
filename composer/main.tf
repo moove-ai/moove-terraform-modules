@@ -17,7 +17,12 @@ module "composer" {
   environment_size                 = var.environment_size
   #cloud_composer_network_ipv4_cidr_block = var.cloud_composer_network_ipv4_cidr_block
   composer_service_account = var.create_service_account == false ? var.composer_service_account : resource.google_service_account.serviceaccount[0].email
-  labels                   = var.labels
+  labels                   = merge({
+    "terraformed" = "true"
+    "function"    = "composer"
+    "environment" = var.environment
+    "region"      = var.region
+    },var.labels)
   worker                   = var.worker_resources
   pypi_packages            = var.pypi_packages
   depends_on = [
