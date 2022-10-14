@@ -109,6 +109,11 @@ variable "service_account_name" {
 
 variable "pypi_packages" {
   type        = map(string)
-  description = " Custom Python Package Index (PyPI) packages to be installed in the environment. Keys refer to the lowercase package name (e.g. \"numpy\")."
+  description = "Custom Python Package Index (PyPI) packages to be installed in the environment. Keys refer to the lowercase package name (e.g. \"numpy\")."
   default     = {}
+}
+
+variable "environment" {
+  type = string
+  description = "The Environment this composer cluster is running in"
 }
