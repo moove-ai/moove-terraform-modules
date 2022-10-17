@@ -194,6 +194,11 @@ variable "master_authorized_networks" {
   ]
 }
 
+variable "service_account" {
+  type = string
+  description = "The service account to run nodes as"
+}
+
 ## Helm Values
 #variable "argo_cd_values" {
 #  type = string
