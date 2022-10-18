@@ -158,11 +158,6 @@ variable "enable_network_egress_export" {
   default     = true
 }
 
-#variable "resource_usage_export_dataset_id" {
-#  type = string
-#  description = "The name of the BQ dataset ID to store billing report data in"
-#}
-
 variable "cluster_labels" {
   type        = map(string)
   description = "Map of label keys and label values to apply to this cluster"
@@ -199,24 +194,7 @@ variable "service_account" {
   description = "The service account to run nodes as"
 }
 
-## Helm Values
-#variable "argo_cd_values" {
-#  type = string
-#  description = "ArgoCD Helm values"
-#}
-#
-#variable "cert_manager_values" {
-#  type = string
-#  description = "Cert Manager Helm Values"
-#}
-#
-#variable "external_dns_values" {
-#  type = string
-#  description = "External DNS Helm Values"
-#}
-#
-#variable "external_secrets_values" {
-#  type = string
-#  description = "External Secrets Helm Values"
-#}
-#
+variable "kubernetes_version" {
+  type = string
+  description = "The kubernetes version"
+}

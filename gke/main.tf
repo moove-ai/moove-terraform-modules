@@ -56,4 +56,5 @@ module "gke" {
   cluster_resource_labels          = var.cluster_labels
   master_authorized_networks       = var.master_authorized_networks
   service_account                  = var.service_account
+  kubernetes_version               = var.kubernetes_version
 }
