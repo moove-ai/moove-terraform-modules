@@ -8,18 +8,6 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(module.gke.ca_certificate)
 }
 
-module "gcloud" {
-  source  = "terraform-google-modules/gcloud/google"
-  version = "~> 2.0"
-
-  platform              = "linux"
-  additional_components = ["kubectl", "beta"]
-
-
-  create_cmd_entrypoint = "gcloud"
-  create_cmd_body       = "container clusters get-credentials ${var.cluster_name} --internal-ip --region=${var.region} --project=${var.project_id}"
-}
-
 
 module "gke" {
   source                           = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster-update-variant"
@@ -55,4 +43,14 @@ module "gke" {
   node_pools_metadata              = var.node_pools_metadata
   cluster_resource_labels          = var.cluster_labels
   master_authorized_networks       = var.master_authorized_networks
+  service_account                  = google_service_account.k8s-nodes.email
+  create_service_account           = false
 }
+
+#module "common" {
+#  source = "../k8s-common"
+#
+#
+#
+#  depends_on = [module.gke]
+#}

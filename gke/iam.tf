@@ -77,6 +77,7 @@ resource "google_service_account_iam_member" "k8s-secrets-workload-identity" {
   member             = "serviceAccount:${var.project_id}.svc.id.goog[default/k8s-secrets]"
   role               = "roles/iam.workloadIdentityUser"
   service_account_id = google_service_account.k8s-secrets.name
+  depends_on = [module.gke]
 }
 
 # DNS Admin Service Account
@@ -89,4 +90,5 @@ resource "google_service_account_iam_member" "dns-admin-data-pipelines-workload-
   member             = "serviceAccount:${var.project_id}.svc.id.goog[default/external-dns]"
   role               = "roles/iam.workloadIdentityUser"
   service_account_id = data.google_service_account.dns-admin.name
+  depends_on = [module.gke]
 }
