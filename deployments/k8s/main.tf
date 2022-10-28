@@ -1,9 +1,3 @@
-provider "kubernetes" {
-  config_path            = "~/.kube/config"
-  proxy_url              = "http://${var.environment}-${var.region}.gke.moove.co.in:8888"
-  config_context_cluster = "gke_${var.project_id}_${var.region}_${var.environment}-${var.region}"
-}
-
 data "google_service_account" "build_service_account" {
   project    = var.project_id
   account_id = var.service_account

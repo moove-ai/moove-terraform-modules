@@ -77,3 +77,26 @@ variable "network_project" {
   type = string
   description = "the project the network is running on."
 }
+
+variable "create_service_account" {
+  type = bool
+  description = "If true, creates a service account"
+  default = true
+}
+
+variable "service_account_id" {
+  type = string
+  description = "The name of the service account used for cloud run. Created automatically. If create_service_account is false, the value of this is used as the service account"
+}
+
+variable "service_account_name" {
+  type = string
+  description = "The display name of the service account. Only used when create_service_account is true"
+  default = ""
+}
+
+variable "service_account_description" {
+  type = string
+  description = "The description of the service account. Only used when create_service_account is true"
+  default = ""
+}

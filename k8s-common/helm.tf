@@ -1,16 +1,16 @@
-module "gcloud" {
-  source  = "terraform-google-modules/gcloud/google"
-  version = "~> 2.0"
-
-  skip_download = true
-
-  platform              = "linux"
-  additional_components = ["kubectl", "beta"]
-
-
-  create_cmd_entrypoint = "gcloud"
-  create_cmd_body       = "container clusters get-credentials ${var.cluster_name} --internal-ip --region=${var.region} --project=${var.project_id}"
-}
+#module "gcloud" {
+#  source  = "terraform-google-modules/gcloud/google"
+#  version = "~> 2.0"
+#
+#  skip_download = true
+#
+#  platform              = "linux"
+#  additional_components = ["kubectl", "beta"]
+#
+#
+#  create_cmd_entrypoint = "gcloud"
+#  create_cmd_body       = "container clusters get-credentials ${var.cluster_name} --internal-ip --region=${var.region} --project=${var.project_id}"
+#}
 
 data "google_secret_manager_secret_version" "helm-key" {
   project = "moove-systems"
@@ -76,8 +76,24 @@ resource "kubernetes_secret" "argocd-secrets" {
   }
 
   type = "Opaque"
-  data = {  config_context = "my-context"
+  data = {
+    "sshprivatekey" = data.google_secret_manager_secret_version.devops-bots-ssh-key.secret_data
+    "url"           = data.google_secret_manager_secret_version.argo-cd_k8s-git-ops-repo-url.secret_data
+    "type"          = data.google_secret_manager_secret_version.argo-cd_git-type.secret_data
+  }
 
+  depends_on = [
+    kubernetes_namespace.monitoring
+  ]
+}
+
+resource "helm_release" "argo-cd" {
+  name             = "argo-cd"
+  version          = "4.9.7"
+  namespace        = "default"
+  create_namespace = true
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
   values           = [local.argocd_values]
 }
 
