@@ -60,7 +60,7 @@ locals {
   notifications:
     enabled: true
     name: notifications-controller
-    argocdUrl: "https://${var.environment}.deployments.moove.co.in"
+    argocdUrl: "https://${var.environment}.deployments.moove.c.in"
 
     secret:
       create: false

@@ -13,10 +13,10 @@ resource "kubernetes_manifest" "app" {
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
-      project: apps
+      project: default
       revisionHistoryLimit: ${var.revision_history}
       source:
-        path: ${var.gke_cluster}/apps/${var.app_path}
+        path: ${var.gke_cluster}/${var.type}/${var.app_path}
         directory:
           recurse: true
         repoURL: git@github.com:moove-ai/k8s-git-ops.git
