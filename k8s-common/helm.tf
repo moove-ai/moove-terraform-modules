@@ -1,17 +1,3 @@
-#module "gcloud" {
-#  source  = "terraform-google-modules/gcloud/google"
-#  version = "~> 2.0"
-#
-#  skip_download = true
-#
-#  platform              = "linux"
-#  additional_components = ["kubectl", "beta"]
-#
-#
-#  create_cmd_entrypoint = "gcloud"
-#  create_cmd_body       = "container clusters get-credentials ${var.cluster_name} --internal-ip --region=${var.region} --project=${var.project_id}"
-#}
-
 data "google_secret_manager_secret_version" "helm-key" {
   project = "moove-systems"
   secret  = "helm_github-token"
@@ -86,6 +72,45 @@ resource "kubernetes_secret" "argocd-secrets" {
     kubernetes_namespace.monitoring
   ]
 }
+
+#resource "kubernetes_manifest" "platform-secret-store" {
+#  manifest = yamldecode(<<-EOT
+#    apiVersion: external-secrets.io/v1beta1
+#    kind: ClusterSecretStore
+#    metadata:
+#      name: ${var.project_id}
+#      namespace: default
+#      labels:
+#        source: terraform
+#        module: k8s-common
+#    spec:
+#      provider:
+#        gcpsm:
+#          projectID: ${var.project_id}
+#  EOT
+#  )
+#  depends_on = [helm_release.external-secrets]
+#}
+#
+#resource "kubernetes_manifest" "secret-secret-store" {
+#  manifest = yamldecode(<<-EOT
+#    apiVersion: external-secrets.io/v1beta1
+#    kind: ClusterSecretStore
+#    metadata:
+#      name: moove-secrets
+#      namespace: default
+#      labels:
+#        source: terraform
+#        module: k8s-common
+#    spec:
+#      provider:
+#        gcpsm:
+#          projectID: moove-secrets
+#  EOT
+#  )
+#  depends_on = [helm_release.external-secrets]
+#}
+
 
 resource "helm_release" "argo-cd" {
   name             = "argo-cd"

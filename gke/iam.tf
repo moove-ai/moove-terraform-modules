@@ -22,6 +22,12 @@ resource "google_project_iam_member" "registry-reader" {
   member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
 }
 
+resource "google_project_iam_member" "storage-reader" {
+  project = var.project_id
+  role    = "roles/storage.objectViewer"
+  member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
+}
+
 resource "google_project_iam_member" "log-writer" {
   project = var.project_id
   role    = "roles/logging.logWriter"

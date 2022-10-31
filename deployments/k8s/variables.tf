@@ -124,3 +124,47 @@ variable "type" {
   type        = string
   description = "Is this an application, or cluster operations. Valid values: apps, ops"
 }
+
+variable "tag_path" {
+  type = string
+  description = <<-EOT
+    The path holding the image tag value in the k8s-deployment repo.
+    Stored in: releases/$TYPE/$APP_NAME/values/$ENVIRONEMNT.yaml.
+    Defaults to '.image.tag'.
+    Path must begin with '.' (.frontend.image.tag, .init.image.tag, etc)
+    EOT
+  default = ".image.tag"
+}
+
+variable "build_files" {
+  type = list(string)
+  description = "List of files that will trigger a build."
+}
+
+variable "build_ignored_files" {
+  type = list(string)
+  description = "List of files that will be ignored if they are changed."
+  default = []
+}
+
+variable "build_repo" {
+  type = string
+  description = "The repo that holds the code to be deployed."
+}
+
+variable "build_branch" {
+  type = string
+  description = "The branch of the repo to build."
+}
+
+variable "build_instance" {
+  type = string
+  description = "The GCE backend instance to build from. Valid options are: E2_HIGHCPU_8, E2_HIGHCPU_32, N1_HIGHCPU_8, N1_HIGHCPU_32"
+  default     = "UNSPECIFIED"
+}
+
+variable "build_timeout" {
+  type = string
+  description = "How long should the build wait before timing out."
+  default = "600s"
+}

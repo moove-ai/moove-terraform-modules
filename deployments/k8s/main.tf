@@ -3,7 +3,128 @@ data "google_service_account" "build_service_account" {
   account_id = var.service_account
 }
 
-resource "google_cloudbuild_trigger" "k8s-build-trigger" {
+resource "google_cloudbuild_trigger" "build" {
+  provider        = google-beta
+  project         = var.project_id
+  name            = "build-k8s-${var.type}-${var.app_name}"
+  description     = "Builds the ${var.app_name} container and triggers an automated deployment via ArgoCD"
+  service_account = data.google_service_account.build_service_account.id
+
+  tags = concat([
+    "k8s",
+    "build",
+    var.app_name
+  ], var.tags)
+
+  included_files = var.build_files
+  ignored_files  = var.build_ignored_files
+
+  github {
+    owner = "moove-ai"
+    name  = var.build_repo
+
+    push {
+      branch = "^${var.build_branch}$"
+    }
+  }
+
+  build {
+    logs_bucket = "gs://moove-${var.environment == "data-pipelines" ? "production" : var.environment}-build-logs"
+    timeout     = var.build_timeout
+    images = [
+      "gcr.io/${var.project_id}/${var.app_name}:$COMMIT_SHA",
+      "gcr.io/${var.project_id}/${var.app_name}:latest",
+    ]
+
+    available_secrets {
+      secret_manager {
+        env          = "GITHUB_TOKEN"
+        version_name = "projects/moove-secrets/secrets/ci-cd_github-token/versions/latest"
+      }
+    }
+
+    options {
+      machine_type = var.build_instance
+    }
+
+    step {
+      id   = "build-container"
+      name = "gcr.io/cloud-builders/docker"
+      args = [
+        "build",
+        "-t", "gcr.io/${var.project_id}/${var.app_name}:$COMMIT_SHA",
+        "-t", "gcr.io/${var.project_id}/${var.app_name}:latest",
+        "."
+      ]
+    }
+
+    step {
+      id   = "push-container"
+      name = "gcr.io/cloud-builders/docker"
+      wait_for = ["build-container"]
+      entrypoint = "bash"
+      args = ["-c", join(" ", [
+        "docker",
+        "push",
+        "gcr.io/${var.project_id}/${var.app_name}:$COMMIT_SHA",
+        "&& echo 'pushed container'"
+      ])]
+    }
+
+    step {
+      id = "clone-deployment-repo"
+      wait_for = ["build-container"]
+      name = "gcr.io/cloud-builders/git"
+      entrypoint = "bash"
+      args = ["-c", join(" ", [
+        "git clone --depth 1 --branch ${var.ci_cd_branch} --single-branch",
+          "https://$$GITHUB_TOKEN@github.com/moove-ai/k8s-deployments.git /workspace/k8s-deployments",
+      ])]
+      secret_env = [
+        "GITHUB_TOKEN",
+      ]
+    }
+
+    step {
+      id = "update-permissions"
+      wait_for = ["clone-deployment-repo"]
+      name = "gcr.io/cloud-builders/git"
+      entrypoint = "bash"
+      args = ["-c", join(" ", [
+        "chmod -R 0777",
+        "/workspace/k8s-deployments"
+      ])]
+    }
+
+    step {
+      id = "update-deployment"
+      wait_for = ["update-permissions"]
+      name = "mikefarah/yq"
+      args = [
+        "e", "${var.tag_path} = \"$COMMIT_SHA\"", 
+        "-i", "/workspace/k8s-deployments/releases/${var.type}/${var.app_name}/values/${var.environment}.yaml"
+      ]
+    }
+
+    step {
+      id = "trigger-cd"
+      wait_for = ["update-deployment"]
+      name = "gcr.io/cloud-builders/git"
+      entrypoint = "bash"
+      args = ["-c", join(" ", [
+        "cd /workspace/k8s-deployments/ &&",
+        "_AUTHOR=$$(git --no-pager show -s --format='%an') &&", 
+        "git config user.name  $$_AUTHOR &&",
+        "git config user.email ${data.google_service_account.build_service_account.email} &&", 
+        "git pull && git add -A &&", 
+        "git commit -m \"deploys ${var.app_name} to ${var.environment}-${var.region}\" &&",
+        "git push origin main"
+      ])]
+    }
+  }
+}
+
+resource "google_cloudbuild_trigger" "deployment" {
   provider        = google-beta
   project         = var.project_id
   name            = "${var.prefix}-${var.region}-${var.type}-${var.app_name}"
