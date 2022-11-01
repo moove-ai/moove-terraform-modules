@@ -111,6 +111,16 @@ resource "kubernetes_secret" "argocd-secrets" {
 #  depends_on = [helm_release.external-secrets]
 #}
 
+resource "helm_release" "external-secrets-pilot" {
+  name             = "external-secrets-pilot"
+  version          = "0.1.1"
+  namespace        = "default"
+  create_namespace = true
+  repository       = "https://moove-helm-charts.storage.googleapis.com/"
+  chart            = "external-secrets-pilot"
+  values           = [local.external_secrets_pilot_values]
+}
+
 
 resource "helm_release" "argo-cd" {
   name             = "argo-cd"

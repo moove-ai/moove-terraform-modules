@@ -68,13 +68,19 @@ resource "google_service_account" "k8s-secrets" {
 }
 
 resource "google_project_iam_member" "external-secrets-accessor" {
-  project = var.cluster_network_project_id
+  project = var.project_id
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.k8s-secrets.email}"
+}
+
+resource "google_project_iam_member" "external-secrets-secret-accessor" {
+  project = "moove-secrets"
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${google_service_account.k8s-secrets.email}"
 }
 
 resource "google_project_iam_member" "external-secrets-viewer" {
-  project = var.cluster_network_project_id
+  project = var.project_id
   role    = "roles/secretmanager.viewer"
   member  = "serviceAccount:${google_service_account.k8s-secrets.email}"
 }

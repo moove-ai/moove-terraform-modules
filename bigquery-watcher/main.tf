@@ -16,3 +16,21 @@ resource "google_organization_iam_member" "sa-iam" {
   role   = "roles/bigquery.metadataViewer"
   member = "serviceAccount:${google_service_account.sa.email}"
 }
+
+resource "google_organization_iam_member" "sa-browser" {
+  org_id = var.org_id
+  role   = "roles/browser"
+  member = "serviceAccount:${google_service_account.sa.email}"
+}
+
+resource "google_project_iam_member" "querier" {
+  project = "moove-systems"
+  role   = "roles/bigquery.jobUser"
+  member = "serviceAccount:${google_service_account.sa.email}"
+}
+
+resource "google_organization_iam_member" "viewer" {
+  org_id = var.org_id
+  role   = "roles/bigquery.dataViewer"
+  member = "serviceAccount:${google_service_account.sa.email}"
+}

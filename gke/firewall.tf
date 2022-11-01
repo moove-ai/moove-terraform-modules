@@ -33,5 +33,25 @@ module "agrocd-ingress" {
       ]
       extra_attributes = {}
     }
+    ingress-allow-promehteus = {
+      description = "Allows access to prometheus"
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "10.0.0.0/8"
+      ]
+      sources              = []
+      targets              = ["private"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "9090",
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
   }
 }

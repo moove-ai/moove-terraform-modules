@@ -252,4 +252,11 @@ locals {
       iam.gke.io/gcp-service-account: k8s-secrets@${var.project_id}.iam.gserviceaccount.com
     name: "k8s-secrets"
   EOT
+
+  external_secrets_pilot_values = <<-EOT
+  pilot:
+    secretStores:
+      - ${var.project_id}
+      - moove-secrets
+  EOT
 }
