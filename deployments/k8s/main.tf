@@ -1,15 +1,10 @@
-data "google_service_account" "build_service_account" {
-  project    = var.project_id
-  account_id = "priviliged-builder"
-}
-
 resource "google_cloudbuild_trigger" "build" {
   count           = var.build ? 1 : 0
   provider        = google-beta
   project         = var.project_id
   name            = "build-k8s-${var.type}-${var.app_name}"
   description     = "Builds the ${var.app_name} container and triggers an automated deployment via ArgoCD"
-  service_account = "projects/${var.project_id}/serviceAccounts/priviliged-builder@${var.project_id}.iam.gserviceaccount.com}" 
+  service_account = "projects/${var.project_id}/serviceAccounts/privileged-builder@${var.project_id}.iam.gserviceaccount.com" 
 
   tags = concat([
     "k8s",
@@ -116,7 +111,7 @@ resource "google_cloudbuild_trigger" "build" {
         "cd /workspace/k8s-deployments/ &&",
         "_AUTHOR=$$(git --no-pager show -s --format='%an') &&", 
         "git config user.name  $$_AUTHOR &&",
-        "git config user.email ${data.google_service_account.build_service_account.email} &&", 
+        "git config user.email devopsbot@moove.ai &&", 
         "git pull && git add -A &&", 
         "git commit -m \"deploys ${var.app_name} to ${var.environment}-${var.region}\" &&",
         "git push origin main"
@@ -129,7 +124,7 @@ resource "google_cloudbuild_trigger" "deployment" {
   project         = var.project_id
   name            = "${var.prefix}-${var.region}-${var.type}-${var.app_name}"
   description     = "Deploys the ${var.app_name} Application to the ${var.environment}-${var.region} GKE cluster"
-  service_account = "projects/${var.project_id}/serviceAccounts/priviliged-builder@${var.project_id}.iam.gserviceaccount.com" 
+  service_account = "projects/${var.project_id}/serviceAccounts/privileged-builder@${var.project_id}.iam.gserviceaccount.com" 
 
   tags = concat([
     "k8s",

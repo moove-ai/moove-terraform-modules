@@ -83,6 +83,16 @@ resource "helm_release" "argo-cd" {
   values           = [local.argocd_values]
 }
 
+resource "helm_release" "common-resources" {
+  name             = "common-resources"
+  version          = "0.1.4"
+  namespace        = "default"
+  create_namespace = true
+  repository       = "https://moove-helm-charts.storage.googleapis.com/"
+  chart            = "common-resources"
+  values           = [local.common_resources_values]
+}
+
 resource "helm_release" "cert-manager" {
   name             = "cert-manager"
   version          = "1.6.1"
@@ -91,6 +101,17 @@ resource "helm_release" "cert-manager" {
   repository       = "https://charts.jetstack.io"
   chart            = "cert-manager"
   values           = [local.cert_manager_values]
+}
+
+resource "helm_release" "cert-manager-pilot" {
+  name             = "cert-manager-pilot"
+  version          = "0.1.1"
+  namespace        = "default"
+  create_namespace = true
+  repository       = "https://moove-helm-charts.storage.googleapis.com/"
+  chart            = "cert-manager-pilot"
+  values           = [local.cert_manager_values]
+  depends_on = [helm_release.cert-manager]
 }
 
 resource "helm_release" "external-dns" {
