@@ -1,6 +1,6 @@
 data "google_service_account" "build_service_account" {
   project    = var.project_id
-  account_id = var.service_account
+  account_id = "priviliged-builder"
 }
 
 resource "google_cloudbuild_trigger" "build" {
@@ -9,7 +9,7 @@ resource "google_cloudbuild_trigger" "build" {
   project         = var.project_id
   name            = "build-k8s-${var.type}-${var.app_name}"
   description     = "Builds the ${var.app_name} container and triggers an automated deployment via ArgoCD"
-  service_account = data.google_service_account.build_service_account.id
+  service_account = "projects/${var.project_id}/serviceAccounts/priviliged-builder@${var.project_id}.iam.gserviceaccount.com}" 
 
   tags = concat([
     "k8s",
@@ -126,11 +126,10 @@ resource "google_cloudbuild_trigger" "build" {
 }
 
 resource "google_cloudbuild_trigger" "deployment" {
-  provider        = google-beta
   project         = var.project_id
   name            = "${var.prefix}-${var.region}-${var.type}-${var.app_name}"
   description     = "Deploys the ${var.app_name} Application to the ${var.environment}-${var.region} GKE cluster"
-  service_account = data.google_service_account.build_service_account.id
+  service_account = "projects/${var.project_id}/serviceAccounts/priviliged-builder@${var.project_id}.iam.gserviceaccount.com" 
 
   tags = concat([
     "k8s",
