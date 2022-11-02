@@ -73,55 +73,6 @@ resource "kubernetes_secret" "argocd-secrets" {
   ]
 }
 
-#resource "kubernetes_manifest" "platform-secret-store" {
-#  manifest = yamldecode(<<-EOT
-#    apiVersion: external-secrets.io/v1beta1
-#    kind: ClusterSecretStore
-#    metadata:
-#      name: ${var.project_id}
-#      namespace: default
-#      labels:
-#        source: terraform
-#        module: k8s-common
-#    spec:
-#      provider:
-#        gcpsm:
-#          projectID: ${var.project_id}
-#  EOT
-#  )
-#  depends_on = [helm_release.external-secrets]
-#}
-#
-#resource "kubernetes_manifest" "secret-secret-store" {
-#  manifest = yamldecode(<<-EOT
-#    apiVersion: external-secrets.io/v1beta1
-#    kind: ClusterSecretStore
-#    metadata:
-#      name: moove-secrets
-#      namespace: default
-#      labels:
-#        source: terraform
-#        module: k8s-common
-#    spec:
-#      provider:
-#        gcpsm:
-#          projectID: moove-secrets
-#  EOT
-#  )
-#  depends_on = [helm_release.external-secrets]
-#}
-
-resource "helm_release" "external-secrets-pilot" {
-  name             = "external-secrets-pilot"
-  version          = "0.1.1"
-  namespace        = "default"
-  create_namespace = true
-  repository       = "https://moove-helm-charts.storage.googleapis.com/"
-  chart            = "external-secrets-pilot"
-  values           = [local.external_secrets_pilot_values]
-}
-
-
 resource "helm_release" "argo-cd" {
   name             = "argo-cd"
   version          = "4.9.7"
@@ -160,4 +111,15 @@ resource "helm_release" "external-secrets" {
   repository       = "https://charts.external-secrets.io"
   chart            = "external-secrets"
   values           = [local.external_secrets_values]
+}
+
+resource "helm_release" "external-secrets-pilot" {
+  name             = "external-secrets-pilot"
+  version          = "0.1.1"
+  namespace        = "default"
+  create_namespace = true
+  repository       = "https://moove-helm-charts.storage.googleapis.com/"
+  chart            = "external-secrets-pilot"
+  values           = [local.external_secrets_pilot_values]
+  depends_on = [helm_release.external-secrets]
 }

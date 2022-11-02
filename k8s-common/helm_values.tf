@@ -1,5 +1,8 @@
 locals {
   argocd_values = <<-EOT
+  dex:
+    enabled: false
+
   server:
     service:
       type: LoadBalancer
@@ -9,8 +12,8 @@ locals {
 
     resources:
       limits:
-        cpu: 4
-        memory: 4Gi
+        cpu: 2
+        memory: 2Gi
       requests:
         cpu: 500m
         memory: 512Mi

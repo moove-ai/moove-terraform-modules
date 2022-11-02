@@ -139,6 +139,7 @@ variable "tag_path" {
 variable "build_files" {
   type = list(string)
   description = "List of files that will trigger a build."
+  default = []
 }
 
 variable "build_ignored_files" {
@@ -150,11 +151,13 @@ variable "build_ignored_files" {
 variable "build_repo" {
   type = string
   description = "The repo that holds the code to be deployed."
+  default = ""
 }
 
 variable "build_branch" {
   type = string
   description = "The branch of the repo to build."
+  default = "main"
 }
 
 variable "build_instance" {
@@ -167,4 +170,10 @@ variable "build_timeout" {
   type = string
   description = "How long should the build wait before timing out."
   default = "600s"
+}
+
+variable "build" {
+  type = bool
+  description = "Set to false to disable the build step. Useful for helmcharts which do not require a custom image"
+  default = true
 }

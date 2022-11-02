@@ -4,6 +4,7 @@ data "google_service_account" "build_service_account" {
 }
 
 resource "google_cloudbuild_trigger" "build" {
+  count           = var.build ? 1 : 0
   provider        = google-beta
   project         = var.project_id
   name            = "build-k8s-${var.type}-${var.app_name}"
