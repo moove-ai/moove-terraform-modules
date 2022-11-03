@@ -8,36 +8,19 @@ variable "input_bucket" {
   description = "Objects created in this bucket will trigger a pub/sub notification to the configured topic"
 }
 
-variable "output_bucket" {
-  type        = string
-  description = "Where the transformed objects are written"
-}
-
 variable "create_input_bucket" {
   type        = bool 
   description = "Creates the input bucket if true"
   default = true
 }
 
-variable "input_bucket_location" {
+variable "bucket_location" {
   type = string
   description = "The region the input_bucket is located in"
   default = "US"
 }
 
-variable "output_bucket_location" {
-  type = string
-  description = "The region the output_bucket is located in"
-  default = "US"
-}
-
-variable "input_bucket_project" {
-  type        = string
-  description = "Optional. If the bucket is located in a different project, set this value. If create_input_bucket is set, the bucket will be created in this project." 
-  default = ""
-}
-
-variable "output_bucket_project" {
+variable "bucket_project" {
   type        = string
   description = "Optional. If the bucket is located in a different project, set this value. If create_input_bucket is set, the bucket will be created in this project." 
   default = ""
@@ -71,21 +54,4 @@ variable "subscription_name" {
   type = string
   description = "Optional. Sets the subscription name if set. If unset, the topic name defaults to the value of input_bucket"
   default = ""
-}
-
-variable "service_account_id" {
-  type = string
-  description = "The service account ID being used to run this app"
-}
-
-variable "namespace" {
-  type = string
-  description = "The k8s namespace the app is running in"
-  default = ""
-}
-
-variable "k8s_sa" {
-  type = string
-  description = "The k8s service account running this app"
-  default = "transform-wejo-jtr"
 }
