@@ -1,17 +1,17 @@
 output "bucket" {
-  value       = "${var.create_input_bucket ? data.google_storage_bucket.bucket.name : google_storage_bucket.bucket.name}"
+  value       = var.create_input_bucket ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
   sensitive   = false
   description = "The name of the bucket being used"
 }
 
 output "bucket-project" {
-  value       = "${var.create_input_bucket ? data.google_storage_bucket.bucket.project : google_storage_bucket.bucket.project}"
+  value       = var.create_input_bucket ? google_storage_bucket.bucket[0].project : data.google_storage_bucket.bucket[0].project
   sensitive   = false
   description = "The project the bucket is in"
 }
 
 output "bucket-url" {
-  value       = "${var.create_input_bucket ? data.google_storage_bucket.bucket.url : google_storage_bucket.bucket.url}"
+  value       = var.create_input_bucket ? google_storage_bucket.bucket[0].url : data.google_storage_bucket.bucket[0].url
   sensitive   = false
   description = "The url (gs://<name>) of the bucket"
 }
