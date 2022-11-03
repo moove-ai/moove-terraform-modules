@@ -5,12 +5,12 @@ variable "project_id" {
 }
 
 variable "environment" {
-  type = string
+  type        = string
   description = "The environment this module is running in"
 }
 
 variable "app_name" {
-  type = string
+  type        = string
   description = "The name of the k8s app. Must match the name in the k8s-deployments repo"
 }
 
@@ -22,67 +22,67 @@ variable "input_bucket" {
 variable "output_bucket" {
   type        = string
   description = "Bucket to hold the output of this app. Required if 'enable_output' is true"
-  default = ""
+  default     = ""
 }
 
 variable "enable_output" {
-  type = bool
+  type        = bool
   description = "Creates output resources"
-  default = true
+  default     = true
 }
 
 variable "create_input_bucket" {
-  type        = bool 
+  type        = bool
   description = "Creates the input bucket if true"
-  default = true
+  default     = true
 }
 
 variable "create_output_bucket" {
-  type        = bool 
+  type        = bool
   description = "Creates the output bucket if true"
-  default = true
+  default     = true
 }
 
 variable "input_bucket_location" {
-  type = string
+  type        = string
   description = "The region the input_bucket is located in"
-  default = "US"
+  default     = "US"
 }
 
 variable "input_bucket_project" {
   type        = string
-  description = "Optional. If the bucket is located in a different project, set this value. If create_input_bucket is set, the bucket will be created in this project." 
-  default = ""
+  description = "Optional. If the bucket is located in a different project, set this value. If create_input_bucket is set, the bucket will be created in this project."
+  default     = ""
 }
 
 variable "labels" {
-  type = map(string)
+  type        = map(string)
   description = "Map of additional labels to apply"
-  default = {}
+  default     = {}
 }
 
 variable "notification_enabled" {
-  type = bool
+  type        = bool
   description = "Set to false to disable the bucket notification. Useful for testing."
-  default = true
+  default     = true
 }
 
 variable "ack_deadline_seconds" {
-  type = string
+  type        = string
   description = "The ack deadline in seconds for the subscription."
-  default = "120"
+  default     = "120"
 }
 
 variable "topic_name" {
-  type = string
+  type        = string
   description = "Optional. Sets the topic name if set. If unset, the topic name defaults to the value of input_bucket"
-  default = ""
+  default     = ""
 }
 
 variable "subscription_name" {
-  type = string
+  type        = string
   description = "Optional. Sets the subscription name if set. If unset, the topic name defaults to the value of input_bucket"
-  default = ""
+  default     = ""
 }
 
 variable "service_account_id" {}

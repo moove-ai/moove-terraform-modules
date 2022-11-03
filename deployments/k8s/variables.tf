@@ -171,3 +171,9 @@ variable "build" {
   description = "Set to false to disable the build step. Useful for helmcharts which do not require a custom image"
   default = true
 }
+
+variable "k8s_sa" {
+  type = string
+  description = "The name of the kubernetes service account."
+  default = ""
+}
