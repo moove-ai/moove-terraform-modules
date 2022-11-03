@@ -28,6 +28,10 @@ resource "google_cloudbuild_trigger" "build" {
     }
   }
 
+  substitutions = {
+    _CI_CD_BRANCH = var.ci_cd_branch
+  }
+
   build {
     logs_bucket = "gs://moove-${var.environment == "data-pipelines" ? "production" : var.environment}-build-logs"
     timeout     = var.build_timeout
@@ -77,7 +81,7 @@ resource "google_cloudbuild_trigger" "build" {
       name = "gcr.io/cloud-builders/git"
       entrypoint = "bash"
       args = ["-c", join(" ", [
-        "git clone --depth 1 --branch ${var.ci_cd_branch} --single-branch",
+        "git clone --depth 1 --branch $_CI_CD_BRANCH --single-branch",
           "https://$$GITHUB_TOKEN@github.com/moove-ai/k8s-deployments.git /workspace/k8s-deployments",
       ])]
       secret_env = [
@@ -118,7 +122,7 @@ resource "google_cloudbuild_trigger" "build" {
         "git config user.email devopsbot@moove.ai &&", 
         "git pull && git add -A &&", 
         "git commit -m \"deploys ${var.app_name} to ${var.environment}-${var.region}\" &&",
-        "git push origin main"
+        "git push origin $_CI_CD_BRANCH"
       ])]
     }
   }
@@ -134,7 +138,7 @@ resource "google_cloudbuild_trigger" "deployment" {
     "k8s",
     "deploy",
     "${var.type}",
-    var.app_name
+    var.app_name,
   ], var.build_tags)
 
   included_files = [

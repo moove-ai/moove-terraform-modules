@@ -101,7 +101,7 @@ variable "service_account_id" {}
 variable "namespace" {}
 
 variable "k8s_sa" {
-  type = string
+  type        = string
   description = "The name of the kubernetes service account."
-  default = ""
+  default     = ""
 }

@@ -1,6 +1,8 @@
 locals {
-  namespace = var.namespace == "" ? var.environment : var.namespace
-  k8s_sa    = var.k8s_sa == "" ? var.app_name : var.k8s_sa
+  namespace             = var.namespace == "" ? var.environment : var.namespace
+  k8s_sa                = var.k8s_sa == "" ? var.app_name : var.k8s_sa
+  output_bucket_project = var.output_bucket_project == "" ? var.project_id : var.output_bucket_project
+  input_bucket_project  = var.input_bucket_project == "" ? var.project_id : var.input_bucket_project
 }
 
 # Application
@@ -19,13 +21,13 @@ resource "google_service_account_iam_member" "workload-identity" {
 
 # Input Bucket
 data "google_storage_project_service_account" "gcs_account" {
-  project = var.input_bucket_project == "" ? var.project_id : var.input_bucket_project
+  project = local.input_bucket_project
 }
 
 resource "google_storage_bucket" "bucket" {
   count    = var.create_input_bucket ? 1 : 0
   name     = var.input_bucket
-  project  = var.input_bucket_project == "" ? var.project_id : var.input_bucket_project
+  project  = local.input_bucket_project
   location = var.input_bucket_location
   labels = merge({
     "project"     = var.project_id,
@@ -79,6 +81,7 @@ resource "google_pubsub_topic_iam_binding" "binding" {
 
 resource "google_pubsub_subscription" "subscription" {
   name                 = var.subscription_name == "" ? var.input_bucket : var.subscription_name
+  project              = google_pubsub_topic.topic.project
   topic                = google_pubsub_topic.topic.id
   ack_deadline_seconds = var.ack_deadline_seconds
   labels = merge({
@@ -89,6 +92,7 @@ resource "google_pubsub_subscription" "subscription" {
 
 resource "google_pubsub_subscription_iam_member" "subscriber" {
   subscription = google_pubsub_subscription.subscription.name
+  project      = google_pubsub_subscription.subscription.project
   role         = "roles/pubsub.subscriber"
   member       = "serviceAccount:${google_service_account.service-account.email}"
 }
@@ -97,7 +101,7 @@ resource "google_pubsub_subscription_iam_member" "subscriber" {
 resource "google_storage_bucket" "output-bucket" {
   count    = var.enable_output && var.create_output_bucket ? 1 : 0
   name     = var.output_bucket
-  project  = var.output_bucket_project
+  project  = local.output_bucket_project
   location = var.output_bucket_location
   labels = merge({
     "project"     = var.project_id,
