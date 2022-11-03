@@ -53,5 +53,25 @@ module "agrocd-ingress" {
       ]
       extra_attributes = {}
     }
+    ingress-allow-thanos = {
+      description = "Allows access to thanos"
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "10.0.0.0/8"
+      ]
+      sources              = []
+      targets              = ["private"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "10901",
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
   }
 }

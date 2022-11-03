@@ -38,3 +38,51 @@ variable "proxy_dns_name" {
   type = string
   description = "The DNS Name of the GKE proxy"
 }
+
+variable "install_argocd" {
+  type = bool
+  description = "Installs helm chart."
+  default = true
+}
+
+variable "install_common_resources" {
+  type = bool
+  description = "Installs helm chart."
+  default = true
+}
+
+variable "install_cert_manager" {
+  type = bool
+  description = "Installs helm chart."
+  default = true
+}
+
+variable "install_cert_manager_pilot" {
+  type = bool
+  description = "Installs helm chart."
+  default = true
+}
+
+variable "install_external_dns" {
+  type = bool
+  description = "Installs helm chart."
+  default = true
+}
+
+variable "install_external_secrets" {
+  type = bool
+  description = "Installs helm chart."
+  default = true
+}
+
+variable "install_external_secrets_pilot" {
+  type = bool
+  description = "Installs helm chart."
+  default = true
+}
+
+variable "install_keda" {
+  type = bool
+  description = "Set to true to install keda"
+  default = true
+}

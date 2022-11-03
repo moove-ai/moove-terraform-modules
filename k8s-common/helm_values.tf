@@ -262,7 +262,6 @@ locals {
       - ${var.project_id}
       - moove-secrets
   EOT
-  common_resources_values = ""
   cert_manager_pilot_values = <<-EOT
   pilot:
   clusterIssuer:
@@ -270,5 +269,9 @@ locals {
       enabled: true
     live:
       enabled: true
+  EOT
+  common_resources_values = <<-EOT
+  EOT
+  keda_values = <<-EOT
   EOT
 }
