@@ -8,11 +8,6 @@ variable "app_name" {
   description = "The name of the app to be deployed. This needs to be the same name"
 }
 
-variable "service_account" {
-  type        = string
-  description = "The service account running the CD process"
-}
-
 variable "ci_cd_branch" {
   type        = string
   description = "The branch on k8s-deployments the CD process should run off of"
@@ -33,6 +28,7 @@ variable "github_ssh_key_name" {
 variable "gke_cluster" {
   type        = string
   description = "The name of the GKE cluster to deploy to"
+  default = ""
 }
 
 variable "helmfile_image" {
@@ -47,17 +43,13 @@ variable "helmfile_image_tag" {
   description = "The helmfile image tag to use"
 }
 
-variable "app_output_dir" {
-  default = "apps/"
-}
-
 variable "prefix" {
   type        = string
   description = "The prefix to apply to the deployment name"
   default     = "deploy-k8s"
 }
 
-variable "tags" {
+variable "build_tags" {
   type        = list(string)
   description = "Tags to append to app builds"
   default     = []
@@ -88,6 +80,7 @@ variable "revision_history" {
 variable "app_path" {
   type        = string
   description = "The folder name the app is stored in."
+  default = ""
 }
 
 variable "target_revision" {
@@ -123,6 +116,7 @@ variable "respect_ignore_differences" {
 variable "type" {
   type        = string
   description = "Is this an application, or cluster operations. Valid values: apps, ops"
+  default = "apps"
 }
 
 variable "tag_path" {
@@ -139,7 +133,7 @@ variable "tag_path" {
 variable "build_files" {
   type = list(string)
   description = "List of files that will trigger a build."
-  default = []
+  default = ["main.py", "requirements.txt", "Dockerfile"]
 }
 
 variable "build_ignored_files" {

@@ -1,3 +1,7 @@
+locals {
+  app_path = var.app_path == "" ? var.app_name : var.app_path
+}
+
 resource "google_cloudbuild_trigger" "build" {
   count           = var.build ? 1 : 0
   provider        = google-beta
@@ -193,7 +197,7 @@ resource "google_cloudbuild_trigger" "deployment" {
       entrypoint = "bash"
       env = [
         "KUSTOMIZE_PLUGIN_HOME=/root/",
-        "OUTPUT_DIR=${var.app_output_dir}"
+        "OUTPUT_DIR=${var.type}/"
       ]
       args = [
         "-c",
