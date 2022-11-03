@@ -14,7 +14,7 @@ resource "google_cloudbuild_trigger" "build" {
     "k8s",
     "build",
     var.app_name
-  ], var.tags)
+  ], var.build_tags)
 
   included_files = var.build_files
   ignored_files  = var.build_ignored_files
@@ -135,7 +135,7 @@ resource "google_cloudbuild_trigger" "deployment" {
     "deploy",
     "${var.type}",
     var.app_name
-  ], var.tags)
+  ], var.build_tags)
 
   included_files = [
     "releases/${var.type}/${var.app_name}/configs/${var.environment}/**",
@@ -215,7 +215,7 @@ resource "google_cloudbuild_trigger" "deployment" {
       entrypoint = "bash"
       args = [
         "-c",
-        "cd /workspace/k8s-git-ops/ && git config user.name moove-devopsbot && git config user.email ${var.service_account} && git pull && git add -A ${var.gke_cluster}/${var.type}/ && git commit -m \"deploys ${var.app_name} to ${var.environment}\" && git push origin main"
+        "cd /workspace/k8s-git-ops/ && git config user.name moove-devopsbot && git config user.email devopsbot@moove.ai && git pull && git add -A ${var.gke_cluster}/${var.type}/ && git commit -m \"deploys ${var.app_name} to ${var.environment}\" && git push origin main"
       ]
     }
   }

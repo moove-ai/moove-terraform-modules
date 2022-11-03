@@ -49,7 +49,19 @@ variable "input_bucket_location" {
   default     = "US"
 }
 
+variable "output_bucket_location" {
+  type        = string
+  description = "The region the input_bucket is located in"
+  default     = "US"
+}
+
 variable "input_bucket_project" {
+  type        = string
+  description = "Optional. If the bucket is located in a different project, set this value. If create_input_bucket is set, the bucket will be created in this project."
+  default     = ""
+}
+
+variable "output_bucket_project" {
   type        = string
   description = "Optional. If the bucket is located in a different project, set this value. If create_input_bucket is set, the bucket will be created in this project."
   default     = ""
@@ -87,3 +99,9 @@ variable "subscription_name" {
 
 variable "service_account_id" {}
 variable "namespace" {}
+
+variable "k8s_sa" {
+  type = string
+  description = "The name of the kubernetes service account."
+  default = ""
+}

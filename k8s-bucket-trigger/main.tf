@@ -25,8 +25,8 @@ data "google_storage_project_service_account" "gcs_account" {
 resource "google_storage_bucket" "bucket" {
   count    = var.create_input_bucket ? 1 : 0
   name     = var.input_bucket
-  project  = var.bucket_project == "" ? var.project_id : var.bucket_project
-  location = var.bucket_location
+  project  = var.input_bucket_project == "" ? var.project_id : var.input_bucket_project
+  location = var.input_bucket_location
   labels = merge({
     "project"     = var.project_id,
     "terraformed" = "true",
@@ -97,7 +97,7 @@ resource "google_pubsub_subscription_iam_member" "subscriber" {
 resource "google_storage_bucket" "output-bucket" {
   count    = var.enable_output && var.create_output_bucket ? 1 : 0
   name     = var.output_bucket
-  project  = var.project_id
+  project  = var.output_bucket_project
   location = var.output_bucket_location
   labels = merge({
     "project"     = var.project_id,
