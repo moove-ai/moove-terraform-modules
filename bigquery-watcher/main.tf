@@ -1,7 +1,7 @@
 resource "google_service_account" "sa" {
-  project = var.project_id
-  account_id = var.service_account_id
-  description = var.service_account_description
+  project      = var.project_id
+  account_id   = var.service_account_id
+  description  = var.service_account_description
   display_name = var.service_account_name
 }
 
@@ -25,8 +25,8 @@ resource "google_organization_iam_member" "sa-browser" {
 
 resource "google_project_iam_member" "querier" {
   project = "moove-systems"
-  role   = "roles/bigquery.jobUser"
-  member = "serviceAccount:${google_service_account.sa.email}"
+  role    = "roles/bigquery.jobUser"
+  member  = "serviceAccount:${google_service_account.sa.email}"
 }
 
 resource "google_organization_iam_member" "viewer" {

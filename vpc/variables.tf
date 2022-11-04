@@ -65,5 +65,5 @@ variable "regions" {
 variable "create_mgmt_peer" {
   type        = bool
   description = "Creates mgmt peer"
-  default = true
+  default     = true
 }

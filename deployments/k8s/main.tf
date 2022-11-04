@@ -8,7 +8,7 @@ resource "google_cloudbuild_trigger" "build" {
   project         = var.project_id
   name            = "build-k8s-${var.type}-${var.app_name}"
   description     = "Builds the ${var.app_name} container and triggers an automated deployment via ArgoCD"
-  service_account = "projects/${var.project_id}/serviceAccounts/privileged-builder@${var.project_id}.iam.gserviceaccount.com" 
+  service_account = "projects/${var.project_id}/serviceAccounts/privileged-builder@${var.project_id}.iam.gserviceaccount.com"
 
   tags = concat([
     "k8s",
@@ -47,12 +47,12 @@ resource "google_cloudbuild_trigger" "build" {
       }
     }
 
-  dynamic "options" {
-    for_each = var.build_instance == "" ? [] : [0]
-    content {
-      machine_type = var.build_instance
+    dynamic "options" {
+      for_each = var.build_instance == "" ? [] : [0]
+      content {
+        machine_type = var.build_instance
+      }
     }
-  }
 
     step {
       id   = "build-container"
@@ -66,9 +66,9 @@ resource "google_cloudbuild_trigger" "build" {
     }
 
     step {
-      id   = "push-container"
-      name = "gcr.io/cloud-builders/docker"
-      wait_for = ["build-container"]
+      id         = "push-container"
+      name       = "gcr.io/cloud-builders/docker"
+      wait_for   = ["build-container"]
       entrypoint = "bash"
       args = ["-c", join(" ", [
         "docker",
@@ -79,13 +79,13 @@ resource "google_cloudbuild_trigger" "build" {
     }
 
     step {
-      id = "clone-deployment-repo"
-      wait_for = ["build-container"]
-      name = "gcr.io/cloud-builders/git"
+      id         = "clone-deployment-repo"
+      wait_for   = ["build-container"]
+      name       = "gcr.io/cloud-builders/git"
       entrypoint = "bash"
       args = ["-c", join(" ", [
         "git clone --depth 1 --branch $_CI_CD_BRANCH --single-branch",
-          "https://$$GITHUB_TOKEN@github.com/moove-ai/k8s-deployments.git /workspace/k8s-deployments",
+        "https://$$GITHUB_TOKEN@github.com/moove-ai/k8s-deployments.git /workspace/k8s-deployments",
       ])]
       secret_env = [
         "GITHUB_TOKEN",
@@ -93,9 +93,9 @@ resource "google_cloudbuild_trigger" "build" {
     }
 
     step {
-      id = "update-permissions"
-      wait_for = ["clone-deployment-repo"]
-      name = "gcr.io/cloud-builders/git"
+      id         = "update-permissions"
+      wait_for   = ["clone-deployment-repo"]
+      name       = "gcr.io/cloud-builders/git"
       entrypoint = "bash"
       args = ["-c", join(" ", [
         "chmod -R 0777",
@@ -104,26 +104,26 @@ resource "google_cloudbuild_trigger" "build" {
     }
 
     step {
-      id = "update-deployment"
+      id       = "update-deployment"
       wait_for = ["update-permissions"]
-      name = "mikefarah/yq"
+      name     = "mikefarah/yq"
       args = [
-        "e", "${var.tag_path} = \"$COMMIT_SHA\"", 
+        "e", "${var.tag_path} = \"$COMMIT_SHA\"",
         "-i", "/workspace/k8s-deployments/releases/${var.type}/${var.app_name}/values/${var.environment}.yaml"
       ]
     }
 
     step {
-      id = "trigger-cd"
-      wait_for = ["update-deployment"]
-      name = "gcr.io/cloud-builders/git"
+      id         = "trigger-cd"
+      wait_for   = ["update-deployment"]
+      name       = "gcr.io/cloud-builders/git"
       entrypoint = "bash"
       args = ["-c", join(" ", [
         "cd /workspace/k8s-deployments/ &&",
-        "_AUTHOR=$$(git --no-pager show -s --format='%an') &&", 
+        "_AUTHOR=$$(git --no-pager show -s --format='%an') &&",
         "git config user.name  $$_AUTHOR &&",
-        "git config user.email devopsbot@moove.ai &&", 
-        "git pull && git add -A &&", 
+        "git config user.email devopsbot@moove.ai &&",
+        "git pull && git add -A &&",
         "git commit -m \"deploys ${var.app_name} to ${var.environment}-${var.region}\" &&",
         "git push origin $_CI_CD_BRANCH"
       ])]
@@ -135,7 +135,7 @@ resource "google_cloudbuild_trigger" "deployment" {
   project         = var.project_id
   name            = "${var.prefix}-${var.region}-${var.type}-${var.app_name}"
   description     = "Deploys the ${var.app_name} Application to the ${var.environment}-${var.region} GKE cluster"
-  service_account = "projects/${var.project_id}/serviceAccounts/privileged-builder@${var.project_id}.iam.gserviceaccount.com" 
+  service_account = "projects/${var.project_id}/serviceAccounts/privileged-builder@${var.project_id}.iam.gserviceaccount.com"
 
   tags = concat([
     "k8s",

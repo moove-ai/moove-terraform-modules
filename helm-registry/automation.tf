@@ -10,7 +10,7 @@ resource "google_cloudbuild_trigger" "chart" {
   description     = "Updates the moove helm chart registry (charts.moove.co.in)"
   service_account = data.google_service_account.build_service_account.id
 
-  tags = [ 
+  tags = [
     "helm",
     "deploy",
   ]
@@ -39,8 +39,8 @@ resource "google_cloudbuild_trigger" "chart" {
     }
 
     step {
-      id   = "package-charts"
-      name = "alpine/helm"
+      id         = "package-charts"
+      name       = "alpine/helm"
       entrypoint = "sh"
       args = [
         "-c", "helm package charts/*"
@@ -48,8 +48,8 @@ resource "google_cloudbuild_trigger" "chart" {
     }
 
     step {
-      id   = "move-charts"
-      name = "gcr.io/cloud-builders/gcloud"
+      id         = "move-charts"
+      name       = "gcr.io/cloud-builders/gcloud"
       entrypoint = "bash"
       args = [
         "-c", "mv *.tgz /uploads"
@@ -61,13 +61,13 @@ resource "google_cloudbuild_trigger" "chart" {
       name = "alpine/helm"
       args = [
         "repo", "index", "/uploads",
-         #"--url", "${google_storage_bucket.helm-registry-public.name}.storage.googleapis.com"
+        #"--url", "${google_storage_bucket.helm-registry-public.name}.storage.googleapis.com"
       ]
     }
 
     step {
-      id   = "upload-charts"
-      name = "gcr.io/cloud-builders/gcloud"
+      id         = "upload-charts"
+      name       = "gcr.io/cloud-builders/gcloud"
       entrypoint = "gsutil"
       args = [
         "rsync", "-r", "/uploads", google_storage_bucket.helm-registry-public.url

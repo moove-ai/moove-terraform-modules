@@ -3,7 +3,7 @@ variable "project_id" {
 }
 
 variable "build_branch" {
-  type = string
+  type    = string
   default = "main"
 }
 

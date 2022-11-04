@@ -16,7 +16,7 @@ data "google_secret_manager_secret" "slack-webhook-token" {
 }
 
 data "google_service_account" "terraform" {
-  project = "moove-systems"
+  project    = "moove-systems"
   account_id = "terraform"
 }
 
