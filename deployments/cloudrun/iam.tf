@@ -8,11 +8,11 @@ data "google_service_account" "builder" {
 }
 
 resource "google_service_account" "serviceaccount" {
-  count = var.create_service_account ?  1 : 0
-  project = var.platform_project
-  account_id = var.service_account_id
+  count        = var.create_service_account ? 1 : 0
+  project      = var.platform_project
+  account_id   = var.service_account_id
   display_name = var.service_account_name
-  description = var.service_account_description
+  description  = var.service_account_description
 }
 
 resource "google_project_iam_member" "run-dev" {

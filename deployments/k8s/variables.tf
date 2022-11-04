@@ -28,7 +28,7 @@ variable "github_ssh_key_name" {
 variable "gke_cluster" {
   type        = string
   description = "The name of the GKE cluster to deploy to"
-  default = ""
+  default     = ""
 }
 
 variable "helmfile_image" {
@@ -80,7 +80,7 @@ variable "revision_history" {
 variable "app_path" {
   type        = string
   description = "The folder name the app is stored in."
-  default = ""
+  default     = ""
 }
 
 variable "target_revision" {
@@ -116,58 +116,58 @@ variable "respect_ignore_differences" {
 variable "type" {
   type        = string
   description = "Is this an application, or cluster operations. Valid values: apps, ops"
-  default = "apps"
+  default     = "apps"
 }
 
 variable "tag_path" {
-  type = string
+  type        = string
   description = <<-EOT
     The path holding the image tag value in the k8s-deployment repo.
     Stored in: releases/$TYPE/$APP_NAME/values/$ENVIRONEMNT.yaml.
     Defaults to '.image.tag'.
     Path must begin with '.' (.frontend.image.tag, .init.image.tag, etc)
     EOT
-  default = ".image.tag"
+  default     = ".image.tag"
 }
 
 variable "build_files" {
-  type = list(string)
+  type        = list(string)
   description = "List of files that will trigger a build."
-  default = ["main.py", "requirements.txt", "Dockerfile"]
+  default     = ["main.py", "requirements.txt", "Dockerfile"]
 }
 
 variable "build_ignored_files" {
-  type = list(string)
+  type        = list(string)
   description = "List of files that will be ignored if they are changed."
-  default = []
+  default     = []
 }
 
 variable "build_repo" {
-  type = string
+  type        = string
   description = "The repo that holds the code to be deployed."
-  default = ""
+  default     = ""
 }
 
 variable "build_branch" {
-  type = string
+  type        = string
   description = "The branch of the repo to build."
-  default = "main"
+  default     = "main"
 }
 
 variable "build_instance" {
-  type = string
+  type        = string
   description = "The GCE backend instance to build from. Valid options are: E2_HIGHCPU_8, E2_HIGHCPU_32, N1_HIGHCPU_8, N1_HIGHCPU_32"
   default     = ""
 }
 
 variable "build_timeout" {
-  type = string
+  type        = string
   description = "How long should the build wait before timing out."
-  default = "600s"
+  default     = "600s"
 }
 
 variable "build" {
-  type = bool
+  type        = bool
   description = "Set to false to disable the build step. Useful for helmcharts which do not require a custom image"
-  default = true
+  default     = true
 }

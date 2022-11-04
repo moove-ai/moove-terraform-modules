@@ -1,5 +1,5 @@
 variable "bucket_names" {
-  type = list(string)
+  type        = list(string)
   description = "List of existing buckets to monitor"
 }
 variable "topic_name" {}

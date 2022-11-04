@@ -36,7 +36,7 @@ resource "google_cloudbuild_trigger" "cloudrun" {
     #}
 
     step {
-      id =  "build-cloudrun-container"
+      id   = "build-cloudrun-container"
       name = "gcr.io/cloud-builders/docker"
       args = [
         "build", "-t", "gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA", "."
@@ -44,7 +44,7 @@ resource "google_cloudbuild_trigger" "cloudrun" {
     }
 
     step {
-      id =  "push-cloudrun-container"
+      id   = "push-cloudrun-container"
       name = "gcr.io/cloud-builders/docker"
       args = [
         "push", "gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA"
