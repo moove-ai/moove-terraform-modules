@@ -34,7 +34,7 @@ resource "google_service_account_key" "monitor-key" {
 
 resource "google_secret_manager_secret" "monitor-sa" {
   project   = var.secret_project_id
-  secret_id = "${var.environment}_monitor-serviceaccount-key"
+  secret_id = "${var.environment}_monitor-grafana-datasource"
 
   labels = {
     environment = var.environment
@@ -50,7 +50,6 @@ resource "google_secret_manager_secret" "monitor-sa" {
 }
 
 resource "google_secret_manager_secret_version" "monitor-sa-key" {
-  secret = google_secret_manager_secret.monitor-sa.id
-
-  secret_data = base64decode(google_service_account_key.monitor-key.private_key)
+  secret      = google_secret_manager_secret.monitor-sa.id
+  secret_data = local.datasource
 }
