@@ -36,21 +36,6 @@ resource "kubernetes_namespace" "environment" {
   }
 }
 
-resource "kubernetes_secret" "prometheus-secrets" {
-  metadata {
-    name      = "prometheus-secrets"
-    namespace = "monitoring"
-  }
-
-  type = "Opaque"
-  data = {
-    "objstore.yml" = google_secret_manager_secret_version.thanos-object-store-config.secret_data
-  }
-  depends_on = [
-    kubernetes_namespace.monitoring
-  ]
-}
-
 resource "kubernetes_secret" "argocd-secrets" {
   metadata {
     name      = "k8s-git-ops-repo"
@@ -74,6 +59,7 @@ resource "kubernetes_secret" "argocd-secrets" {
 }
 
 resource "helm_release" "argo-cd" {
+  count            = var.install_argocd ? 1 : 0
   name             = "argo-cd"
   version          = "4.9.7"
   namespace        = "default"
@@ -84,6 +70,7 @@ resource "helm_release" "argo-cd" {
 }
 
 resource "helm_release" "common-resources" {
+  count            = var.install_common_resources ? 1 : 0
   name             = "common-resources"
   version          = "0.1.4"
   namespace        = "default"
@@ -94,6 +81,7 @@ resource "helm_release" "common-resources" {
 }
 
 resource "helm_release" "cert-manager" {
+  count            = var.install_cert_manager ? 1 : 0
   name             = "cert-manager"
   version          = "1.6.1"
   namespace        = "default"
@@ -104,6 +92,7 @@ resource "helm_release" "cert-manager" {
 }
 
 resource "helm_release" "cert-manager-pilot" {
+  count            = var.install_cert_manager_pilot ? 1 : 0
   name             = "cert-manager-pilot"
   version          = "0.1.1"
   namespace        = "default"
@@ -111,10 +100,11 @@ resource "helm_release" "cert-manager-pilot" {
   repository       = "https://moove-helm-charts.storage.googleapis.com/"
   chart            = "cert-manager-pilot"
   values           = [local.cert_manager_values]
-  depends_on = [helm_release.cert-manager]
+  depends_on       = [helm_release.cert-manager]
 }
 
 resource "helm_release" "external-dns" {
+  count            = var.install_external_dns ? 1 : 0
   name             = "external-dns"
   version          = "6.2.1"
   namespace        = "default"
@@ -125,6 +115,7 @@ resource "helm_release" "external-dns" {
 }
 
 resource "helm_release" "external-secrets" {
+  count            = var.install_external_secrets ? 1 : 0
   name             = "external-secrets"
   version          = "0.4.1"
   namespace        = "default"
@@ -135,6 +126,7 @@ resource "helm_release" "external-secrets" {
 }
 
 resource "helm_release" "external-secrets-pilot" {
+  count            = var.install_external_secrets_pilot ? 1 : 0
   name             = "external-secrets-pilot"
   version          = "0.1.1"
   namespace        = "default"
@@ -142,5 +134,16 @@ resource "helm_release" "external-secrets-pilot" {
   repository       = "https://moove-helm-charts.storage.googleapis.com/"
   chart            = "external-secrets-pilot"
   values           = [local.external_secrets_pilot_values]
-  depends_on = [helm_release.external-secrets]
+  depends_on       = [helm_release.external-secrets]
+}
+
+resource "helm_release" "keda" {
+  count            = var.install_keda ? 1 : 0
+  name             = "keda"
+  version          = "2.8.1"
+  namespace        = "default"
+  create_namespace = true
+  repository       = "https://kedacore.github.io/charts"
+  chart            = "keda"
+  values           = [local.keda_values]
 }

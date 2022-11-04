@@ -1,3 +1,7 @@
+locals {
+  app_path = var.app_path == "" ? var.app_name : var.app_path
+}
+
 resource "google_cloudbuild_trigger" "build" {
   count           = var.build ? 1 : 0
   provider        = google-beta
@@ -10,7 +14,7 @@ resource "google_cloudbuild_trigger" "build" {
     "k8s",
     "build",
     var.app_name
-  ], var.tags)
+  ], var.build_tags)
 
   included_files = var.build_files
   ignored_files  = var.build_ignored_files
@@ -22,6 +26,10 @@ resource "google_cloudbuild_trigger" "build" {
     push {
       branch = "^${var.build_branch}$"
     }
+  }
+
+  substitutions = {
+    _CI_CD_BRANCH = var.ci_cd_branch
   }
 
   build {
@@ -39,9 +47,12 @@ resource "google_cloudbuild_trigger" "build" {
       }
     }
 
-    options {
+  dynamic "options" {
+    for_each = var.build_instance == "" ? [] : [0]
+    content {
       machine_type = var.build_instance
     }
+  }
 
     step {
       id   = "build-container"
@@ -73,7 +84,7 @@ resource "google_cloudbuild_trigger" "build" {
       name = "gcr.io/cloud-builders/git"
       entrypoint = "bash"
       args = ["-c", join(" ", [
-        "git clone --depth 1 --branch ${var.ci_cd_branch} --single-branch",
+        "git clone --depth 1 --branch $_CI_CD_BRANCH --single-branch",
           "https://$$GITHUB_TOKEN@github.com/moove-ai/k8s-deployments.git /workspace/k8s-deployments",
       ])]
       secret_env = [
@@ -114,7 +125,7 @@ resource "google_cloudbuild_trigger" "build" {
         "git config user.email devopsbot@moove.ai &&", 
         "git pull && git add -A &&", 
         "git commit -m \"deploys ${var.app_name} to ${var.environment}-${var.region}\" &&",
-        "git push origin main"
+        "git push origin $_CI_CD_BRANCH"
       ])]
     }
   }
@@ -130,8 +141,8 @@ resource "google_cloudbuild_trigger" "deployment" {
     "k8s",
     "deploy",
     "${var.type}",
-    var.app_name
-  ], var.tags)
+    var.app_name,
+  ], var.build_tags)
 
   included_files = [
     "releases/${var.type}/${var.app_name}/configs/${var.environment}/**",
@@ -193,7 +204,7 @@ resource "google_cloudbuild_trigger" "deployment" {
       entrypoint = "bash"
       env = [
         "KUSTOMIZE_PLUGIN_HOME=/root/",
-        "OUTPUT_DIR=${var.app_output_dir}"
+        "OUTPUT_DIR=${var.type}/"
       ]
       args = [
         "-c",
@@ -211,7 +222,7 @@ resource "google_cloudbuild_trigger" "deployment" {
       entrypoint = "bash"
       args = [
         "-c",
-        "cd /workspace/k8s-git-ops/ && git config user.name moove-devopsbot && git config user.email ${var.service_account} && git pull && git add -A ${var.gke_cluster}/${var.type}/ && git commit -m \"deploys ${var.app_name} to ${var.environment}\" && git push origin main"
+        "cd /workspace/k8s-git-ops/ && git config user.name moove-devopsbot && git config user.email devopsbot@moove.ai && git pull && git add -A ${var.gke_cluster}/${var.type}/ && git commit -m \"deploys ${var.app_name} to ${var.environment}\" && git push origin main"
       ]
     }
   }

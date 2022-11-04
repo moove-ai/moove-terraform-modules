@@ -42,12 +42,20 @@ module "gke" {
 }
 
 module "k8s-common" {
-  source = "../k8s-common"
-  environment = var.environment
-  project_id = var.project_id
-  cluster_name = var.cluster_name
-  region = var.region
-  cluster_network = var.cluster_network
-  cluster_network_project_id = var.cluster_network_project_id
-  proxy_dns_name = "${var.proxy_dns}.moove.co.in"
+  source                         = "../k8s-common"
+  environment                    = var.environment
+  project_id                     = var.project_id
+  cluster_name                   = var.cluster_name
+  region                         = var.region
+  cluster_network                = var.cluster_network
+  cluster_network_project_id     = var.cluster_network_project_id
+  proxy_dns_name                 = "${var.proxy_dns}.moove.co.in"
+  install_argocd                 = var.install_argocd
+  install_common_resources       = var.install_common_resources
+  install_cert_manager           = var.install_cert_manager
+  install_cert_manager_pilot     = var.install_cert_manager_pilot
+  install_external_dns           = var.install_external_dns
+  install_external_secrets       = var.install_external_secrets
+  install_external_secrets_pilot = var.install_external_secrets_pilot
+  install_keda                   = var.install_keda
 }

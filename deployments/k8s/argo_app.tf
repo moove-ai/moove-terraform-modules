@@ -16,7 +16,7 @@ resource "kubernetes_manifest" "app" {
       project: default
       revisionHistoryLimit: ${var.revision_history}
       source:
-        path: ${var.gke_cluster}/${var.type}/${var.app_path}
+        path: ${var.gke_cluster}/${var.type}/${var.app_name}
         directory:
           recurse: true
         repoURL: git@github.com:moove-ai/k8s-git-ops.git

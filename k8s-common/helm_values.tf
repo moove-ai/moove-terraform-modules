@@ -262,13 +262,20 @@ locals {
       - ${var.project_id}
       - moove-secrets
   EOT
-  common_resources_values = ""
-  cert_manager_pilot_values = <<-EOT
+  cert_manager_pilot_values     = <<-EOT
   pilot:
   clusterIssuer:
     staging:
       enabled: true
     live:
       enabled: true
+  EOT
+  common_resources_values       = <<-EOT
+  EOT
+  keda_values                   = <<-EOT
+  serviceAccount:
+    create: true
+    annotations:
+      iam.gke.io/gcp-service-account: k8s-keda@${var.project_id}.iam.gserviceaccount.com
   EOT
 }
