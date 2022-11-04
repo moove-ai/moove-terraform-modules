@@ -47,9 +47,12 @@ resource "google_cloudbuild_trigger" "build" {
       }
     }
 
-    options {
+  dynamic "options" {
+    for_each = var.build_instance == "" ? [] : [0]
+    content {
       machine_type = var.build_instance
     }
+  }
 
     step {
       id   = "build-container"

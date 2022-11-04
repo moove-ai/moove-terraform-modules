@@ -157,7 +157,7 @@ variable "build_branch" {
 variable "build_instance" {
   type = string
   description = "The GCE backend instance to build from. Valid options are: E2_HIGHCPU_8, E2_HIGHCPU_32, N1_HIGHCPU_8, N1_HIGHCPU_32"
-  default     = "UNSPECIFIED"
+  default     = ""
 }
 
 variable "build_timeout" {
