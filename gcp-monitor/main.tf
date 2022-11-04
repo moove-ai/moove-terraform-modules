@@ -53,3 +53,9 @@ resource "google_secret_manager_secret_version" "monitor-sa-key" {
   secret      = google_secret_manager_secret.monitor-sa.id
   secret_data = local.datasource
 }
+
+resource "random_string" "suffix" {
+  length  = "4"
+  special = false
+  upper   = false
+}
