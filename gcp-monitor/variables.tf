@@ -12,3 +12,9 @@ variable "environment" {
   type        = string
   description = "The environment being monitored"
 }
+
+variable "secret_project_id" {
+  type        = string
+  description = "The project holding GCP secrets"
+  default     = "moove-secrets"
+}

@@ -24,3 +24,33 @@ resource "google_project_iam_member" "viewer-iam" {
   role     = "roles/monitoring.viewer"
   member   = "serviceAccount:${google_service_account.monitor.email}"
 }
+
+
+resource "google_service_account_key" "monitor-key" {
+  service_account_id = google_service_account.monitor.name
+  public_key_type    = "TYPE_X509_PEM_FILE"
+}
+
+
+resource "google_secret_manager_secret" "monitor-sa" {
+  project   = var.secret_project_id
+  secret_id = "${var.environment}_monitor-serviceaccount-key"
+
+  labels = {
+    environment = var.environment
+    function    = "monitoring"
+    client      = "moove"
+    terraformed = "true"
+    secret-data = "terraform"
+  }
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "monitor-sa-key" {
+  secret = google_secret_manager_secret.monitor-sa.id
+
+  secret_data = base64decode(google_service_account_key.monitor-key.private_key)
+}
