@@ -1,3 +1,9 @@
+variable "kubernetes_version" {
+  type = string
+  description = "The version of kubernetes to apply"
+  default = "latest"
+}
+
 variable "environment" {
   type        = string
   description = "The environment to deploy these resources to"
@@ -240,4 +246,10 @@ variable "install_keda" {
   type        = bool
   description = "Set to true to install keda"
   default     = true
+}
+
+variable "create_firewall_rules" {
+  type = bool
+  description = "Set to false to skip firewall rule creation"
+  default = true
 }

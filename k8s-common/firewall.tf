@@ -1,4 +1,5 @@
 module "gke-firewall-rules" {
+  count = var.create_firewall_rules ? 1 : 0
   source                  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
   project_id              = var.cluster_network_project_id
   network                 = var.cluster_network
@@ -12,6 +13,29 @@ module "gke-firewall-rules" {
   ssh_target_tags         = []
   ssh_source_ranges       = []
   custom_rules = {
+    ingress-gke-master = { # needed for Keda
+      description = "Allows access to the GKE master."
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "10.11.112.16/28",
+        "10.40.113.16/28",
+        "10.80.112.16/28",
+        "10.130.112.0/28",
+      ]
+      sources              = []
+      targets              = ["gke"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "6443",
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
     ingress-allow-http-https-argocd = {
       description = "Allows http and https ingress to GKE nodes"
       direction   = "INGRESS"
@@ -75,25 +99,5 @@ module "gke-firewall-rules" {
       extra_attributes = {}
     }
     # Needed for Keda 
-    ingress-gke-master = {
-      description = "Allows access to the GKE master."
-      direction   = "INGRESS"
-      action      = "allow"
-      ranges = [
-        "10.130.112.0/28"
-      ]
-      sources              = []
-      targets              = ["gke"]
-      use_service_accounts = false
-      rules = [
-        {
-          protocol = "tcp"
-          ports = [
-            "6443",
-          ]
-        }
-      ]
-      extra_attributes = {}
-    }
   }
 }

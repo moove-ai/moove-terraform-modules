@@ -53,6 +53,7 @@ resource "google_dns_record_set" "proxy" {
 }
 
 module "proxy-firewall" {
+  count = var.create_firewall_rules ? 1 : 0
   source                  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
   project_id              = var.cluster_network_project_id
   network                 = var.cluster_network
@@ -66,7 +67,7 @@ module "proxy-firewall" {
   ssh_target_tags         = []
   ssh_source_ranges       = []
   custom_rules = {
-    ingress-allow-http-proxy = {
+    "ingress-allow-http-proxy" = {
       description = "Allows access to the GKE proxy to access private clusters"
       direction   = "INGRESS"
       action      = "allow"
