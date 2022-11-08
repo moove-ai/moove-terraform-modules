@@ -86,3 +86,9 @@ variable "install_keda" {
   description = "Set to true to install keda"
   default     = true
 }
+
+variable "create_firewall_rules" {
+  type = bool
+  description = "Set to false to disable the creation of firewall rule"
+  default = true
+}
