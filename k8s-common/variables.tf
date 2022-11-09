@@ -1,88 +1,107 @@
-# 
-variable "environment" {
-  type        = string
-  description = "The environment to deploy these resources to"
-}
-
-#
+# Common Variables
 variable "project_id" {
   type        = string
-  description = "The project ID the cluster will be deployed in"
+  description = "The project ID to create these resources on"
 }
 
-#
-variable "cluster_name" {
+variable "environment" {
   type        = string
-  description = "The name of the GKE cluster to be created"
+  description = "The environment this module is running in"
 }
 
-#
-variable "region" {
+variable "app_name" {
   type        = string
-  description = "The GCP Region to deploy this module into"
+  description = "The name of the k8s app. Must match the name in the k8s-deployments repo"
 }
 
-#
-variable "cluster_network" {
+variable "input_bucket" {
   type        = string
-  description = "The VPC network the cluster is going to run in"
+  description = "Objects created in this bucket will trigger a pub/sub notification to the configured topic"
 }
 
-#
-variable "cluster_network_project_id" {
+variable "output_bucket" {
   type        = string
-  description = "The name of the project the VPC resides in."
+  description = "Bucket to hold the output of this app. Required if 'enable_output' is true"
+  default     = ""
 }
 
-variable "proxy_dns_name" {
+variable "enable_output" {
+  type        = bool
+  description = "Creates output resources"
+  default     = true
+}
+
+variable "create_input_bucket" {
+  type        = bool
+  description = "Creates the input bucket if true"
+  default     = true
+}
+
+variable "create_output_bucket" {
+  type        = bool
+  description = "Creates the output bucket if true"
+  default     = true
+}
+
+variable "input_bucket_location" {
   type        = string
-  description = "The DNS Name of the GKE proxy"
+  description = "The region the input_bucket is located in"
+  default     = "US"
 }
 
-variable "install_argocd" {
+variable "output_bucket_location" {
+  type        = string
+  description = "The region the input_bucket is located in"
+  default     = "US"
+}
+
+variable "input_bucket_project" {
+  type        = string
+  description = "Optional. If the bucket is located in a different project, set this value. If create_input_bucket is set, the bucket will be created in this project."
+  default     = ""
+}
+
+variable "output_bucket_project" {
+  type        = string
+  description = "Optional. If the bucket is located in a different project, set this value. If create_input_bucket is set, the bucket will be created in this project."
+  default     = ""
+}
+
+variable "labels" {
+  type        = map(string)
+  description = "Map of additional labels to apply"
+  default     = {}
+}
+
+variable "notification_enabled" {
   type        = bool
-  description = "Installs helm chart."
+  description = "Set to false to disable the bucket notification. Useful for testing."
   default     = true
 }
 
-variable "install_common_resources" {
-  type        = bool
-  description = "Installs helm chart."
-  default     = true
+variable "ack_deadline_seconds" {
+  type        = string
+  description = "The ack deadline in seconds for the subscription."
+  default     = "120"
 }
 
-variable "install_cert_manager" {
-  type        = bool
-  description = "Installs helm chart."
-  default     = true
+variable "topic_name" {
+  type        = string
+  description = "Optional. Sets the topic name if set. If unset, the topic name defaults to the value of input_bucket"
+  default     = ""
 }
 
-variable "install_cert_manager_pilot" {
-  type        = bool
-  description = "Installs helm chart."
-  default     = true
+variable "subscription_name" {
+  type        = string
+  description = "Optional. Sets the subscription name if set. If unset, the topic name defaults to the value of input_bucket"
+  default     = ""
 }
 
-variable "install_external_dns" {
-  type        = bool
-  description = "Installs helm chart."
-  default     = true
-}
+variable "service_account_id" {}
+variable "namespace" {}
 
-variable "install_external_secrets" {
-  type        = bool
-  description = "Installs helm chart."
-  default     = true
-}
-
-variable "install_external_secrets_pilot" {
-  type        = bool
-  description = "Installs helm chart."
-  default     = true
-}
-
-variable "install_keda" {
-  type        = bool
-  description = "Set to true to install keda"
-  default     = true
+variable "k8s_sa" {
+  type        = string
+  description = "The name of the kubernetes service account."
+  default     = ""
 }

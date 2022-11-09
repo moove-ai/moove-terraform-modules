@@ -24,7 +24,7 @@ data "google_storage_project_service_account" "gcs_account" {
   project = local.input_bucket_project
 }
 
-resource "google_storage_bucket" "bucket" {
+resource "google_storage_bucket" "input-bucket" {
   count    = var.create_input_bucket ? 1 : 0
   name     = var.input_bucket
   project  = local.input_bucket_project
@@ -36,7 +36,7 @@ resource "google_storage_bucket" "bucket" {
   }, var.labels)
 }
 
-data "google_storage_bucket" "bucket" {
+data "google_storage_bucket" "input-bucket" {
   count = var.create_input_bucket ? 0 : 1
   name  = var.input_bucket
 }
@@ -95,6 +95,11 @@ resource "google_pubsub_subscription_iam_member" "subscriber" {
   project      = google_pubsub_subscription.subscription.project
   role         = "roles/pubsub.subscriber"
   member       = "serviceAccount:${google_service_account.service-account.email}"
+}
+
+data "google_storage_bucket" "output-bucket" {
+  count = var.create_output_bucket ? 0 : 1
+  name  = var.output_bucket
 }
 
 # Output Bucket 
