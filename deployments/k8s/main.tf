@@ -1,7 +1,3 @@
-locals {
-  app_path = var.app_path == "" ? var.app_name : var.app_path
-}
-
 resource "google_cloudbuild_trigger" "build" {
   count           = var.build ? 1 : 0
   provider        = google-beta
