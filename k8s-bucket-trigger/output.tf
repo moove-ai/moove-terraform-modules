@@ -46,3 +46,9 @@ output "project_id" {
   sensitive   = false
   description = "The project_id"
 }
+
+output "namespace" {
+  value       = var.namespace
+  sensitive   = false
+  description = "The namespace the app is deployed in"
+}
