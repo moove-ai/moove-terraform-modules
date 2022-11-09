@@ -1,3 +1,7 @@
+locals {
+  app_path = var.app_path == "" ? "${var.gke_cluster}/${var.type}/${var.app_name}" : "${var.gke_cluster}/${var.type}/${var.app_path}"
+}
+
 resource "kubernetes_manifest" "app" {
   manifest = yamldecode(<<-EOT
     apiVersion: argoproj.io/v1alpha1
@@ -16,7 +20,7 @@ resource "kubernetes_manifest" "app" {
       project: default
       revisionHistoryLimit: ${var.revision_history}
       source:
-        path: ${var.gke_cluster}/${var.type}/${var.app_name}
+        path: ${local.app_path}
         directory:
           recurse: true
         repoURL: git@github.com:moove-ai/k8s-git-ops.git
