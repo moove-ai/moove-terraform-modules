@@ -105,3 +105,36 @@ variable "k8s_sa" {
   description = "The name of the kubernetes service account."
   default     = ""
 }
+
+variable "input_bucket_retention_age" {
+  type        = string
+  description = "If set files will be deleted after n days from the input bucket."
+  default     = ""
+}
+
+variable "output_bucket_retention_age" {
+  type        = string
+  description = "If set files will be deleted after n days from the input bucket."
+  default     = ""
+}
+
+variable "input_bucket_client" {
+  type        = string
+  description = "The client with t"
+}
+
+variable "output_bucket_client" {
+  type        = string
+  description = "The client with t"
+  default     = "moove"
+}
+
+variable "input_bucket_lifecycle_rules" {
+  description = "The lifecycle rules to be applied to the input bucket. If this array is populated then each element in it will be applied as a lifecycle rule to this bucket. The structure of each element is described in detail here: https://www.terraform.io/docs/providers/google/r/storage_bucket.html#lifecycle_rule. See also: https://cloud.google.com/storage/docs/lifecycle#configuration."
+  default     = []
+}
+
+variable "output_bucket_lifecycle_rules" {
+  description = "The lifecycle rules to be applied to the output bucket. If this array is populated then each element in it will be applied as a lifecycle rule to this bucket. The structure of each element is described in detail here: https://www.terraform.io/docs/providers/google/r/storage_bucket.html#lifecycle_rule. See also: https://cloud.google.com/storage/docs/lifecycle#configuration."
+  default     = []
+}

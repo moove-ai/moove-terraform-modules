@@ -30,10 +30,38 @@ resource "google_storage_bucket" "input-bucket" {
   project  = local.input_bucket_project
   location = var.input_bucket_location
   labels = merge({
-    "project"     = var.project_id,
-    "terraformed" = "true",
-    "environment" = var.environment,
+    project     = var.project_id,
+    terraformed = "true",
+    environment = var.environment,
+    client      = var.input_bucket_client
   }, var.labels)
+
+  dynamic "lifecycle_rule" {
+    for_each = [for rule in var.input_bucket_lifecycle_rules : {
+      action_type          = rule.action.type
+      action_storage_class = lookup(rule.action, "storage_class", null)
+
+      condition_age                   = lookup(rule.condition, "age", null)
+      condition_created_before        = lookup(rule.condition, "created_before", null)
+      condition_with_state            = lookup(rule.condition, "with_state", null)
+      condition_matches_storage_class = lookup(rule.condition, "matches_storage_class", null)
+      condition_num_newer_versions    = lookup(rule.condition, "num_newer_versions", null)
+    }]
+
+    content {
+      action {
+        type          = lifecycle_rule.value.action_type
+        storage_class = lifecycle_rule.value.action_storage_class
+      }
+      condition {
+        age                   = lifecycle_rule.value.condition_age
+        created_before        = lifecycle_rule.value.condition_created_before
+        with_state            = lifecycle_rule.value.condition_with_state
+        matches_storage_class = lifecycle_rule.value.condition_matches_storage_class
+        num_newer_versions    = lifecycle_rule.value.condition_num_newer_versions
+      }
+    }
+  }
 }
 
 data "google_storage_bucket" "input-bucket" {
@@ -64,8 +92,9 @@ resource "google_pubsub_topic" "topic" {
   project = var.project_id
   name    = var.topic_name == "" ? var.input_bucket : var.topic_name
   labels = merge({
-    "terraformed" = "true",
-    "environment" = var.environment,
+    terraformed = "true",
+    environment = var.environment,
+    client      = var.input_bucket_client
   }, var.labels)
 }
 
@@ -85,8 +114,9 @@ resource "google_pubsub_subscription" "subscription" {
   topic                = google_pubsub_topic.topic.id
   ack_deadline_seconds = var.ack_deadline_seconds
   labels = merge({
-    "terraformed" = "true",
-    "environment" = var.environment,
+    terraformed = "true",
+    environment = var.environment,
+    client      = var.input_bucket_client
   }, var.labels)
 }
 
@@ -109,10 +139,38 @@ resource "google_storage_bucket" "output-bucket" {
   project  = local.output_bucket_project
   location = var.output_bucket_location
   labels = merge({
-    "project"     = var.project_id,
-    "terraformed" = "true",
-    "environment" = var.environment,
+    project     = var.project_id,
+    terraformed = "true",
+    environment = var.environment,
+    client      = var.output_bucket_client
   }, var.labels)
+
+  dynamic "lifecycle_rule" {
+    for_each = [for rule in var.output_bucket_lifecycle_rules : {
+      action_type          = rule.action.type
+      action_storage_class = lookup(rule.action, "storage_class", null)
+
+      condition_age                   = lookup(rule.condition, "age", null)
+      condition_created_before        = lookup(rule.condition, "created_before", null)
+      condition_with_state            = lookup(rule.condition, "with_state", null)
+      condition_matches_storage_class = lookup(rule.condition, "matches_storage_class", null)
+      condition_num_newer_versions    = lookup(rule.condition, "num_newer_versions", null)
+    }]
+
+    content {
+      action {
+        type          = lifecycle_rule.value.action_type
+        storage_class = lifecycle_rule.value.action_storage_class
+      }
+      condition {
+        age                   = lifecycle_rule.value.condition_age
+        created_before        = lifecycle_rule.value.condition_created_before
+        with_state            = lifecycle_rule.value.condition_with_state
+        matches_storage_class = lifecycle_rule.value.condition_matches_storage_class
+        num_newer_versions    = lifecycle_rule.value.condition_num_newer_versions
+      }
+    }
+  }
 }
 
 resource "google_storage_bucket_iam_member" "output-bucket-iam" {
