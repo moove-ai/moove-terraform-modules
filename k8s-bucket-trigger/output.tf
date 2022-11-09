@@ -5,19 +5,19 @@ output "input_bucket" {
 }
 
 output "output_bucket" {
-  value       = var.create_output_bucket ? google_storage_bucket.output-bucket[0].name : data.google_storage_bucket.output-bucket[0].name
+  value       = var.enable_output ? var.output_bucket : "null"
   sensitive   = false
   description = "The name of the bucket being used"
 }
 
 output "input_bucket_project" {
-  value       = var.create_input_bucket ? google_storage_bucket.input-bucket[0].project : data.google_storage_bucket.input-bucket[0].project
+  value       = local.input_bucket_project
   sensitive   = false
   description = "The project the bucket is in"
 }
 
 output "output_bucket_project" {
-  value       = var.create_output_bucket ? google_storage_bucket.output-bucket[0].project : data.google_storage_bucket.output-bucket[0].project
+  value       = var.enable_output ? local.output_bucket_project : "null"
   sensitive   = false
   description = "The project the bucket is in"
 }
