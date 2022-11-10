@@ -13,11 +13,6 @@ resource "google_service_account" "service-account" {
   description  = "Used for the ${var.app_name} application. Coresponding K8s sa: ${var.k8s_sa} in namespace: ${var.namespace}" 
 }
 
-resource "google_service_account_iam_member" "workload-identity" {
-  member             = "serviceAccount:${var.project_id}.svc.id.goog[${local.namespace}/${local.k8s_sa}]"
-  role               = "roles/iam.workloadIdentityUser"
-  service_account_id = google_service_account.service-account.name
-}
 
 # Input Bucket
 data "google_storage_project_service_account" "gcs_account" {
@@ -67,18 +62,6 @@ resource "google_storage_bucket" "input-bucket" {
 data "google_storage_bucket" "input-bucket" {
   count = var.create_input_bucket ? 0 : 1
   name  = var.input_bucket
-}
-
-resource "google_storage_bucket_iam_member" "input-bucket-iam" {
-  bucket = var.input_bucket
-  role   = "roles/storage.objectViewer"
-  member = "serviceAccount:${google_service_account.service-account.email}"
-}
-
-resource "google_storage_bucket_iam_member" "input-bucket-legacy-iam" {
-  bucket = var.input_bucket
-  role   = "roles/storage.legacyBucketReader"
-  member = "serviceAccount:${google_service_account.service-account.email}"
 }
 
 resource "google_storage_notification" "bucket-notification" {
@@ -178,9 +161,3 @@ resource "google_storage_bucket" "output-bucket" {
   }
 }
 
-resource "google_storage_bucket_iam_member" "output-bucket-iam" {
-  count  = var.enable_output ? 1 : 0
-  bucket = var.output_bucket
-  role   = "roles/storage.objectAdmin"
-  member = "serviceAccount:${google_service_account.service-account.email}"
-}
