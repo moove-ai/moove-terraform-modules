@@ -171,3 +171,15 @@ variable "build" {
   description = "Set to false to disable the build step. Useful for helmcharts which do not require a custom image"
   default     = true
 }
+
+variable "build_args" {
+  type        = string
+  description = "Arguments to append to the docker build"
+  default     = ""
+}
+
+variable "ci_cd_name_override" {
+  type        = string
+  default     = ""
+  description = "Overrides the app_name value. Useful if you have two apps that update the same chart, like the scoring-frontend & scoring-backend"
+}
