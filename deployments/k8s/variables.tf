@@ -173,9 +173,9 @@ variable "build" {
 }
 
 variable "build_args" {
-  type        = string
-  description = "Arguments to append to the docker build"
-  default     = ""
+  type        = list(string)
+  description = "List of Arguments to append to the docker build"
+  default     = []
 }
 
 variable "ci_cd_name_override" {

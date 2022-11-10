@@ -1,6 +1,7 @@
 locals {
-  build_args = var.build_args == "" ? var.build_args : var.build_args
   ci_cd_name_override = var.ci_cd_name_override == "" ? var.app_name : var.ci_cd_name_override
+  default_build_args = ["-t", "gcr.io/${var.project_id}/${var.app_name}:$COMMIT_SHA", "-t", "gcr.io/${var.project_id}/${var.app_name}:latest", "."]
+  build_args = var.build_args == [] ? concat(["build"], local.default_build_args) : concat(["build"], var.build_args, local.default_build_args)
 }
 
 
@@ -59,13 +60,7 @@ resource "google_cloudbuild_trigger" "build" {
     step {
       id   = "build-container"
       name = "gcr.io/cloud-builders/docker"
-      args = [
-        "build",
-        local.build_args,
-        "-t", "gcr.io/${var.project_id}/${var.app_name}:$COMMIT_SHA",
-        "-t", "gcr.io/${var.project_id}/${var.app_name}:latest",
-        "."
-      ]
+      args = local.build_args
     }
 
     step {
