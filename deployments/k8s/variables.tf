@@ -172,6 +172,12 @@ variable "build" {
   default     = true
 }
 
+variable "deploy" {
+  type        = bool
+  description = "Set to false to disable the deployment step. Useful for builds where there are multiple images on the same deployment"
+  default     = true
+}
+
 variable "build_args" {
   type        = list(string)
   description = "List of Arguments to append to the docker build"
@@ -194,4 +200,10 @@ variable "argo_app_namespace" {
   type        = string
   default     = "default"
   description = "The namespace where the argocd Application object should be created in."
+}
+
+variable "deployment_name" {
+  type        = string
+  default     = ""
+  description = "Optional. Overrides the name of the deployment. Appends the name onto the end of: k8s-deploy-app|op-$deployment_name"
 }

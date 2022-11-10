@@ -1,5 +1,6 @@
 locals {
   ci_cd_name_override = var.ci_cd_name_override == "" ? var.app_name : var.ci_cd_name_override
+  deployment_name = var.deployment_name == "" ? "${var.prefix}-${var.region}-${var.type}-${var.app_name}" : "${var.prefix}-${var.region}-${var.type}-${var.deployment_name}"
   default_build_args  = ["-t", "gcr.io/${var.project_id}/${var.app_name}:$COMMIT_SHA", "-t", "gcr.io/${var.project_id}/${var.app_name}:latest", "."]
   build_args          = var.build_args == [] ? concat(["build"], local.default_build_args) : concat(["build"], var.build_args, local.default_build_args)
 }
@@ -130,8 +131,9 @@ resource "google_cloudbuild_trigger" "build" {
 }
 
 resource "google_cloudbuild_trigger" "deployment" {
+  count           = var.deploy ? 1 : 0
   project         = var.project_id
-  name            = "${var.prefix}-${var.region}-${var.type}-${var.app_name}"
+  name            = local.deployment_name
   description     = "Deploys the ${var.app_name} Application to the ${var.environment}-${var.region} GKE cluster"
   service_account = "projects/${var.project_id}/serviceAccounts/privileged-builder@${var.project_id}.iam.gserviceaccount.com"
 
