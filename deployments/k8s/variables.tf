@@ -185,7 +185,13 @@ variable "ci_cd_name_override" {
 }
 
 variable "create_argo_app" {
-  type = bool
+  type        = bool
   description = "Set to false to skip the creation of the ArgoCD App. Useful for two deployments that use the same chart. See: scoring-frontend, scoring-backend"
-  default = true
+  default     = true
+}
+
+variable "argo_app_namespace" {
+  type        = string
+  default     = "default"
+  description = "The namespace where the argocd Application object should be created in."
 }
