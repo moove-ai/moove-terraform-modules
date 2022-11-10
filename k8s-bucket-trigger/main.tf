@@ -75,6 +75,11 @@ resource "google_storage_bucket_iam_member" "input-bucket-iam" {
   member = "serviceAccount:${google_service_account.service-account.email}"
 }
 
+resource "google_storage_bucket_iam_member" "input-bucket-legacy-iam" {
+  bucket = var.input_bucket
+  role   = "roles/storage.legacyBucketReader"
+  member = "serviceAccount:${google_service_account.service-account.email}"
+}
 
 resource "google_storage_notification" "bucket-notification" {
   count          = var.notification_enabled ? 1 : 0
