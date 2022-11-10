@@ -3,6 +3,7 @@ locals {
 }
 
 resource "kubernetes_manifest" "app" {
+  count = var.create_argo_app ? 1 : 0
   manifest = yamldecode(<<-EOT
     apiVersion: argoproj.io/v1alpha1
     kind: Application

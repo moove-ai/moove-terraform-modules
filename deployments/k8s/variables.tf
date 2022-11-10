@@ -183,3 +183,9 @@ variable "ci_cd_name_override" {
   default     = ""
   description = "Overrides the app_name value. Useful if you have two apps that update the same chart, like the scoring-frontend & scoring-backend"
 }
+
+variable "create_argo_app" {
+  type = bool
+  description = "Set to false to skip the creation of the ArgoCD App. Useful for two deployments that use the same chart. See: scoring-frontend, scoring-backend"
+  default = true
+}
