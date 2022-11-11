@@ -82,7 +82,7 @@ resource "google_cloudbuild_trigger" "build" {
       args = ["-c", join(" ", [
         "rm -f /workspace/${var.build_repo}/deployments/README.md", "&&",
         "rm -f /workspace/${var.build_repo}/README.md", "&&",
-        "cp .README.md README.md"
+        "cp /workspace/${var.build_repo}/.README.md /workspace/${var.build_repo}/README.md"
       ])]
       secret_env = [
         "GITHUB_TOKEN",
