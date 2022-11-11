@@ -1,3 +1,14 @@
+/**
+ * # deployments/cloudrun
+ *
+ * Creates build automation to deploy cloudrun
+ *
+ * I'll be honest, I haven't tested or used this.
+ * 
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
+
 resource "google_cloudbuild_trigger" "cloudrun" {
   provider        = google-beta
   project         = var.project_id

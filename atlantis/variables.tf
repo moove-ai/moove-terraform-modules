@@ -1,3 +1,4 @@
+# Common
 variable "project_id" {
   type        = string
   description = "The project the atlantis will be deployed to"
@@ -8,6 +9,18 @@ variable "environment" {
   description = "The project the atlantis will be deployed to"
 }
 
+variable "region" {
+  type        = string
+  description = "The region this app is running in"
+}
+
+variable "secret_project_id" {
+  type        = string
+  description = "The project hosting the atlantis secret values"
+  default     = "moove-secrets"
+}
+
+# Deployment
 variable "app_name" {
   type        = string
   description = "The name of the app"
@@ -19,12 +32,8 @@ variable "build_service_account" {
   description = "The service account used for build automation"
 }
 
-variable "region" {
-  type        = string
-  description = "The region this app is running in"
-}
 
-variable "deployment_namespace" {
+variable "namespace" {
   type        = string
   description = "The namespace to deploy this app to"
   default     = "default"
@@ -42,8 +51,8 @@ variable "deployment_type" {
   default     = "ops"
 }
 
-variable "secret_project_id" {
+variable "k8s_sa_name" {
   type        = string
-  description = "The project hosting the atlantis secret values"
-  default     = "moove-secrets"
+  default     = "atlantis"
+  description = "The name of the Kubernetes service account running atlantis."
 }

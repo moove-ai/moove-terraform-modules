@@ -1,3 +1,24 @@
+/**
+ * # deployments/k8s
+ *
+ * Creates a kubernetes deployment
+ *
+ * This module is very flexible
+ *
+ * Creates CI (build) and CD (deploy). Both are optional.
+ * Creates the argocd application resources on the k8s cluster.
+ * Allows you to pass build args to the docker build by defining the `build_args` variable
+ * Allows you to override the name of the app (internal) with the `ci_cd_name_override` variable
+ * Allows you to override the name of the deployment with the `deployment_name` variable
+ *
+ * This module should be used for all kubernetes ci/cd 
+ * Application resources (such as bucket triggers, iam permissions, etc) should be created in a seperate module. The outputs of that module should be used as inputs for this module for things like: 
+ * * app_name
+ * * namespace
+ *
+ * Written by Alex Merenda for moove.ai
+ */
+
 locals {
   ci_cd_name_override = var.ci_cd_name_override == "" ? var.app_name : var.ci_cd_name_override
   deployment_name = var.deployment_name == "" ? "${var.prefix}-${var.region}-${var.type}-${var.app_name}" : "${var.prefix}-${var.region}-${var.type}-${var.deployment_name}"

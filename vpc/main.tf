@@ -1,3 +1,13 @@
+/**
+ * # vpc
+ *
+ * Creates a VPC for an environment and sets up:
+ * * Network peering for this environment to the mgmt environment (metrics)
+ * * Default firewalls
+ *
+ * Written by Alex Merenda for moove.ai
+ */
+
 data "google_compute_network" "systems" {
   project = "moove-systems"
   name    = "mgmt-vpc"

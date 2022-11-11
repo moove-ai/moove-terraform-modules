@@ -1,4 +1,11 @@
-# google_client_config and kubernetes provider must be explicitly specified like the following.
+/**
+ * # gke
+ *
+ * creates a GKE (beta-private-update-variant) cluster and deploys common helm resources to it
+ *
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
 
 data "google_client_config" "default" {}
 

@@ -1,3 +1,13 @@
+/**
+ * # GCP Monitor
+ *
+ * Takes a list of projects (monitored_projects) and attaches them as monitoring scopes to a parent project.
+ * Placed in the `[ENVIRONMENT]/projects` folder. 
+ * Metrics scope project must be created separately. (Use a module in projects as a template)
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
+
 resource "google_monitoring_monitored_project" "project" {
   provider      = google-beta
   for_each      = toset(var.monitored_projects)

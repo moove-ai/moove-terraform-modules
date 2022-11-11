@@ -1,3 +1,14 @@
+/**
+ * # Atlantis
+ *
+ * Creates Atlantis resources.
+ *
+ * [Atlantis](https://www.runatlantis.io/)
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
+
+
 resource "google_service_account" "atlantis" {
   project      = var.project_id
   account_id   = "k8s-atlantis"
@@ -121,4 +132,10 @@ resource "google_secret_manager_secret_iam_member" "atlantis_gcp-sa-key-iam" {
   secret_id = google_secret_manager_secret.atlantis_gcp-sa-key.secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:k8s-secrets@${var.project_id}.iam.gserviceaccount.com"
+}
+
+resource "google_service_account_iam_member" "sa-workload-identity" {
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[${var.namespace}/${var.k8s_sa_name}]"
+  role               = "roles/iam.workloadIdentityUser"
+  service_account_id = google_service_account.atlantis.name
 }
