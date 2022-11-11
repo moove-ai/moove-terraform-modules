@@ -37,6 +37,7 @@ resource "google_pubsub_topic" "topic" {
 resource "google_pubsub_subscription" "subscription" {
   for_each             = toset(var.bucket_names)
   name                 = each.key
+  project              = google_pubsub_topic.topic[each.key].project
   topic                = google_pubsub_topic.topic[each.key].id
   ack_deadline_seconds = 120
   labels = {
