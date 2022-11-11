@@ -27,7 +27,7 @@ resource "google_cloudbuild_trigger" "build" {
     name  = var.build_repo
 
     push {
-      tag = "^${var.build_branch}$"
+      branch = "^${var.build_branch}$"
     }
   }
 
