@@ -19,7 +19,7 @@ resource "google_container_registry" "registry" {
 resource "google_storage_bucket" "build-logs" {
   name                        = "moove-${var.environment}-build-logs"
   project                     = var.project_id
-  location                    = "US"
+  location                    = var.build_logs_bucket_location
   uniform_bucket_level_access = true
 
   labels = {
@@ -41,7 +41,7 @@ resource "google_storage_bucket" "build-logs" {
 resource "google_storage_bucket" "build-cache" {
   name                        = "moove-${var.environment}-build-cache"
   project                     = var.project_id
-  location                    = "US"
+  location                    = var.build_cache_bucket_location
   uniform_bucket_level_access = true
 
   labels = {

@@ -125,17 +125,17 @@ resource "google_storage_bucket_iam_member" "builder-registry-admin-iam" {
   member = "serviceAccount:${google_service_account.builder.email}"
 }
 
-#resource "google_service_account_iam_member" "builder-act-as" {
-#  service_account_id = data.google_service_account.terraform.name
-#  role               = "roles/iam.serviceAccountUser"
-#  member             = "serviceAccount:${google_service_account.builder.email}"
-#}
-#
-#resource "google_service_account_iam_member" "p-builder-act-as" {
-#  service_account_id = data.google_service_account.terraform.name
-#  role               = "roles/iam.serviceAccountUser"
-#  member             = "serviceAccount:${google_service_account.privileged-builder.email}"
-#}
+resource "google_service_account_iam_member" "builder-act-as" {
+  service_account_id = data.google_service_account.terraform.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.builder.email}"
+}
+
+resource "google_service_account_iam_member" "p-builder-act-as" {
+  service_account_id = data.google_service_account.terraform.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.privileged-builder.email}"
+}
 #
 #resource "google_service_account_iam_member" "builder-act-as-1" {
 #  service_account_id = google_service_account.builder.name

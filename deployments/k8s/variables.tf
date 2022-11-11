@@ -171,3 +171,39 @@ variable "build" {
   description = "Set to false to disable the build step. Useful for helmcharts which do not require a custom image"
   default     = true
 }
+
+variable "deploy" {
+  type        = bool
+  description = "Set to false to disable the deployment step. Useful for builds where there are multiple images on the same deployment"
+  default     = true
+}
+
+variable "build_args" {
+  type        = list(string)
+  description = "List of Arguments to append to the docker build"
+  default     = []
+}
+
+variable "ci_cd_name_override" {
+  type        = string
+  default     = ""
+  description = "Overrides the app_name value. Useful if you have two apps that update the same chart, like the scoring-frontend & scoring-backend"
+}
+
+variable "create_argo_app" {
+  type        = bool
+  description = "Set to false to skip the creation of the ArgoCD App. Useful for two deployments that use the same chart. See: scoring-frontend, scoring-backend"
+  default     = true
+}
+
+variable "argo_app_namespace" {
+  type        = string
+  default     = "default"
+  description = "The namespace where the argocd Application object should be created in."
+}
+
+variable "deployment_name" {
+  type        = string
+  default     = ""
+  description = "Optional. Overrides the name of the deployment. Appends the name onto the end of: k8s-deploy-app|op-$deployment_name"
+}

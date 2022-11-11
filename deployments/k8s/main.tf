@@ -1,3 +1,10 @@
+locals {
+  ci_cd_name_override = var.ci_cd_name_override == "" ? var.app_name : var.ci_cd_name_override
+  deployment_name = var.deployment_name == "" ? "${var.prefix}-${var.region}-${var.type}-${var.app_name}" : "${var.prefix}-${var.region}-${var.type}-${var.deployment_name}"
+  default_build_args  = ["-t", "gcr.io/${var.project_id}/${var.app_name}:$COMMIT_SHA", "-t", "gcr.io/${var.project_id}/${var.app_name}:latest", "."]
+  build_args          = var.build_args == [] ? concat(["build"], local.default_build_args) : concat(["build"], var.build_args, local.default_build_args)
+}
+
 resource "google_cloudbuild_trigger" "build" {
   count           = var.build ? 1 : 0
   provider        = google-beta
@@ -53,12 +60,7 @@ resource "google_cloudbuild_trigger" "build" {
     step {
       id   = "build-container"
       name = "gcr.io/cloud-builders/docker"
-      args = [
-        "build",
-        "-t", "gcr.io/${var.project_id}/${var.app_name}:$COMMIT_SHA",
-        "-t", "gcr.io/${var.project_id}/${var.app_name}:latest",
-        "."
-      ]
+      args = local.build_args
     }
 
     step {
@@ -105,7 +107,7 @@ resource "google_cloudbuild_trigger" "build" {
       name     = "mikefarah/yq"
       args = [
         "e", "${var.tag_path} = \"$COMMIT_SHA\"",
-        "-i", "/workspace/k8s-deployments/releases/${var.type}/${var.app_name}/values/${var.environment}.yaml"
+        "-i", "/workspace/k8s-deployments/releases/${var.type}/${local.ci_cd_name_override}/values/${var.environment}.yaml"
       ]
     }
 
@@ -128,8 +130,9 @@ resource "google_cloudbuild_trigger" "build" {
 }
 
 resource "google_cloudbuild_trigger" "deployment" {
+  count           = var.deploy ? 1 : 0
   project         = var.project_id
-  name            = "${var.prefix}-${var.region}-${var.type}-${var.app_name}"
+  name            = local.deployment_name
   description     = "Deploys the ${var.app_name} Application to the ${var.environment}-${var.region} GKE cluster"
   service_account = "projects/${var.project_id}/serviceAccounts/privileged-builder@${var.project_id}.iam.gserviceaccount.com"
 
@@ -141,11 +144,11 @@ resource "google_cloudbuild_trigger" "deployment" {
   ], var.build_tags)
 
   included_files = [
-    "releases/${var.type}/${var.app_name}/configs/${var.environment}/**",
-    "releases/${var.type}/${var.app_name}/values/values.yaml",
-    "releases/${var.type}/${var.app_name}/values/${var.environment}.yaml",
-    "releases/${var.type}/${var.app_name}/values/${var.environment}-pilot.yaml",
-    "releases/${var.type}/${var.app_name}/helmfile.yaml",
+    "releases/${var.type}/${local.ci_cd_name_override}/configs/${var.environment}/**",
+    "releases/${var.type}/${local.ci_cd_name_override}/values/values.yaml",
+    "releases/${var.type}/${local.ci_cd_name_override}/values/${var.environment}.yaml",
+    "releases/${var.type}/${local.ci_cd_name_override}/values/${var.environment}-pilot.yaml",
+    "releases/${var.type}/${local.ci_cd_name_override}/helmfile.yaml",
   ]
 
   github {
@@ -186,7 +189,7 @@ resource "google_cloudbuild_trigger" "deployment" {
       entrypoint = "bash"
       args = [
         "-c",
-        "rm -fr /workspace/k8s-git-ops/${var.gke_cluster}/${var.type}/${var.app_name}/*",
+        "rm -fr /workspace/k8s-git-ops/${var.gke_cluster}/${var.type}/${local.ci_cd_name_override}/*",
       ]
       secret_env = [
         "GITHUB_TOKEN",
@@ -204,7 +207,7 @@ resource "google_cloudbuild_trigger" "deployment" {
       ]
       args = [
         "-c",
-        "helmfile --environment ${var.environment} --file releases/${var.type}/${var.app_name}/helmfile.yaml template --output-dir-template /workspace/k8s-git-ops/${var.gke_cluster}/${var.type}/${var.app_name}",
+        "helmfile --environment ${var.environment} --file releases/${var.type}/${local.ci_cd_name_override}/helmfile.yaml template --output-dir-template /workspace/k8s-git-ops/${var.gke_cluster}/${var.type}/${local.ci_cd_name_override}",
       ]
       secret_env = [
         "GITHUB_TOKEN",
@@ -218,7 +221,7 @@ resource "google_cloudbuild_trigger" "deployment" {
       entrypoint = "bash"
       args = [
         "-c",
-        "cd /workspace/k8s-git-ops/ && git config user.name moove-devopsbot && git config user.email devopsbot@moove.ai && git pull && git add -A ${var.gke_cluster}/${var.type}/ && git commit -m \"deploys ${var.app_name} to ${var.environment}\" && git push origin main"
+        "cd /workspace/k8s-git-ops/ && git config user.name moove-devopsbot && git config user.email devopsbot@moove.ai && git pull && git add -A ${var.gke_cluster}/${var.type}/ && git commit -m \"deploys ${local.ci_cd_name_override} to ${var.environment}\" && git push origin main"
       ]
     }
   }
