@@ -13,7 +13,7 @@ resource "google_cloudbuild_trigger" "build" {
   project         = var.project_id
   name            = "automation-terraform-documentation"
   description     = "Updates terraform documentation on merge"
-  service_account = "projects/${var.project_id}/serviceAccounts/builder@${var.project_id}.iam.gserviceaccount.com"
+  service_account = "projects/${var.project_id}/serviceAccounts/privileged-builder@${var.project_id}.iam.gserviceaccount.com"
 
   tags = concat([
     "terraform-docs"
