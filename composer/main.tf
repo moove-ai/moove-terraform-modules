@@ -1,3 +1,13 @@
+/**
+ * # Composer
+ *
+ * Creates composer resources
+ *
+ * [based on composer](https://registry.terraform.io/modules/terraform-google-modules/composer/google/latest/submodules/create_environment_v2)
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
+
 module "composer" {
   source = "terraform-google-modules/composer/google//modules/create_environment_v2"
   #version = "~> 2.0"

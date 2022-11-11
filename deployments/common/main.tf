@@ -1,3 +1,14 @@
+/**
+ * # deployments/common
+ *
+ * Creates common deployment resouces. All environments need this.
+ *
+ * Should be installed on all environments in the `moove-platform-$ENVIRONMENT` project
+ * 
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
+
 resource "google_service_account" "builder" {
   account_id   = "builder"
   display_name = "Cloud Build Builder"
@@ -29,7 +40,7 @@ resource "google_storage_bucket" "build-logs" {
 
   lifecycle_rule {
     condition {
-      age = 730
+      age = 365 # keeps 1 year of build logs
     }
 
     action {

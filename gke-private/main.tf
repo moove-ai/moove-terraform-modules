@@ -1,4 +1,12 @@
-# google_client_config and kubernetes provider must be explicitly specified like the following.
+/**
+ * # gke-private
+ *
+ * creates a GKE (beta-private) cluster and deploys common helm resources to it.
+ * This is considered a legacy cluster and all new clusters should be created with the [gke](/gke) module
+ *
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
 
 data "google_client_config" "default" {}
 

@@ -1,3 +1,13 @@
+/**
+ * # helm-registry
+ *
+ * creates the moove helm registry 
+ * This module only needs to be insalled once in the mgmt environment
+ *
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
+
 resource "google_storage_bucket" "helm-registry-public" {
   project                     = "moove-systems"
   name                        = "moove-helm-charts"

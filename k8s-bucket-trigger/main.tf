@@ -1,3 +1,12 @@
+/**
+ * # k8s-bucket-trigger
+ *
+ * Creates resources around any internal app which should be triggered on the creation of a GCS object
+ *
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
+
 locals {
   namespace             = var.namespace == "" ? var.environment : var.namespace
   k8s_sa                = var.k8s_sa == "" ? var.app_name : var.k8s_sa

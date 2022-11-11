@@ -1,3 +1,13 @@
+/**
+ * # Bigquery Views
+ *
+ * Creates Bigquery Views.
+ *
+ * [Views](https://cloud.google.com/bigquery/docs/views-intro)
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
+
 locals {
   views = { for view in var.views : view["view_id"] => view }
 }
@@ -27,7 +37,7 @@ resource "google_bigquery_table" "view" {
 }
 
 resource "google_bigquery_dataset_access" "dataset-access" {
-  project    = var.source_dataset_project
+  project    = var.shared_dataset_project
   for_each   = local.views
   dataset_id = var.shared_dataset
   view {

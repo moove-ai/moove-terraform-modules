@@ -1,3 +1,13 @@
+/**
+ * # Bucket Monitor
+ *
+ * Creates infrastructure around the bucket monitor.
+ *
+ * [bucket-monitor](https://github.com/moove-ai/bigquery-monitor)
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
+
 resource "google_storage_notification" "bucket-notification" {
   for_each       = toset(var.bucket_names)
   bucket         = data.google_storage_bucket.existing-bucket[each.key].name

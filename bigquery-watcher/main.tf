@@ -1,3 +1,13 @@
+/**
+ * # Bigquery Watcher
+ *
+ * Creates infrastructure around the bigquery watcher.
+ *
+ * [bigquery-watcher](https://github.com/moove-ai/bigquery-watcher)
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
+
 resource "google_service_account" "sa" {
   project      = var.project_id
   account_id   = var.service_account_id
