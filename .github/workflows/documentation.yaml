@@ -14,5 +14,5 @@ jobs:
       with:
         config-file: .terraform-docs.yml
         find-dir: .
-        recursive: false
+        recursive: true
     
