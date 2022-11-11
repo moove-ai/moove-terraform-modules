@@ -106,18 +106,6 @@ variable "k8s_sa" {
   default     = ""
 }
 
-variable "input_bucket_retention_age" {
-  type        = string
-  description = "If set files will be deleted after n days from the input bucket."
-  default     = ""
-}
-
-variable "output_bucket_retention_age" {
-  type        = string
-  description = "If set files will be deleted after n days from the input bucket."
-  default     = ""
-}
-
 variable "input_bucket_client" {
   type        = string
   description = "The client with t"
