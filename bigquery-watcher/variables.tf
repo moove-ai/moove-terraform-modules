@@ -6,7 +6,7 @@ variable "project_id" {
 variable "service_account_id" {
   type        = string
   description = "The Account ID of the SA to create"
-  default     = "bigquery-watcher"
+  default     = "k8s-bigquery-watcher"
 }
 
 variable "service_account_description" {
