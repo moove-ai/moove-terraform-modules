@@ -95,5 +95,25 @@ module "gke-firewall-rules" {
       ]
       extra_attributes = {}
     }
+    ingress-redis = {
+      description = "Allows access to redis."
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "10.0.0.0/8"
+      ]
+      sources              = []
+      targets              = ["gke"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "6379",
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
   }
 }
