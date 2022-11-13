@@ -171,3 +171,9 @@ variable "build" {
   description = "Set to false to disable the build step. Useful for helmcharts which do not require a custom image"
   default     = true
 }
+
+variable "deploy_included_files" {
+  type        = list(string)
+  default     = []
+  description = "List of files which will trigger an ArgoCD Deployment if changed."
+}
