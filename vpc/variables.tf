@@ -61,3 +61,9 @@ variable "regions" {
   type        = list(string)
   description = "List of regions to create routers, nats, and VPC connectors"
 }
+
+variable "create_mgmt_peer" {
+  type        = bool
+  description = "Creates mgmt peer"
+  default     = true
+}

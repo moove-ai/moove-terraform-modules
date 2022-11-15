@@ -194,24 +194,50 @@ variable "master_authorized_networks" {
   ]
 }
 
-## Helm Values
-#variable "argo_cd_values" {
-#  type = string
-#  description = "ArgoCD Helm values"
-#}
-#
-#variable "cert_manager_values" {
-#  type = string
-#  description = "Cert Manager Helm Values"
-#}
-#
-#variable "external_dns_values" {
-#  type = string
-#  description = "External DNS Helm Values"
-#}
-#
-#variable "external_secrets_values" {
-#  type = string
-#  description = "External Secrets Helm Values"
-#}
-#
+variable "install_argocd" {
+  type        = bool
+  description = "Installs helm chart."
+  default     = true
+}
+
+variable "install_common_resources" {
+  type        = bool
+  description = "Installs helm chart."
+  default     = true
+}
+
+variable "install_cert_manager" {
+  type        = bool
+  description = "Installs helm chart."
+  default     = true
+}
+
+variable "install_cert_manager_pilot" {
+  type        = bool
+  description = "Installs helm chart."
+  default     = true
+}
+
+variable "install_external_dns" {
+  type        = bool
+  description = "Installs helm chart."
+  default     = true
+}
+
+variable "install_external_secrets" {
+  type        = bool
+  description = "Installs helm chart."
+  default     = true
+}
+
+variable "install_external_secrets_pilot" {
+  type        = bool
+  description = "Installs helm chart."
+  default     = true
+}
+
+variable "install_keda" {
+  type        = bool
+  description = "Set to true to install keda"
+  default     = true
+}

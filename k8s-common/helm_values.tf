@@ -1,5 +1,8 @@
 locals {
   argocd_values = <<-EOT
+  dex:
+    enabled: false
+
   server:
     service:
       type: LoadBalancer
@@ -9,8 +12,8 @@ locals {
 
     resources:
       limits:
-        cpu: 4
-        memory: 4Gi
+        cpu: 2
+        memory: 2Gi
       requests:
         cpu: 500m
         memory: 512Mi
@@ -60,7 +63,7 @@ locals {
   notifications:
     enabled: true
     name: notifications-controller
-    argocdUrl: "https://${var.environment}.deployments.moove.co.in"
+    argocdUrl: "https://${var.environment}.deployments.moove.c.in"
 
     secret:
       create: false
@@ -251,5 +254,28 @@ locals {
     annotations:
       iam.gke.io/gcp-service-account: k8s-secrets@${var.project_id}.iam.gserviceaccount.com
     name: "k8s-secrets"
+  EOT
+
+  external_secrets_pilot_values = <<-EOT
+  pilot:
+    secretStores:
+      - ${var.project_id}
+      - moove-secrets
+  EOT
+  cert_manager_pilot_values     = <<-EOT
+  pilot:
+  clusterIssuer:
+    staging:
+      enabled: true
+    live:
+      enabled: true
+  EOT
+  common_resources_values       = <<-EOT
+  EOT
+  keda_values                   = <<-EOT
+  serviceAccount:
+    create: true
+    annotations:
+      iam.gke.io/gcp-service-account: k8s-keda@${var.project_id}.iam.gserviceaccount.com
   EOT
 }

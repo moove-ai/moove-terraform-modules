@@ -1,4 +1,4 @@
-module "agrocd-ingress" {
+module "gke-firewall-rules" {
   source                  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
   project_id              = var.cluster_network_project_id
   network                 = var.cluster_network
@@ -28,6 +28,88 @@ module "agrocd-ingress" {
           ports = [
             "80",
             "443"
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
+    ingress-allow-prometheus = {
+      description = "Allows access to prometheus"
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "10.0.0.0/8"
+      ]
+      sources              = []
+      targets              = ["private"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "9090",
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
+    # Needed for metrics
+    ingress-allow-thanos = {
+      description = "Allows access to thanos"
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "10.0.0.0/8"
+      ]
+      sources              = []
+      targets              = ["gke"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "10901",
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
+    # Needed for Keda 
+    ingress-gke-master = {
+      description = "Allows access to the GKE master."
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "10.130.112.0/28"
+      ]
+      sources              = []
+      targets              = ["gke"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "6443",
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
+    ingress-redis = {
+      description = "Allows access to redis."
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "10.0.0.0/8"
+      ]
+      sources              = []
+      targets              = ["gke"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "6379",
           ]
         }
       ]

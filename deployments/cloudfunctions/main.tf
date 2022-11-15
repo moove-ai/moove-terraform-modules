@@ -1,3 +1,14 @@
+/**
+ * # deployments/cloudfunction
+ *
+ * Creates build automation to deploy cloudfunctions 
+ *
+ * If you provide `function_trigger_topic` it will create a trigger to deploy the CF with a pub/sub topic (must be created seperately)
+ * If `function_trigger_topic` is ommited, it will create an HTTP trigger.
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
+
 resource "google_cloudbuild_trigger" "cloudfunction" {
   provider        = google-beta
   project         = var.project_id

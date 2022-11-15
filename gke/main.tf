@@ -1,29 +1,18 @@
-# google_client_config and kubernetes provider must be explicitly specified like the following.
+/**
+ * # gke
+ *
+ * creates a GKE (beta-private-update-variant) cluster and deploys common helm resources to it
+ *
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
 
 data "google_client_config" "default" {}
-
-provider "kubernetes" {
-  host                   = "https://${module.gke.endpoint}"
-  token                  = data.google_client_config.default.access_token
-  cluster_ca_certificate = base64decode(module.gke.ca_certificate)
-}
-
-module "gcloud" {
-  source  = "terraform-google-modules/gcloud/google"
-  version = "~> 2.0"
-
-  platform              = "linux"
-  additional_components = ["kubectl", "beta"]
-
-
-  create_cmd_entrypoint = "gcloud"
-  create_cmd_body       = "container clusters get-credentials ${var.cluster_name} --internal-ip --region=${var.region} --project=${var.project_id}"
-}
 
 
 module "gke" {
   source                           = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster-update-variant"
-  version                          = "23.0.0"
+  version                          = "23.3.0"
   project_id                       = var.project_id
   name                             = var.cluster_name
   region                           = var.region
@@ -55,4 +44,25 @@ module "gke" {
   node_pools_metadata              = var.node_pools_metadata
   cluster_resource_labels          = var.cluster_labels
   master_authorized_networks       = var.master_authorized_networks
+  service_account                  = google_service_account.k8s-nodes.email
+  create_service_account           = false
+}
+
+module "k8s-common" {
+  source                         = "../k8s-common"
+  environment                    = var.environment
+  project_id                     = var.project_id
+  cluster_name                   = var.cluster_name
+  region                         = var.region
+  cluster_network                = var.cluster_network
+  cluster_network_project_id     = var.cluster_network_project_id
+  proxy_dns_name                 = "${var.proxy_dns}.moove.co.in"
+  install_argocd                 = var.install_argocd
+  install_common_resources       = var.install_common_resources
+  install_cert_manager           = var.install_cert_manager
+  install_cert_manager_pilot     = var.install_cert_manager_pilot
+  install_external_dns           = var.install_external_dns
+  install_external_secrets       = var.install_external_secrets
+  install_external_secrets_pilot = var.install_external_secrets_pilot
+  install_keda                   = var.install_keda
 }

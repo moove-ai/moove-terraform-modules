@@ -1,18 +1,3 @@
-provider "helm" {
-  kubernetes {
-    config_path    = "~/.kube/config"
-    proxy_url      = "http://${google_compute_instance.gke-proxy.network_interface.0.network_ip}:8888"
-    config_context = "gke_${var.project_id}_${var.region}_${module.gke.name}"
-  }
-}
-
-provider "kubernetes" {
-  alias                  = "internal"
-  config_path            = "~/.kube/config"
-  proxy_url              = "http://${google_compute_instance.gke-proxy.network_interface.0.network_ip}:8888"
-  config_context_cluster = "gke_${var.project_id}_${var.region}_${module.gke.name}"
-}
-
 data "google_secret_manager_secret_version" "helm-key" {
   project = "moove-systems"
   secret  = "helm_github-token"
@@ -34,53 +19,24 @@ data "google_secret_manager_secret_version" "argo-cd_git-type" {
 }
 
 resource "kubernetes_namespace" "monitoring" {
-  provider = kubernetes.internal
   metadata {
     name = "monitoring"
     labels = {
       monitoring = "enabled"
     }
   }
-  depends_on = [
-    google_compute_instance.gke-proxy,
-    module.gcloud
-  ]
 }
 
 resource "kubernetes_namespace" "environment" {
-  provider = kubernetes.internal
   metadata {
     name = var.environment
     labels = {
       monitoring = "enabled"
     }
   }
-  depends_on = [
-    google_compute_instance.gke-proxy,
-    module.gcloud
-  ]
-}
-
-resource "kubernetes_secret" "prometheus-secrets" {
-  provider = kubernetes.internal
-  metadata {
-    name      = "prometheus-secrets"
-    namespace = "monitoring"
-  }
-
-  type = "Opaque"
-  data = {
-    "objstore.yml" = google_secret_manager_secret_version.thanos-object-store-config.secret_data
-  }
-  depends_on = [
-    google_compute_instance.gke-proxy,
-    module.gcloud,
-    kubernetes_namespace.monitoring
-  ]
 }
 
 resource "kubernetes_secret" "argocd-secrets" {
-  provider = kubernetes.internal
   metadata {
     name      = "k8s-git-ops-repo"
     namespace = "default"
@@ -92,19 +48,18 @@ resource "kubernetes_secret" "argocd-secrets" {
 
   type = "Opaque"
   data = {
-    "sshprivatekey" = data.google_secret_manager_secret_version.devops-bots-ssh-key.secret_data
+    "sshPrivateKey" = data.google_secret_manager_secret_version.devops-bots-ssh-key.secret_data
     "url"           = data.google_secret_manager_secret_version.argo-cd_k8s-git-ops-repo-url.secret_data
     "type"          = data.google_secret_manager_secret_version.argo-cd_git-type.secret_data
   }
 
   depends_on = [
-    google_compute_instance.gke-proxy,
-    module.gcloud,
     kubernetes_namespace.monitoring
   ]
 }
 
 resource "helm_release" "argo-cd" {
+  count            = var.install_argocd ? 1 : 0
   name             = "argo-cd"
   version          = "4.9.7"
   namespace        = "default"
@@ -112,13 +67,21 @@ resource "helm_release" "argo-cd" {
   repository       = "https://argoproj.github.io/argo-helm"
   chart            = "argo-cd"
   values           = [local.argocd_values]
-  depends_on = [
-    google_compute_instance.gke-proxy,
-    module.gcloud
-  ]
+}
+
+resource "helm_release" "common-resources" {
+  count            = var.install_common_resources ? 1 : 0
+  name             = "common-resources"
+  version          = "0.1.4"
+  namespace        = "default"
+  create_namespace = true
+  repository       = "https://moove-helm-charts.storage.googleapis.com/"
+  chart            = "common-resources"
+  values           = [local.common_resources_values]
 }
 
 resource "helm_release" "cert-manager" {
+  count            = var.install_cert_manager ? 1 : 0
   name             = "cert-manager"
   version          = "1.6.1"
   namespace        = "default"
@@ -126,13 +89,22 @@ resource "helm_release" "cert-manager" {
   repository       = "https://charts.jetstack.io"
   chart            = "cert-manager"
   values           = [local.cert_manager_values]
-  depends_on = [
-    google_compute_instance.gke-proxy,
-    module.gcloud
-  ]
+}
+
+resource "helm_release" "cert-manager-pilot" {
+  count            = var.install_cert_manager_pilot ? 1 : 0
+  name             = "cert-manager-pilot"
+  version          = "0.1.1"
+  namespace        = "default"
+  create_namespace = true
+  repository       = "https://moove-helm-charts.storage.googleapis.com/"
+  chart            = "cert-manager-pilot"
+  values           = [local.cert_manager_values]
+  depends_on       = [helm_release.cert-manager]
 }
 
 resource "helm_release" "external-dns" {
+  count            = var.install_external_dns ? 1 : 0
   name             = "external-dns"
   version          = "6.2.1"
   namespace        = "default"
@@ -140,13 +112,10 @@ resource "helm_release" "external-dns" {
   repository       = "https://charts.bitnami.com/bitnami"
   chart            = "external-dns"
   values           = [local.external_dns_values]
-  depends_on = [
-    google_compute_instance.gke-proxy,
-    module.gcloud
-  ]
 }
 
 resource "helm_release" "external-secrets" {
+  count            = var.install_external_secrets ? 1 : 0
   name             = "external-secrets"
   version          = "0.4.1"
   namespace        = "default"
@@ -154,8 +123,27 @@ resource "helm_release" "external-secrets" {
   repository       = "https://charts.external-secrets.io"
   chart            = "external-secrets"
   values           = [local.external_secrets_values]
-  depends_on = [
-    google_compute_instance.gke-proxy,
-    module.gcloud
-  ]
+}
+
+resource "helm_release" "external-secrets-pilot" {
+  count            = var.install_external_secrets_pilot ? 1 : 0
+  name             = "external-secrets-pilot"
+  version          = "0.1.1"
+  namespace        = "default"
+  create_namespace = true
+  repository       = "https://moove-helm-charts.storage.googleapis.com/"
+  chart            = "external-secrets-pilot"
+  values           = [local.external_secrets_pilot_values]
+  depends_on       = [helm_release.external-secrets]
+}
+
+resource "helm_release" "keda" {
+  count            = var.install_keda ? 1 : 0
+  name             = "keda"
+  version          = "2.8.1"
+  namespace        = "default"
+  create_namespace = true
+  repository       = "https://kedacore.github.io/charts"
+  chart            = "keda"
+  values           = [local.keda_values]
 }

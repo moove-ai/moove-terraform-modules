@@ -1,6 +1,12 @@
+# Common
 variable "project_id" {
   type        = string
   description = "The project id the trigger should be deployed to"
+}
+
+variable "environment" {
+  type        = string
+  description = "The environment the CD applications are being deployed to"
 }
 
 variable "app_name" {
@@ -8,9 +14,39 @@ variable "app_name" {
   description = "The name of the app to be deployed. This needs to be the same name"
 }
 
-variable "service_account" {
+variable "region" {
   type        = string
-  description = "The service account running the CD process"
+  description = "The region the app is being deployed to"
+}
+
+
+variable "type" {
+  type        = string
+  description = "Is this an application, or cluster operations. Valid values: apps, ops"
+  default     = "apps"
+}
+
+variable "build_args" {
+  type        = list(string)
+  description = "List of Arguments to append to the docker build"
+  default     = []
+}
+
+# Deployment
+variable "namespace" {
+  type        = string
+  description = "The namespace this app should be deployed to"
+}
+
+variable "tag_path" {
+  type        = string
+  description = <<-EOT
+    The path holding the image tag value in the k8s-deployment repo.
+    Stored in: releases/$TYPE/$APP_NAME/values/$ENVIRONEMNT.yaml.
+    Defaults to '.image.tag'.
+    Path must begin with '.' (.frontend.image.tag, .init.image.tag, etc)
+    EOT
+  default     = ".image.tag"
 }
 
 variable "ci_cd_branch" {
@@ -19,20 +55,16 @@ variable "ci_cd_branch" {
   default     = "main"
 }
 
-variable "environment" {
+variable "gke_cluster" {
   type        = string
-  description = "The environment the CD applications are being deployed to"
+  description = "The name of the GKE cluster to deploy to"
+  default     = ""
 }
 
 variable "github_ssh_key_name" {
   type        = string
   description = "The name of the secret holding the ssh key with access to the k8s-deployments repo. Secret located in the moove-secrets project"
   default     = "ci-cd_github-ssh-key"
-}
-
-variable "gke_cluster" {
-  type        = string
-  description = "The name of the GKE cluster to deploy to"
 }
 
 variable "helmfile_image" {
@@ -47,36 +79,16 @@ variable "helmfile_image_tag" {
   description = "The helmfile image tag to use"
 }
 
-variable "app_output_dir" {
-  default = "apps/"
-}
-
 variable "prefix" {
   type        = string
   description = "The prefix to apply to the deployment name"
   default     = "deploy-k8s"
 }
 
-variable "tags" {
-  type        = list(string)
-  description = "Tags to append to app builds"
-  default     = []
-}
-
-variable "region" {
-  type        = string
-  description = "The region the app is being deployed to"
-}
-
 variable "deployment_repo" {
   type        = string
   description = "The name of the repo being used as the source of truth for deployments"
   default     = "k8s-deployments"
-}
-
-variable "namespace" {
-  type        = string
-  description = "The namespace this app should be deployed to"
 }
 
 variable "revision_history" {
@@ -88,6 +100,7 @@ variable "revision_history" {
 variable "app_path" {
   type        = string
   description = "The folder name the app is stored in."
+  default     = ""
 }
 
 variable "target_revision" {
@@ -120,7 +133,87 @@ variable "respect_ignore_differences" {
   default     = "true"
 }
 
-variable "type" {
+variable "deploy" {
+  type        = bool
+  description = "Set to false to disable the deployment step. Useful for builds where there are multiple images on the same deployment"
+  default     = true
+}
+
+variable "ci_cd_name_override" {
   type        = string
-  description = "Is this an application, or cluster operations. Valid values: apps, ops"
+  default     = ""
+  description = "Overrides the app_name value. Useful if you have two apps that update the same chart, like the scoring-frontend & scoring-backend"
+}
+
+variable "create_argo_app" {
+  type        = bool
+  description = "Set to false to skip the creation of the ArgoCD App. Useful for two deployments that use the same chart. See: scoring-frontend, scoring-backend"
+  default     = true
+}
+
+variable "argo_app_namespace" {
+  type        = string
+  default     = "default"
+  description = "The namespace where the argocd Application object should be created in."
+}
+
+variable "deployment_name" {
+  type        = string
+  default     = ""
+  description = "Optional. Overrides the name of the deployment. Appends the name onto the end of: k8s-deploy-app|op-$deployment_name"
+}
+
+# Build
+variable "build_tags" {
+  type        = list(string)
+  description = "Tags to append to app builds"
+  default     = []
+}
+
+variable "build_files" {
+  type        = list(string)
+  description = "List of files that will trigger a build."
+  default     = ["main.py", "requirements.txt", "Dockerfile"]
+}
+
+variable "build_ignored_files" {
+  type        = list(string)
+  description = "List of files that will be ignored if they are changed."
+  default     = []
+}
+
+variable "build_repo" {
+  type        = string
+  description = "The repo that holds the code to be deployed."
+  default     = ""
+}
+
+variable "build_branch" {
+  type        = string
+  description = "The branch of the repo to build."
+  default     = "main"
+}
+
+variable "build_instance" {
+  type        = string
+  description = "The GCE backend instance to build from. Valid options are: E2_HIGHCPU_8, E2_HIGHCPU_32, N1_HIGHCPU_8, N1_HIGHCPU_32"
+  default     = ""
+}
+
+variable "build_timeout" {
+  type        = string
+  description = "How long should the build wait before timing out."
+  default     = "600s"
+}
+
+variable "build" {
+  type        = bool
+  description = "Set to false to disable the build step. Useful for helmcharts which do not require a custom image"
+  default     = true
+}
+
+variable "deploy_included_files" {
+  type        = list(string)
+  default     = []
+  description = "List of files which will trigger an ArgoCD Deployment if changed."
 }

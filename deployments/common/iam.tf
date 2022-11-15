@@ -15,6 +15,47 @@ data "google_secret_manager_secret" "slack-webhook-token" {
   project   = var.secret_project_id
 }
 
+data "google_service_account" "terraform" {
+  project    = "moove-systems"
+  account_id = "terraform"
+}
+
+resource "google_project_iam_custom_role" "builder" {
+  project     = var.project_id
+  role_id     = "builder"
+  title       = "Builder"
+  description = "Role with minimum permissions needed for a builder"
+  permissions = [
+    "storage.buckets.create",
+    "logging.logEntries.create",
+    "storage.buckets.get",
+  ]
+}
+
+resource "google_project_iam_member" "builder-iam" {
+  project = var.project_id
+  role    = google_project_iam_custom_role.builder.name
+  member  = "serviceAccount:${google_service_account.builder.email}"
+}
+
+resource "google_project_iam_member" "privileged-builder-iam" {
+  project = var.project_id
+  role    = google_project_iam_custom_role.builder.name
+  member  = "serviceAccount:${google_service_account.privileged-builder.email}"
+}
+
+resource "google_project_iam_member" "builder-registry-iam" {
+  project = var.project_id
+  role    = "roles/artifactregistry.writer"
+  member  = "serviceAccount:${google_service_account.builder.email}"
+}
+
+resource "google_project_iam_member" "privileged-builder-registry-iam" {
+  project = var.project_id
+  role    = "roles/artifactregistry.writer"
+  member  = "serviceAccount:${google_service_account.privileged-builder.email}"
+}
+
 resource "google_secret_manager_secret_iam_member" "privileged-builder-grafana-iam" {
   project   = data.google_secret_manager_secret.grafana-api-key.project
   secret_id = data.google_secret_manager_secret.grafana-api-key.secret_id
@@ -35,3 +76,76 @@ resource "google_secret_manager_secret_iam_member" "privileged-builder-github-to
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.privileged-builder.email}"
 }
+
+resource "google_storage_bucket_iam_member" "privileged-builder-logs-iam" {
+  bucket = google_storage_bucket.build-logs.name
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${google_service_account.privileged-builder.email}"
+}
+
+resource "google_storage_bucket_iam_member" "builder-logs-iam" {
+  bucket = google_storage_bucket.build-logs.name
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${google_service_account.builder.email}"
+}
+
+resource "google_storage_bucket_iam_member" "privileged-builder-cache-iam" {
+  bucket = google_storage_bucket.build-cache.name
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${google_service_account.privileged-builder.email}"
+}
+
+resource "google_storage_bucket_iam_member" "builder-cache-iam" {
+  bucket = google_storage_bucket.build-cache.name
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${google_service_account.builder.email}"
+}
+
+resource "google_storage_bucket_iam_member" "privileged-builder-registry-iam" {
+  bucket = google_container_registry.registry.id
+  role   = "roles/storage.legacyBucketWriter"
+  member = "serviceAccount:${google_service_account.privileged-builder.email}"
+}
+
+resource "google_storage_bucket_iam_member" "builder-registry-iam" {
+  bucket = google_container_registry.registry.id
+  role   = "roles/storage.legacyBucketWriter"
+  member = "serviceAccount:${google_service_account.builder.email}"
+}
+
+resource "google_storage_bucket_iam_member" "privileged-builder-admin-registry-iam" {
+  bucket = google_container_registry.registry.id
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${google_service_account.privileged-builder.email}"
+}
+
+resource "google_storage_bucket_iam_member" "builder-registry-admin-iam" {
+  bucket = google_container_registry.registry.id
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${google_service_account.builder.email}"
+}
+
+resource "google_service_account_iam_member" "builder-act-as" {
+  service_account_id = data.google_service_account.terraform.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.builder.email}"
+}
+
+resource "google_service_account_iam_member" "p-builder-act-as" {
+  service_account_id = data.google_service_account.terraform.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.privileged-builder.email}"
+}
+#
+#resource "google_service_account_iam_member" "builder-act-as-1" {
+#  service_account_id = google_service_account.builder.name
+#  role               = "roles/iam.serviceAccountUser"
+#  member             = "serviceAccount:${data.google_service_account.terraform.email}"
+#}
+#
+#resource "google_service_account_iam_member" "p-builder-act-as-1" {
+#  service_account_id = google_service_account.privileged-builder.name
+#  role               = "roles/iam.serviceAccountUser"
+#  member             = "serviceAccount:${data.google_service_account.terraform.email}"
+#}
+#

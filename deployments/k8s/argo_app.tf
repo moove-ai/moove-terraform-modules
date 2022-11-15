@@ -1,22 +1,27 @@
+locals {
+  app_path = var.ci_cd_name_override == "" ? "${var.gke_cluster}/${var.type}/${var.app_name}" : "${var.gke_cluster}/${var.type}/${var.ci_cd_name_override}"
+}
+
 resource "kubernetes_manifest" "app" {
+  count = var.create_argo_app ? 1 : 0
   manifest = yamldecode(<<-EOT
     apiVersion: argoproj.io/v1alpha1
     kind: Application
     metadata:
-      name: ${var.app_name}
-      namespace: "default"
+      name: ${var.ci_cd_name_override == "" ? var.app_name : var.ci_cd_name_override}
+      namespace: ${var.argo_app_namespace}
       annotations:
-        notifications.argoproj.io/subscribe.on-deployed.grafana: "app|${var.app_name}"
+        notifications.argoproj.io/subscribe.on-deployed.grafana: "${var.type}|${var.app_name}"
       labels:
         app.kubernetes.io/name: ${var.app_name}
         app.kubernetes.io/app: "true"
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
-      project: apps
+      project: default
       revisionHistoryLimit: ${var.revision_history}
       source:
-        path: ${var.gke_cluster}/apps/${var.app_path}
+        path: ${local.app_path}
         directory:
           recurse: true
         repoURL: git@github.com:moove-ai/k8s-git-ops.git
