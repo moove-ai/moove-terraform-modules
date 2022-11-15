@@ -34,7 +34,6 @@ output "subscription" {
   description = "The name of the subscription"
 }
 
-
 output "app_name" {
   value       = var.app_name
   sensitive   = false
