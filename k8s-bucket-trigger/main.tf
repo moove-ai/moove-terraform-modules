@@ -73,18 +73,6 @@ data "google_storage_bucket" "input-bucket" {
   name  = var.input_bucket
 }
 
-resource "google_storage_bucket_iam_member" "input-bucket-iam" {
-  bucket = var.input_bucket
-  role   = "roles/storage.objectViewer"
-  member = "serviceAccount:${google_service_account.service-account.email}"
-}
-
-resource "google_storage_bucket_iam_member" "input-bucket-legacy-iam" {
-  bucket = var.input_bucket
-  role   = "roles/storage.legacyBucketReader"
-  member = "serviceAccount:${google_service_account.service-account.email}"
-}
-
 resource "google_storage_notification" "bucket-notification" {
   count          = var.notification_enabled ? 1 : 0
   bucket         = var.input_bucket
