@@ -27,3 +27,21 @@ output "subscription" {
   sensitive   = false
   description = "The name of the subscription"
 }
+
+output "app_name" {
+  value       = var.app_name
+  sensitive   = false
+  description = "The name of the application"
+}
+
+output "project_id" {
+  value       = var.project_id
+  sensitive   = false
+  description = "The project_id"
+}
+
+output "namespace" {
+  value       = var.namespace
+  sensitive   = false
+  description = "The namespace the app is deployed in"
+}
