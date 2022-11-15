@@ -23,7 +23,7 @@ Written by Alex Merenda for moove.ai
 | <a name="input_org_id"></a> [org\_id](#input\_org\_id) | The org ID to monitor | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The project ID the SA/GKE cluster is in | `string` | n/a | yes |
 | <a name="input_service_account_description"></a> [service\_account\_description](#input\_service\_account\_description) | What is this SA About? | `string` | `"Runs the Bigquery Watcher kubernetes job. Records the sizes of all BQ datasets and saves the historical data."` | no |
-| <a name="input_service_account_id"></a> [service\_account\_id](#input\_service\_account\_id) | The Account ID of the SA to create | `string` | `"bigquery-watcher"` | no |
+| <a name="input_service_account_id"></a> [service\_account\_id](#input\_service\_account\_id) | The Account ID of the SA to create | `string` | `"k8s-bigquery-watcher"` | no |
 | <a name="input_service_account_name"></a> [service\_account\_name](#input\_service\_account\_name) | The SA Display Name | `string` | `"BigQuery Watcher"` | no |
 
 ## Outputs
