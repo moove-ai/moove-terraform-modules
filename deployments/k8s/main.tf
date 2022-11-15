@@ -164,13 +164,15 @@ resource "google_cloudbuild_trigger" "deployment" {
     var.app_name,
   ], var.build_tags)
 
-  included_files = [
-    "releases/${var.type}/${local.ci_cd_name_override}/configs/${var.environment}/**",
-    "releases/${var.type}/${local.ci_cd_name_override}/values/values.yaml",
-    "releases/${var.type}/${local.ci_cd_name_override}/values/${var.environment}.yaml",
-    "releases/${var.type}/${local.ci_cd_name_override}/values/${var.environment}-pilot.yaml",
-    "releases/${var.type}/${local.ci_cd_name_override}/helmfile.yaml",
-  ]
+  included_files = concat([
+    "releases/${var.type}/${var.app_name}/configs/${var.environment}/**",
+    "releases/${var.type}/${var.app_name}/values/values.yaml",
+    "releases/${var.type}/${var.app_name}/values/${var.environment}.yaml",
+    "releases/${var.type}/${var.app_name}/values/${var.environment}-pilot.yaml",
+    "releases/${var.type}/${var.app_name}/helmfile.yaml",
+  ],
+    var.deploy_included_files 
+  )
 
   github {
     owner = "moove-ai"

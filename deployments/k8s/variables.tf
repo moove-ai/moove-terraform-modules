@@ -212,3 +212,8 @@ variable "build" {
   default     = true
 }
 
+variable "deploy_included_files" {
+  type        = list(string)
+  default     = []
+  description = "List of files which will trigger an ArgoCD Deployment if changed."
+}
