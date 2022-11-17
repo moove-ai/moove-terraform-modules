@@ -46,6 +46,7 @@ module "gke" {
   master_authorized_networks       = var.master_authorized_networks
   service_account                  = google_service_account.k8s-nodes.email
   create_service_account           = false
+  cluster_autoscaling              = var.cluster_autoscaling
 }
 
 module "k8s-common" {
