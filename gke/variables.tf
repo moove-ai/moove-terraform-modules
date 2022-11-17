@@ -263,3 +263,9 @@ variable "cluster_autoscaling" {
   }
   description = "Cluster autoscaling configuration. See [more details](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters#clusterautoscaling)"
 }
+
+variable "kubernetes_version" {
+  type = string
+  description = "The version of k8s to deploy"
+  default = "latest"
+}
