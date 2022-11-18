@@ -47,6 +47,7 @@ module "gke" {
   service_account                  = google_service_account.k8s-nodes.email
   create_service_account           = false
   cluster_autoscaling              = var.cluster_autoscaling
+  kubernetes_version               = var.kubernetes_version
 }
 
 module "k8s-common" {
