@@ -25,6 +25,7 @@ resource "google_bigquery_table" "view" {
   labels        = each.value["labels"]
   project       = var.project_id
 
+  deletion_protection = false
   lifecycle {
     prevent_destroy = "false"
   }
