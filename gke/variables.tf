@@ -266,6 +266,6 @@ variable "cluster_autoscaling" {
 
 variable "kubernetes_version" {
   type = string
-  description = "The version of k8s to deploy"
-  default = "latest"
+  description = "The version to install on the gke main node"
+  default = "latest" 
 }
