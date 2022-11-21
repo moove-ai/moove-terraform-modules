@@ -32,8 +32,13 @@ variable "build_service_account" {
   description = "The service account used for build automation"
 }
 
-
 variable "namespace" {
+  type        = string
+  description = "The namespace to deploy this app to"
+  default     = "default"
+}
+
+variable "deployment_namespace" {
   type        = string
   description = "The namespace to deploy this app to"
   default     = "default"
