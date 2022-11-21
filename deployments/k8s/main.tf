@@ -24,6 +24,7 @@ locals {
   deployment_name = var.deployment_name == "" ? "${var.prefix}-${var.region}-${var.type}-${var.app_name}" : "${var.prefix}-${var.region}-${var.type}-${var.deployment_name}"
   default_build_args  = ["-t", "gcr.io/${var.project_id}/${var.app_name}:$COMMIT_SHA", "-t", "gcr.io/${var.project_id}/${var.app_name}:latest", "."]
   build_args          = var.build_args == [] ? concat(["build"], local.default_build_args) : concat(["build"], var.build_args, local.default_build_args)
+  gke_cluster         = var.gke_cluster == "" ? "${var.environment}-${var.region}" : var.gke_cluster
 }
 
 resource "google_cloudbuild_trigger" "build" {
@@ -212,7 +213,7 @@ resource "google_cloudbuild_trigger" "deployment" {
       entrypoint = "bash"
       args = [
         "-c",
-        "rm -fr /workspace/k8s-git-ops/${var.gke_cluster}/${var.type}/${local.ci_cd_name_override}/*",
+        "rm -fr /workspace/k8s-git-ops/${local.gke_cluster}/${var.type}/${local.ci_cd_name_override}/*",
       ]
       secret_env = [
         "GITHUB_TOKEN",
@@ -230,7 +231,7 @@ resource "google_cloudbuild_trigger" "deployment" {
       ]
       args = [
         "-c",
-        "helmfile --environment ${var.environment} --file releases/${var.type}/${local.ci_cd_name_override}/helmfile.yaml template --output-dir-template /workspace/k8s-git-ops/${var.gke_cluster}/${var.type}/${local.ci_cd_name_override}",
+        "helmfile --environment ${var.environment} --file releases/${var.type}/${local.ci_cd_name_override}/helmfile.yaml template --output-dir-template /workspace/k8s-git-ops/${local.gke_cluster}/${var.type}/${local.ci_cd_name_override}",
       ]
       secret_env = [
         "GITHUB_TOKEN",
@@ -244,7 +245,7 @@ resource "google_cloudbuild_trigger" "deployment" {
       entrypoint = "bash"
       args = [
         "-c",
-        "cd /workspace/k8s-git-ops/ && git config user.name moove-devopsbot && git config user.email devopsbot@moove.ai && git pull && git add -A ${var.gke_cluster}/${var.type}/ && git commit -m \"deploys ${local.ci_cd_name_override} to ${var.environment}\" && git push origin main"
+        "cd /workspace/k8s-git-ops/ && git config user.name moove-devopsbot && git config user.email devopsbot@moove.ai && git pull && git add -A ${local.gke_cluster}/${var.type}/ && git commit -m \"deploys ${local.ci_cd_name_override} to ${var.environment}\" && git push origin main"
       ]
     }
   }
