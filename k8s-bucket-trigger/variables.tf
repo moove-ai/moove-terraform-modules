@@ -98,7 +98,12 @@ variable "subscription_name" {
 }
 
 variable "service_account_id" {}
-variable "namespace" {}
+
+variable "namespace" {
+  type = string
+  description = "The namespace to deploy the app to"
+  default = ""
+}
 
 variable "k8s_sa" {
   type        = string
@@ -125,4 +130,10 @@ variable "input_bucket_lifecycle_rules" {
 variable "output_bucket_lifecycle_rules" {
   description = "The lifecycle rules to be applied to the output bucket. If this array is populated then each element in it will be applied as a lifecycle rule to this bucket. The structure of each element is described in detail here: https://www.terraform.io/docs/providers/google/r/storage_bucket.html#lifecycle_rule. See also: https://cloud.google.com/storage/docs/lifecycle#configuration."
   default     = []
+}
+
+variable "create_namespace" {
+  type = bool
+  description = "Creates the namepsace if set to true"
+  default     = true
 }
