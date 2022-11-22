@@ -106,3 +106,10 @@ variable "service_account_name" {
   type    = string
   default = ""
 }
+
+
+variable "image_version" {
+  type = string
+  description = "The version of airflow to deploy"
+  default = "composer-2.0.2-airflow-2.1.4"
+}
