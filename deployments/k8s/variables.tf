@@ -217,3 +217,9 @@ variable "deploy_included_files" {
   default     = []
   description = "List of files which will trigger an ArgoCD Deployment if changed."
 }
+
+variable "build_name" {
+  type        = string
+  default     = ""
+  description = "Overrides the name for the build trigger. Optional."
+}
