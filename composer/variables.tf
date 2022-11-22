@@ -63,6 +63,11 @@ variable "environment_size" {
   description = "The environment size controls the performance parameters of the managed Cloud Composer infrastructure that includes the Airflow database. Values for environment size are: ENVIRONMENT_SIZE_SMALL, ENVIRONMENT_SIZE_MEDIUM, and ENVIRONMENT_SIZE_LARGE."
 }
 
+variable "environment" {
+  type        = string
+  description = "The environment this cluster is running in."  
+}
+
 #variable "cloud_composer_network_ipv4_cidr_block" {
 #  type        = string
 #  description = "The CIDR block from which IP range in tenant project will be reserved."
