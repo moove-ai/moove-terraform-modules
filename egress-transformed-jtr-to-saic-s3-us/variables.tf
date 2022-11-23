@@ -1,4 +1,4 @@
-variable label {
+variable labels {
   type        = map(string)
   default = {
     function = "data-pipelines"
@@ -7,4 +7,14 @@ variable label {
     client = "saic"
   }
   description = "description"
+}
+
+variable "project_id" {
+  type        = string
+  description = "The project to deploy secrets to"
+}
+
+variable "namespace" {
+  type        = string
+  description = "The namespace to install secrets onto"
 }
