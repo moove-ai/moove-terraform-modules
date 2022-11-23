@@ -266,7 +266,7 @@ argocd_values = var.argocd_values != "" ? var.argocd_values : <<-EOT
     name: "k8s-secrets"
   EOT
 
-  external_secrets_pilot_values = var.external_secrets_pilot_values != "" ? var.external_secrets_pilot_values : <<-EOT
+  external_secrets_pilot_values = var.external_secrets_pilot_values == "" ? var.external_secrets_pilot_values : <<-EOT
   pilot:
     secretStores:
       - ${var.project_id}
