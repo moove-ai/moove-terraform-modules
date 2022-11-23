@@ -5,6 +5,7 @@ variable labels {
     pipeline = "join-to-roads"
     component = "egress"
     client = "saic"
+    terraformed = "true"
   }
   description = "description"
 }
@@ -17,4 +18,9 @@ variable "project_id" {
 variable "namespace" {
   type        = string
   description = "The namespace to install secrets onto"
+}
+
+variable "k8s_secrets_email" {
+  type        = string
+  description = "The email of the k8s secrets service account"
 }

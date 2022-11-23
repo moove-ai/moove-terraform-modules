@@ -1,4 +1,4 @@
-resource "kubernetes_manifest" "atlantis-vcs-secrets" {
+resource "kubernetes_manifest" "egress-secrets" {
   manifest = yamldecode(<<-EOT
     apiVersion: external-secrets.io/v1alpha1
     kind: ExternalSecret
