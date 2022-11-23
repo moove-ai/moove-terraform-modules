@@ -41,6 +41,11 @@ resource "google_project_iam_member" "monitoring-viewer-iam" {
   member   = "serviceAccount:${google_service_account.monitor.email}"
 }
 
+resource "google_project_iam_member" "browser-iam" {
+  project  = var.metrics_scope
+  role     = "roles/browser"
+  member   = "serviceAccount:${google_service_account.monitor.email}"
+}
 
 resource "google_service_account_key" "monitor-key" {
   service_account_id = google_service_account.monitor.name
