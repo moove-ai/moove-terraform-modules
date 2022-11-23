@@ -36,6 +36,7 @@ variable "build_args" {
 variable "namespace" {
   type        = string
   description = "The namespace this app should be deployed to"
+  default = ""
 }
 
 variable "tag_path" {
