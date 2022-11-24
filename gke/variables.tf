@@ -269,3 +269,9 @@ variable "kubernetes_version" {
   description = "The version to install on the gke main node"
   default = "latest" 
 }
+
+variable "create_firewall_rules" {
+  type        = bool
+  default     = true
+  description = "Set to false to skip the creation of default firewall rules."
+}

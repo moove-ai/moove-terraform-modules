@@ -67,4 +67,5 @@ module "k8s-common" {
   install_external_secrets       = var.install_external_secrets
   install_external_secrets_pilot = var.install_external_secrets_pilot
   install_keda                   = var.install_keda
+  create_firewall_rules          = var.create_firewall_rules
 }
