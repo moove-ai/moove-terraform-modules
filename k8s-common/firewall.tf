@@ -1,5 +1,5 @@
 module "gke-firewall-rules" {
-  #count = var.create_firewall_rules ? 1 : 0
+  count = var.create_firewall_rules ? 1 : 0
   source                  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
   project_id              = var.cluster_network_project_id
   network                 = var.cluster_network
@@ -98,6 +98,26 @@ module "gke-firewall-rules" {
       ]
       extra_attributes = {}
     }
-    # Needed for Keda 
+    # Redis
+    ingress-redis = {
+      description = "Allows access to redis."
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "10.0.0.0/8"
+      ]
+      sources              = []
+      targets              = ["gke"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "6379",
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
   }
 }
