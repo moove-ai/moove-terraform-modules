@@ -19,9 +19,8 @@ resource "google_service_account" "service-account" {
   project      = var.project_id
   account_id   = var.service_account_id
   display_name = "${title(replace(var.app_name, "-", " "))} (K8s)"
-  description  = "Used for the ${var.app_name} application. Coresponding K8s sa: ${var.k8s_sa} in namespace: ${var.namespace}" 
+  description  = "Used for the ${var.app_name} application. Coresponding K8s sa: ${local.k8s_sa} in namespace: ${local.namespace}" 
 }
-
 
 # Input Bucket
 data "google_storage_project_service_account" "gcs_account" {
@@ -170,3 +169,12 @@ resource "google_storage_bucket" "output-bucket" {
   }
 }
 
+resource "kubernetes_namespace" "namespace" {
+  count = var.create_namespace ? 1 : 0
+  metadata {
+    name = local.namespace
+    labels = {
+      monitoring = "enabled"
+    }
+  }
+}
