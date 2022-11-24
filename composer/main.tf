@@ -29,6 +29,7 @@ module "composer" {
   composer_service_account = var.create_service_account == false ? var.composer_service_account : resource.google_service_account.serviceaccount[0].email
   labels                   = var.labels
   worker                   = var.worker_resources
+  image_version            = var.image_version
   depends_on = [
     google_service_account.serviceaccount,
     google_project_service.composer,
