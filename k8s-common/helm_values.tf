@@ -1,5 +1,5 @@
 locals {
-  argocd_values = <<-EOT
+argocd_values = var.argocd_values != "" ? var.argocd_values : <<-EOT
   dex:
     enabled: false
 
@@ -174,7 +174,7 @@ locals {
           when: app.status.operationState.phase in ['Succeeded']
   EOT
 
-  cert_manager_values = <<-EOT
+  cert_manager_values = var.cert_manager_values != "" ? var.cert_manager_values : <<-EOT
   clusterResourceNamespace: "cert-manager"
   installCRDs: true
   replicaCount: 1
@@ -216,7 +216,17 @@ locals {
       scrapeTimeout: 30s
       labels: {}
   EOT
-  external_dns_values = <<-EOT
+
+  cert_manager_pilot_values = var.cert_manager_pilot_values != "" ? var.cert_manager_pilot_values : <<-EOT
+  pilot:
+  clusterIssuer:
+    staging:
+      enabled: true
+    live:
+      enabled: true
+  EOT
+
+  external_dns_values = var.external_dns_values != "" ? var.external_dns_values : <<-EOT
   clusterDomain: cluster.local
 
   sources:
@@ -248,7 +258,7 @@ locals {
       memory: 256Mi
     EOT
 
-  external_secrets_values = <<-EOT
+  external_secrets_values = var.external_secrets_values != "" ? var.external_secrets_values : <<-EOT
   serviceAccount:
     create: true
     annotations:
@@ -256,23 +266,17 @@ locals {
     name: "k8s-secrets"
   EOT
 
-  external_secrets_pilot_values = <<-EOT
+  external_secrets_pilot_values = var.external_secrets_pilot_values != "" ? var.external_secrets_pilot_values : <<-EOT
   pilot:
     secretStores:
       - ${var.project_id}
       - moove-secrets
   EOT
-  cert_manager_pilot_values     = <<-EOT
-  pilot:
-  clusterIssuer:
-    staging:
-      enabled: true
-    live:
-      enabled: true
+
+  common_resources_values = var.common_resources_values != "" ? var.common_resources_values : <<-EOT
   EOT
-  common_resources_values       = <<-EOT
-  EOT
-  keda_values                   = <<-EOT
+
+  keda_values = var.keda_values != "" ? var.keda_values : <<-EOT
   serviceAccount:
     create: true
     annotations:

@@ -92,3 +92,52 @@ variable "create_firewall_rules" {
   description = "Set to false to disable the creation of firewall rule"
   default = true
 }
+
+
+variable "argocd_values" {
+  type = string
+  description = "Multiline string holding helm values"
+  default = ""
+}
+
+variable "cert_manager_values" {
+  type = string
+  description = "Multiline string holding helm values"
+  default = ""
+}
+
+variable "cert_manager_pilot_values" {
+  type = string
+  description = "Multiline string holding helm values"
+  default = ""
+}
+
+variable "external_dns_values" {
+  type = string
+  description = "Multiline string holding helm values"
+  default = ""
+}
+
+variable "external_secrets_values" {
+  type = string
+  description = "Multiline string holding helm values"
+  default = ""
+}
+
+variable "external_secrets_pilot_values" {
+  type = string
+  description = "Multiline string holding helm values"
+  default = ""
+}
+
+variable "common_resources_values" {
+  type = string
+  description = "Multiline string holding helm values"
+  default = ""
+}
+
+variable "keda_values" {
+  type = string
+  description = "Multiline string holding helm values"
+  default = ""
+}

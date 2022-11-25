@@ -1,5 +1,6 @@
 locals {
   app_path = var.ci_cd_name_override == "" ? "${var.gke_cluster}/${var.type}/${var.app_name}" : "${var.gke_cluster}/${var.type}/${var.ci_cd_name_override}"
+  namespace = var.namespace != "" ? var.namespace : var.environment
 }
 
 resource "kubernetes_manifest" "app" {
@@ -28,7 +29,7 @@ resource "kubernetes_manifest" "app" {
         targetRevision: ${var.target_revision}
       destination:
         server: https://kubernetes.default.svc
-        namespace: ${var.namespace}
+        namespace: ${local.namespace}
       syncPolicy:
         automated:
           prune: ${var.prune}

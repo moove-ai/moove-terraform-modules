@@ -36,6 +36,7 @@ variable "build_args" {
 variable "namespace" {
   type        = string
   description = "The namespace this app should be deployed to"
+  default = ""
 }
 
 variable "tag_path" {
@@ -216,4 +217,10 @@ variable "deploy_included_files" {
   type        = list(string)
   default     = []
   description = "List of files which will trigger an ArgoCD Deployment if changed."
+}
+
+variable "build_name" {
+  type        = string
+  default     = ""
+  description = "Overrides the name for the build trigger. Optional."
 }

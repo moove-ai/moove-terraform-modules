@@ -21,16 +21,18 @@
 
 locals {
   ci_cd_name_override = var.ci_cd_name_override == "" ? var.app_name : var.ci_cd_name_override
-  deployment_name = var.deployment_name == "" ? "${var.prefix}-${var.region}-${var.type}-${var.app_name}" : "${var.prefix}-${var.region}-${var.type}-${var.deployment_name}"
+  deployment_name = var.deployment_name == "" ? "${var.prefix}-${var.type}-${var.region}-${var.app_name}" : "${var.prefix}-${var.type}-${var.region}-${var.deployment_name}"
+  build_name = var.build_name == "" ? "build-k8s-${var.type}-${var.app_name}" : "build-k8s-${var.type}-${var.build_name}"
   default_build_args  = ["-t", "gcr.io/${var.project_id}/${var.app_name}:$COMMIT_SHA", "-t", "gcr.io/${var.project_id}/${var.app_name}:latest", "."]
   build_args          = var.build_args == [] ? concat(["build"], local.default_build_args) : concat(["build"], var.build_args, local.default_build_args)
+  gke_cluster         = var.gke_cluster == "" ? "${var.environment}-${var.region}" : var.gke_cluster
 }
 
 resource "google_cloudbuild_trigger" "build" {
   count           = var.build ? 1 : 0
   provider        = google-beta
   project         = var.project_id
-  name            = "build-k8s-${var.type}-${var.app_name}"
+  name            = local.build_name
   description     = "Builds the ${var.app_name} container and triggers an automated deployment via ArgoCD"
   service_account = "projects/${var.project_id}/serviceAccounts/privileged-builder@${var.project_id}.iam.gserviceaccount.com"
 
@@ -212,7 +214,7 @@ resource "google_cloudbuild_trigger" "deployment" {
       entrypoint = "bash"
       args = [
         "-c",
-        "rm -fr /workspace/k8s-git-ops/${var.gke_cluster}/${var.type}/${local.ci_cd_name_override}/*",
+        "rm -fr /workspace/k8s-git-ops/${local.gke_cluster}/${var.type}/${local.ci_cd_name_override}/*",
       ]
       secret_env = [
         "GITHUB_TOKEN",
@@ -230,7 +232,7 @@ resource "google_cloudbuild_trigger" "deployment" {
       ]
       args = [
         "-c",
-        "helmfile --environment ${var.environment} --file releases/${var.type}/${local.ci_cd_name_override}/helmfile.yaml template --output-dir-template /workspace/k8s-git-ops/${var.gke_cluster}/${var.type}/${local.ci_cd_name_override}",
+        "helmfile --environment ${var.environment} --file releases/${var.type}/${local.ci_cd_name_override}/helmfile.yaml template --output-dir-template /workspace/k8s-git-ops/${local.gke_cluster}/${var.type}/${local.ci_cd_name_override}",
       ]
       secret_env = [
         "GITHUB_TOKEN",
@@ -244,7 +246,7 @@ resource "google_cloudbuild_trigger" "deployment" {
       entrypoint = "bash"
       args = [
         "-c",
-        "cd /workspace/k8s-git-ops/ && git config user.name moove-devopsbot && git config user.email devopsbot@moove.ai && git pull && git add -A ${var.gke_cluster}/${var.type}/ && git commit -m \"deploys ${local.ci_cd_name_override} to ${var.environment}\" && git push origin main"
+        "cd /workspace/k8s-git-ops/ && git config user.name moove-devopsbot && git config user.email devopsbot@moove.ai && git pull && git add -A ${local.gke_cluster}/${var.type}/ && git commit -m \"deploys ${local.ci_cd_name_override} to ${var.environment}\" && git push origin main"
       ]
     }
   }

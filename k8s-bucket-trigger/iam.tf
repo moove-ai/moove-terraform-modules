@@ -18,6 +18,7 @@ resource "google_storage_bucket_iam_member" "output-bucket-iam" {
 }
 
 resource "google_storage_bucket_iam_member" "output-bucket-legacy-iam" {
+  count  = var.enable_output ? 1 : 0
   bucket = var.output_bucket
   role   = "roles/storage.legacyBucketReader"
   member = "serviceAccount:${google_service_account.service-account.email}"

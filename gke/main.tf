@@ -67,4 +67,13 @@ module "k8s-common" {
   install_external_secrets       = var.install_external_secrets
   install_external_secrets_pilot = var.install_external_secrets_pilot
   install_keda                   = var.install_keda
+  create_firewall_rules          = var.create_firewall_rules
+  argocd_values = var.argocd_values
+  cert_manager_values = var.cert_manager_values
+  cert_manager_pilot_values = var.cert_manager_pilot_values
+  external_dns_values = var.external_dns_values
+  external_secrets_values = var.external_secrets_values
+  external_secrets_pilot_values = var.external_secrets_pilot_values
+  common_resources_values = var.common_resources_values
+  keda_values = var.keda_values
 }
