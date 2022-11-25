@@ -18,7 +18,7 @@ data "google_project" "project" {
 }
 
 locals {
-  projects_map           = {for project in data.google_projects.projects.projects[*]: "${project.project_id}" => project.project_id}
+  projects_map           = {for project in data.google_projects.projects.projects[*] : "${project.project_id}" => project.project_id}
 }
 
 resource "google_monitoring_monitored_project" "project" {
