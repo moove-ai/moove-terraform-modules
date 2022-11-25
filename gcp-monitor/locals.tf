@@ -5,6 +5,7 @@ locals {
   apiVersion: 1
   datasources:
     - name: ${var.environment}
+      uid: ${var.environment}
       type: stackdriver
       access: proxy
       jsonData:
@@ -13,7 +14,7 @@ locals {
         authenticationType: jwt
         defaultProject: ${var.metrics_scope}
       secureJsonData:
-        privateKey: 
-          ${indent(10, local.key)}
+        privateKey: |
+          ${indent(8, local.key)}
   EOT
 }
