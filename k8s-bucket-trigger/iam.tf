@@ -20,12 +20,12 @@ resource "google_storage_bucket_iam_member" "output-bucket-iam" {
 resource "google_storage_bucket_iam_member" "output-bucket-legacy-iam" {
   count  = var.enable_output ? 1 : 0
   bucket = var.output_bucket
-  role   = "roles/storage.legacyBucketReader"
+  role   = "roles/storage.legacyObjectOwner"
   member = "serviceAccount:${google_service_account.service-account.email}"
 }
 
 resource "google_service_account_iam_member" "workload-identity" {
-  member             = "serviceAccount:${var.project_id}.svc.id.goog[${local.namespace}/${local.k8s_sa}]"
+  member             = "serviceAccount:${local.cluster_project_id}.svc.id.goog[${local.namespace}/${local.k8s_sa}]"
   role               = "roles/iam.workloadIdentityUser"
   service_account_id = google_service_account.service-account.name
 }
