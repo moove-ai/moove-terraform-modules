@@ -67,8 +67,8 @@ resource "google_service_account_iam_member" "k8s-keda-workload-identity" {
 }
 
 resource "google_project_iam_member" "k8s-keda-monitoring-iam" {
-  count   = var.install_keda ? 1 : 0
-  project = var.project_id
+  for_each = toset(var.keda_monitor_projects)
+  project = each.key
   role    = "roles/monitoring.viewer"
   member  = "serviceAccount:${google_service_account.k8s-keda[0].email}"
 }

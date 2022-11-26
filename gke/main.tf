@@ -76,4 +76,5 @@ module "k8s-common" {
   external_secrets_pilot_values = var.external_secrets_pilot_values
   common_resources_values = var.common_resources_values
   keda_values = var.keda_values
+  keda_monitor_projects = var.keda_monitor_projects
 }
