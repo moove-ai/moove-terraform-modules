@@ -48,6 +48,7 @@ module "gke" {
   create_service_account           = false
   cluster_autoscaling              = var.cluster_autoscaling
   kubernetes_version               = var.kubernetes_version
+  enable_vertical_pod_autoscaling  = var.enable_vertical_pod_autoscaling
 }
 
 module "k8s-common" {

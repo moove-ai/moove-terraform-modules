@@ -328,3 +328,8 @@ variable "keda_monitor_projects" {
   type = list(string)
   description = "List of projects for keda to monitor"
 }
+
+variable "enable_vertical_pod_autoscaling" {
+  type = bool
+  description = "Enables vertical autoscaling on pods"
+}
