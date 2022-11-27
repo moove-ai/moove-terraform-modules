@@ -7,10 +7,23 @@
  * 
  * Written by Alex Merenda for moove.ai
  */
+data "google_projects" "projects" {
+  filter = "parent.id:${var.folder_id}"
+}
+
+
+data "google_project" "project" {
+  count      = length(data.google_projects.projects.projects[*].project_id)
+  project_id = data.google_projects.projects.projects[count.index].project_id
+}
+
+locals {
+  projects_map           = {for project in data.google_projects.projects.projects[*] : "${project.project_id}" => project.project_id}
+}
 
 resource "google_monitoring_monitored_project" "project" {
   provider      = google-beta
-  for_each      = toset(var.monitored_projects)
+  for_each      = local.projects_map
   metrics_scope = var.metrics_scope
   name          = each.key
 }
@@ -22,14 +35,14 @@ resource "google_service_account" "monitor" {
 }
 
 resource "google_project_iam_member" "scopes-iam" {
-  for_each = toset(var.monitored_projects)
+  for_each      = local.projects_map
   project  = each.key
   role     = "roles/monitoring.metricsScopesViewer"
   member   = "serviceAccount:${google_service_account.monitor.email}"
 }
 
 resource "google_project_iam_member" "viewer-iam" {
-  for_each = toset(var.monitored_projects)
+  for_each      = local.projects_map
   project  = each.key
   role     = "roles/monitoring.viewer"
   member   = "serviceAccount:${google_service_account.monitor.email}"
