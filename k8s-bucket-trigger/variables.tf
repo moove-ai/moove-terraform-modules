@@ -137,3 +137,9 @@ variable "create_namespace" {
   description = "Creates the namepsace if set to true"
   default     = true
 }
+
+variable "cluster_project_id" {
+  type = string
+  description = "The project ID the cluster is running in, only use if different than project id"
+  default = ""
+}

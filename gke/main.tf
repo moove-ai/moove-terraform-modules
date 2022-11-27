@@ -48,6 +48,7 @@ module "gke" {
   create_service_account           = false
   cluster_autoscaling              = var.cluster_autoscaling
   kubernetes_version               = var.kubernetes_version
+  enable_vertical_pod_autoscaling  = var.enable_vertical_pod_autoscaling
 }
 
 module "k8s-common" {
@@ -76,4 +77,5 @@ module "k8s-common" {
   external_secrets_pilot_values = var.external_secrets_pilot_values
   common_resources_values = var.common_resources_values
   keda_values = var.keda_values
+  keda_monitor_projects = var.keda_monitor_projects
 }

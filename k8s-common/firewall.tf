@@ -36,6 +36,26 @@ module "gke-firewall-rules" {
       ]
       extra_attributes = {}
     }
+    ingress-gke-internal = { # needed for Keda
+      description = "Allows access to gke internally."
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "10.0.0.0/8",
+      ]
+      sources              = ["gke"]
+      targets              = ["gke"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "443",
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
     ingress-allow-http-https-argocd = {
       description = "Allows http and https ingress to GKE nodes"
       direction   = "INGRESS"
