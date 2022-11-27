@@ -93,7 +93,6 @@ variable "create_firewall_rules" {
   default = true
 }
 
-
 variable "argocd_values" {
   type = string
   description = "Multiline string holding helm values"
@@ -146,3 +145,4 @@ variable "keda_monitor_projects" {
   type = list(string)
   description = "List of projects for keda to monitor"
 }
+

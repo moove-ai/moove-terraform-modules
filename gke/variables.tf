@@ -333,3 +333,4 @@ variable "enable_vertical_pod_autoscaling" {
   type = bool
   description = "Enables vertical autoscaling on pods"
 }
+
