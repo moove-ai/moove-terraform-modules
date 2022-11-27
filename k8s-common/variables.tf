@@ -93,7 +93,6 @@ variable "create_firewall_rules" {
   default = true
 }
 
-
 variable "argocd_values" {
   type = string
   description = "Multiline string holding helm values"
