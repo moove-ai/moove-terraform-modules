@@ -3,7 +3,7 @@ resource "kubernetes_manifest" "egress-secrets" {
     apiVersion: external-secrets.io/v1alpha1
     kind: ExternalSecret
     metadata:
-      name: backfill-egress-transformed-jtr-to-saic-s3-us-secrets
+      name: ${var.k8s_secret_name}
       namespace: ${var.namespace}
       labels:
         function: data-pipelines

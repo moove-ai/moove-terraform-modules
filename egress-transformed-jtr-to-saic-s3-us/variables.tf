@@ -53,3 +53,10 @@ variable "gcp_access_secret_key_name" {
   default     = "egress-transformed-jtr-to-saic-s3-us_gcp_secret_access_key"
   description = "The name of the secret"
 }
+
+variable "k8s_secret_name" {
+  type        = string
+  default     = "egress-transformed-jtr-to-saic-s3-us-secrets"
+  description = "The name of the k8s secret"
+}
+
