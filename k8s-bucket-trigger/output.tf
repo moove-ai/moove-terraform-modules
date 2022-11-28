@@ -51,3 +51,9 @@ output "namespace" {
   sensitive   = false
   description = "The namespace the app is deployed in"
 }
+
+output "service_account" {
+  value = google_service_account.service-account.email
+  sensitive   = false
+  description = "The email for the service account created"
+}

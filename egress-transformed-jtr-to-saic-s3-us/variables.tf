@@ -24,3 +24,8 @@ variable "k8s_secrets_email" {
   type        = string
   description = "The email of the k8s secrets service account"
 }
+
+variable "gcp_service_account" {
+  type = string
+  description = "The service account being used to copy GCP data"
+}
