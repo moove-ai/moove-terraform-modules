@@ -14,7 +14,7 @@ resource "kubernetes_manifest" "egress-secrets" {
         kind: ClusterSecretStore
         name: ${var.project_id}
       target:
-        name: backfill-egress-transformed-jtr-to-saic-s3-us-secrets
+        name: ${var.k8s_secret_name}
         creationPolicy: Owner
       data:
       - secretKey: aws_access_key
