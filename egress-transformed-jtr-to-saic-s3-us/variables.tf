@@ -29,3 +29,27 @@ variable "gcp_service_account" {
   type = string
   description = "The service account being used to copy GCP data"
 }
+
+variable "aws_access_key_name" {
+  type        = string
+  default     = "egress-transformed-jtr-to-saic-s3-us_aws_access_key"
+  description = "The name of the secret"
+}
+
+variable "aws_access_secret_key_name" {
+  type        = string
+  default     = "egress-transformed-jtr-to-saic-s3-us_aws_secret_access_key"
+  description = "The name of the secret"
+}
+
+variable "gcp_access_key_name" {
+  type        = string
+  default     = "egress-transformed-jtr-to-saic-s3-us_gcp_access_key"
+  description = "The name of the secret"
+}
+
+variable "gcp_access_secret_key_name" {
+  type        = string
+  default     = "egress-transformed-jtr-to-saic-s3-us_gcp_secret_access_key"
+  description = "The name of the secret"
+}

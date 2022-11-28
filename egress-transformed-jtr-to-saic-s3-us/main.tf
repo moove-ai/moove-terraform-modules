@@ -1,6 +1,6 @@
 resource "google_secret_manager_secret" "aws-access-key" {
   project = var.project_id
-  secret_id = "egress-transformed-jtr-to-saic-s3-us_aws_access_key"
+  secret_id = var.aws_access_key_name
   labels = var.labels
 
   replication {
@@ -10,7 +10,7 @@ resource "google_secret_manager_secret" "aws-access-key" {
 
 resource "google_secret_manager_secret" "aws-secret-access-key" {
   project = var.project_id
-  secret_id = "egress-transformed-jtr-to-saic-s3-us_aws_secret_access_key"
+  secret_id = var.aws_access_secret_key_name
   labels = var.labels
 
   replication {
@@ -20,7 +20,7 @@ resource "google_secret_manager_secret" "aws-secret-access-key" {
 
 resource "google_secret_manager_secret" "gcp-access-key" {
   project = var.project_id
-  secret_id = "egress-transformed-jtr-to-saic-s3-us_gcp_access_key"
+  secret_id = var.gcp_access_key_name
   labels = var.labels
 
   replication {
@@ -30,7 +30,7 @@ resource "google_secret_manager_secret" "gcp-access-key" {
 
 resource "google_secret_manager_secret" "gcp-secret-access-key" {
   project = var.project_id
-  secret_id = "egress-transformed-jtr-to-saic-s3-us_gcp_secret_access_key"
+  secret_id = var.gcp_access_secret_key_name
   labels = var.labels
 
   replication {
