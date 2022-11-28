@@ -40,5 +40,5 @@ resource "google_secret_manager_secret" "gcp-secret-access-key" {
 
 resource "google_storage_hmac_key" "gcp-key" {
   project = var.project_id
-  service_account_email = var.service_account
+  service_account_email = var.gcp_service_account
 }
