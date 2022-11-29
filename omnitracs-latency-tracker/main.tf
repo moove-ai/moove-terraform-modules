@@ -2,7 +2,6 @@ data "google_storage_bucket" "bucket" {
     name = var.bucket
 }
 
-
 resource "google_service_account" "service-account" {
   project      = var.project_id
   account_id   = var.service_account
