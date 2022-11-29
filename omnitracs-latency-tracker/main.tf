@@ -10,7 +10,7 @@ resource "google_service_account" "service-account" {
 }
 
 resource "google_service_account_iam_member" "workload-identity" {
-  member             = "serviceAccount:${local.cluster_project_id}.svc.id.goog[${var.namespace}/${var.k8s_sa}]"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[${var.namespace}/${var.k8s_sa}]"
   role               = "roles/iam.workloadIdentityUser"
   service_account_id = google_service_account.service-account.name
 }
