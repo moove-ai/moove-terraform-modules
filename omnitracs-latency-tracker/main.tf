@@ -22,7 +22,7 @@ resource "google_project_iam_member" "moove-systems-bq-job-user" {
 }
 
 resource "google_storage_bucket_iam_member" "bucket-member" {
-  bucket = google_storage_bucket.bucket.name
+  bucket = data.google_storage_bucket.bucket.name
   role = "roles/storage.objectViewer"
   member  = "serviceAccount:${google_service_account.service-account.email}"
 }
