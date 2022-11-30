@@ -1,6 +1,16 @@
+variable environment {
+  type        = string
+  description = "The environment Jupyter is running in"
+}
+
 variable project_id {
   type        = string
   description = "The project to deploy this modules resources onto"
+}
+
+variable folder_id {
+  type        = string
+  description = "The folder the environment is running in"
 }
 
 variable service_account_id {
@@ -24,4 +34,20 @@ variable k8s_sa_name {
   type        = string
   default     = "jupyter"
   description = "The name of the k8s service account running jupyter"
+}
+
+variable jupyter_domain {
+  type        = string
+  description = "The domain Jupyter is running in. moove.co.in"
+}
+
+variable jupyter_url {
+  type        = string
+  description = "The complete URL for jupyter. dev.jupyter.moove.co.in"
+}
+
+variable billing_account {
+  type        = string
+  default     = "01C68D-9DA6E5-136FB8"
+  description = "The billing account used for this service"
 }
