@@ -32,7 +32,6 @@ resource "google_iap_brand" "project_brand" {
 }
 
 resource "google_iap_client" "project_client" {
-  project = var.project_id
   display_name = "Jupyter"
   brand        =  google_iap_brand.project_brand.name
 }
