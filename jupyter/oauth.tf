@@ -1,6 +1,12 @@
+resource "random_string" "suffix" {
+  length  = "4"
+  special = false
+  upper   = false
+}
+
 resource "google_project" "project" {
   name = "moove-jupyter-${var.environment}-oauth"
-  project_id = "moove-jupyter-${var.environment}-oauth"
+  project_id = "moove-jupyter-${var.environment}-oauth-${random_string.suffix.result}"
   folder_id = var.folder_id
   billing_account = var.billing_account
   auto_create_network = false
