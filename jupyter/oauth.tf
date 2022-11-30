@@ -71,7 +71,4 @@ module "group" {
   owners       = ["terraform@moove-systems.iam.gserviceaccount.com"]
   managers     = [""]
   members      = [""]
-  depends_on = [
-    google_project_service.systems-cloud-ident,
-    ]
 }
