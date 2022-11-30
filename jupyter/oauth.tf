@@ -33,12 +33,16 @@ resource "google_iap_brand" "project_brand" {
   project           = google_project_service.project_service.project
   depends_on = [
     module.group,
+    google_project_service.systems-cloud-ident,
     ]
 }
 
 resource "google_iap_client" "project_client" {
   display_name = "Jupyter"
   brand        =  google_iap_brand.project_brand.name
+  depends_on = [
+    google_project_service.systems-cloud-ident,
+    ]
 }
 
 resource "google_secret_manager_secret" "hub-config" {
@@ -67,4 +71,7 @@ module "group" {
   owners       = ["terraform@moove-systems.iam.gserviceaccount.com"]
   managers     = [""]
   members      = [""]
+  depends_on = [
+    google_project_service.systems-cloud-ident,
+    ]
 }
