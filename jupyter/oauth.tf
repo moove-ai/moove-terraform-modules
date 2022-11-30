@@ -11,6 +11,11 @@ resource "google_project_service" "project_service" {
   service = "iap.googleapis.com"
 }
 
+resource "google_project_service" "cloud-ident" {
+  project = google_project.project.project_id
+  service = "cloudidentity.googleapis.com"
+}
+
 resource "google_iap_brand" "project_brand" {
   support_email     = var.support_email
   application_title = "Jupyter IAP"
