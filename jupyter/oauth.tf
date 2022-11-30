@@ -17,7 +17,7 @@ resource "google_project_service" "cloud-ident" {
 }
 
 resource "google_iap_brand" "project_brand" {
-  support_email     = "jupyter-${var.environment}-oauth@moove.ai"
+  support_email     = "jupyter-${var.environment}@moove.ai"
   application_title = "Jupyter IAP"
   project           = google_project_service.project_service.project
 }
@@ -39,17 +39,4 @@ resource "google_secret_manager_secret" "hub-config" {
 resource "google_secret_manager_secret_version" "hub-config" {
   secret = google_secret_manager_secret.hub-config.id
   secret_data = local.hub_config
-}
-
-resource "google_cloud_identity_group" "cloud_identity_group_basic" {
-  display_name         = "jupyter-${var.environment}"
-  initial_group_config = "WITH_INITIAL_OWNER"
-
-  parent = ""
-
-  group_key {
-      id = "jupyter-${var.environment}-oauth@moove.ai"
-  }
-
- depends_on = [google_project_service.cloud_ident]
 }
