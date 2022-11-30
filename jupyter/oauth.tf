@@ -17,7 +17,7 @@ resource "google_project_service" "cloud-ident" {
 }
 
 resource "google_iap_brand" "project_brand" {
-  support_email     = var.support_email
+  support_email     = "jupyter-${var.environment}-oauth@moove.ai"
   application_title = "Jupyter IAP"
   project           = google_project_service.project_service.project
 }
@@ -48,7 +48,7 @@ resource "google_cloud_identity_group" "cloud_identity_group_basic" {
   parent = ""
 
   group_key {
-      id = "my-identity-group@example.com"
+      id = "jupyter-${var.environment}-oauth@moove.ai"
   }
 
   labels = {
