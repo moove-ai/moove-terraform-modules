@@ -23,9 +23,12 @@ resource "google_project_service" "cloud-ident" {
 }
 
 resource "google_iap_brand" "project_brand" {
-  support_email     = "jupyter-${var.environment}@moove.ai"
+  support_email     = "jupyter-oauth-${var.environment}@moove.ai"
   application_title = "Jupyter IAP"
   project           = google_project_service.project_service.project
+  depends_on = [
+    module.group,
+    ]
 }
 
 resource "google_iap_client" "project_client" {
@@ -45,4 +48,18 @@ resource "google_secret_manager_secret" "hub-config" {
 resource "google_secret_manager_secret_version" "hub-config" {
   secret = google_secret_manager_secret.hub-config.id
   secret_data = local.hub_config
+}
+
+
+module "group" {
+  source  = "terraform-google-modules/group/google"
+  version = "~> 0.1"
+
+  id           = "jupyter-${var.environment}-oauth@moove.ai"
+  display_name = "Jupyter ${var.environment} OAUTH"
+  description  = "OAUTH for Jupyter"
+  domain       = "moove.ai"
+  owners       = ["terraform@moove-systems.iam.gserviceaccount.com"]
+  managers     = [""]
+  members      = [""]
 }
