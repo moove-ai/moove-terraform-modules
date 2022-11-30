@@ -12,6 +12,7 @@ resource "google_project_service" "project_service" {
 }
 
 resource "google_iap_brand" "project_brand" {
+  org_internal_only = true
   support_email     = var.support_email
   application_title = "Jupyter IAP"
   project           = google_project_service.project_service.project
@@ -34,4 +35,19 @@ resource "google_secret_manager_secret" "hub-config" {
 resource "google_secret_manager_secret_version" "hub-config" {
   secret = google_secret_manager_secret.hub-config.id
   secret_data = local.hub_config
+}
+
+resource "google_cloud_identity_group" "cloud_identity_group_basic" {
+  display_name         = "jupyter-${var.environment}"
+  initial_group_config = "WITH_INITIAL_OWNER"
+
+  parent = ""
+
+  group_key {
+      id = "my-identity-group@example.com"
+  }
+
+  labels = {
+    "cloudidentity.googleapis.com/groups.discussion_forum" = ""
+  }
 }
