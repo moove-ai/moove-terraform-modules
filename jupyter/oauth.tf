@@ -12,7 +12,7 @@ resource "google_project_service" "project_service" {
 }
 
 resource "google_iap_brand" "project_brand" {
-  support_email     = "systems@moove.ai"
+  support_email     = var.support_email
   application_title = "Jupyter IAP"
   project           = google_project_service.project_service.project
 }
