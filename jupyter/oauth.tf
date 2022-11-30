@@ -1,7 +1,7 @@
 resource "google_project" "project" {
   name = "moove-jupyter-${var.environment}-oauth"
   project_id = "moove-jupyter-${var.environment}-oauth"
-  folder_id var.folder_id
+  folder_id = var.folder_id
   billing_account = var.billing_account
   auto_create_network = false
 }
