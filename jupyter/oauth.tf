@@ -51,7 +51,5 @@ resource "google_cloud_identity_group" "cloud_identity_group_basic" {
       id = "jupyter-${var.environment}-oauth@moove.ai"
   }
 
-  labels = {
-    "cloudidentity.googleapis.com/groups.discussion_forum" = ""
-  }
+ depends_on = [google_project_service.cloud_ident]
 }
