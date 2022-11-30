@@ -23,7 +23,7 @@ resource "google_project_service" "cloud-ident" {
 }
 
 resource "google_iap_brand" "project_brand" {
-  support_email     = "jupyter-oauth-${var.environment}@moove.ai"
+  support_email     = "jupyter-${var.environment}-oauth@moove.ai"
   application_title = "Jupyter IAP"
   project           = google_project_service.project_service.project
   depends_on = [
