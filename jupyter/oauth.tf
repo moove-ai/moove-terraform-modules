@@ -32,6 +32,7 @@ resource "google_iap_brand" "project_brand" {
 }
 
 resource "google_iap_client" "project_client" {
+  project = var.project_id
   display_name = "Jupyter"
   brand        =  google_iap_brand.project_brand.name
 }
@@ -55,7 +56,6 @@ module "group" {
   source  = "terraform-google-modules/group/google"
   version = "~> 0.1"
 
-  project      = var.project_id
   id           = "jupyter-${var.environment}-oauth@moove.ai"
   display_name = "Jupyter ${var.environment} OAUTH"
   description  = "OAUTH for Jupyter"
