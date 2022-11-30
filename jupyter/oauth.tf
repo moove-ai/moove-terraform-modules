@@ -33,7 +33,6 @@ resource "google_iap_brand" "project_brand" {
   project           = google_project_service.project_service.project
   depends_on = [
     module.group,
-    google_project_service.systems-cloud-ident,
     ]
 }
 
