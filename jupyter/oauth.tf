@@ -40,7 +40,6 @@ resource "google_iap_client" "project_client" {
   display_name = "Jupyter"
   brand        =  google_iap_brand.project_brand.name
   depends_on = [
-    google_project_service.systems-cloud-ident,
     ]
 }
 
