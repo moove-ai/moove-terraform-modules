@@ -55,7 +55,7 @@ module "group" {
   source  = "terraform-google-modules/group/google"
   version = "~> 0.1"
 
-  project_id   = var.project_id
+  project      = var.project_id
   id           = "jupyter-${var.environment}-oauth@moove.ai"
   display_name = "Jupyter ${var.environment} OAUTH"
   description  = "OAUTH for Jupyter"
