@@ -22,13 +22,13 @@ resource "google_project_service" "cloud-ident" {
   service = "cloudidentity.googleapis.com"
 }
 
-resource "google_project_service" "systems-cloud-ident" {
-  project = "moove-systems"
-  service = "cloudidentity.googleapis.com"
-}
+#resource "google_project_service" "systems-cloud-ident" {
+#  project = "moove-systems"
+#  service = "cloudidentity.googleapis.com"
+#}
 
 resource "google_iap_brand" "project_brand" {
-  support_email     = "jupyter-${var.environment}-oauth@moove.ai"
+  support_email     = "jupyter-${var.environment}@moove.ai"
   application_title = "Jupyter IAP"
   project           = google_project_service.project_service.project
   depends_on = [
@@ -64,7 +64,7 @@ module "group" {
   source  = "terraform-google-modules/group/google"
   version = "~> 0.1"
 
-  id           = "jupyter-${var.environment}-oauth@moove.ai"
+  id           = "jupyter-${var.environment}@moove.ai"
   display_name = "Jupyter ${var.environment} OAUTH"
   description  = "OAUTH for Jupyter"
   domain       = "moove.ai"
