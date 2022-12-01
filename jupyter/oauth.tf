@@ -22,10 +22,10 @@ resource "google_project_service" "cloud-ident" {
   service = "cloudidentity.googleapis.com"
 }
 
-#resource "google_project_service" "systems-cloud-ident" {
-#  project = "moove-systems"
-#  service = "cloudidentity.googleapis.com"
-#}
+resource "google_project_service" "systems-cloud-ident" {
+  project = "moove-systems"
+  service = "cloudidentity.googleapis.com"
+}
 
 resource "google_iap_brand" "project_brand" {
   support_email     = "jupyter-${var.environment}@moove.ai"
