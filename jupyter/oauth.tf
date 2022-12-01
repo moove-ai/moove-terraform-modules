@@ -30,8 +30,3 @@ resource "google_secret_manager_secret" "hub-config" {
     automatic = true
   }
 }
-
-resource "google_secret_manager_secret_version" "hub-config" {
-  secret = google_secret_manager_secret.hub-config.id
-  secret_data = local.hub_config
-}
