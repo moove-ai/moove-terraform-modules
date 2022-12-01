@@ -1,4 +1,4 @@
-resource "kubernetes_manifest" "atlantis-vcs-secrets" {
+resource "kubernetes_manifest" "hub-config" {
   manifest = yamldecode(<<-EOT
     apiVersion: external-secrets.io/v1alpha1
     kind: ExternalSecret
@@ -20,6 +20,21 @@ resource "kubernetes_manifest" "atlantis-vcs-secrets" {
       - secretKey: values.yaml
         remoteRef:
           key: ${google_secret_manager_secret.hub-config.secret_id}
+  EOT
+  )
+}
+
+resource "kubernetes_manifest" "frontend-config" {
+  manifest = yamldecode(<<-EOT
+    apiVersion: networking.gke.io/v1beta1
+    kind: FrontendConfig
+    metadata:
+      name: jupyter-https
+      namespace: ${var.namespace}
+    spec:
+      redirectToHttps:
+        enabled: true
+        responseCodeName: MOVED_PERMANENTLY_DEFAULT
   EOT
   )
 }
