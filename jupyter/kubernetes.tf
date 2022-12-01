@@ -19,7 +19,7 @@ resource "kubernetes_manifest" "atlantis-vcs-secrets" {
       data:
       - secretKey: values.yaml
         remoteRef:
-          key: ${google_secret_manager_secret.hub-config.name}
+          key: ${google_secret_manager_secret.hub-config.secret_id}
   EOT
   )
 }
