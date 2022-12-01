@@ -60,7 +60,7 @@ resource "kubernetes_manifest" "google-maps-api-key" {
       data:
       - secretKey: gkey
         remoteRef:
-          key: ${google_secret_manager_secret.hub-config.secret_id}
+          key: ${google_secret_manager_secret.googlemaps-api-key.secret_id}
   EOT
   )
 }
