@@ -67,6 +67,6 @@ module "group" {
   description  = "OAUTH for Jupyter"
   domain       = "moove.ai"
   owners       = ["terraform@moove-systems.iam.gserviceaccount.com"]
-  managers     = ["terraform@moove-systems.iam.gserviceaccount.com"]
-  members      = ["terraform@moove-systems.iam.gserviceaccount.com"]
+  managers     = ["alex@moove.ai"]
+  members      = ["justin@moove.ai"]
 }
