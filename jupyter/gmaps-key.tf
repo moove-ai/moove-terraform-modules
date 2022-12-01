@@ -14,7 +14,7 @@ resource "google_secret_manager_secret" "googlemaps-api-key" {
 
 resource "null_resource" "geocode" {
   provisioner "local-exec" {
-    command = "chmod +x ./get-gmaps-key.sh && sh ./get-gmaps-key.sh"
+    command = "chmod +x ${path.module}/get-gmaps-key.sh && sh ${path.module}/get-gmaps-key.sh"
     environment = {
       SERVICE_API = "geocoding-backend.googleapis.com"
       KEY_NAME = "gkey"
