@@ -22,27 +22,6 @@ resource "google_project_service" "cloud-ident" {
   service = "cloudidentity.googleapis.com"
 }
 
-resource "google_project_service" "systems-cloud-ident" {
-  project = "moove-systems"
-  service = "cloudidentity.googleapis.com"
-}
-
-resource "google_iap_brand" "project_brand" {
-  support_email     = "jupyter-${var.environment}@moove.ai"
-  application_title = "Jupyter IAP"
-  project           = google_project_service.project_service.project
-  depends_on = [
-    module.group,
-    ]
-}
-
-resource "google_iap_client" "project_client" {
-  display_name = "Jupyter"
-  brand        =  google_iap_brand.project_brand.name
-  depends_on = [
-    ]
-}
-
 resource "google_secret_manager_secret" "hub-config" {
   project = var.project_id
   secret_id = "jupyter-hub_config"
@@ -55,18 +34,4 @@ resource "google_secret_manager_secret" "hub-config" {
 resource "google_secret_manager_secret_version" "hub-config" {
   secret = google_secret_manager_secret.hub-config.id
   secret_data = local.hub_config
-}
-
-
-module "group" {
-  source  = "terraform-google-modules/group/google"
-  version = "~> 0.1"
-
-  id           = "jupyter-${var.environment}@moove.ai"
-  display_name = "Jupyter ${var.environment} OAUTH"
-  description  = "OAUTH for Jupyter"
-  domain       = "moove.ai"
-  owners       = ["terraform@moove-systems.iam.gserviceaccount.com"]
-  managers     = ["alex@moove.ai"]
-  members      = ["justin@moove.ai"]
 }
