@@ -19,8 +19,10 @@ resource "null_resource" "geocode" {
       SERVICE_API = "geocoding-backend.googleapis.com"
       KEY_NAME = "gkey"
       SECRET_NAME = google_secret_manager_secret.googlemaps-api-key.secret_id
+      PROJECT_ID = var.project_id
     }
   }
+
   depends_on = [
     google_secret_manager_secret.googlemaps-api-key,
     google_project_service.geocoding
