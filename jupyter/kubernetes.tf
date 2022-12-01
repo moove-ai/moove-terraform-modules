@@ -6,7 +6,7 @@ resource "kubernetes_manifest" "hub-config" {
       name: hub-config
       namespace: ${var.namespace}
       labels:
-        app: atlantis
+        app: jupyterhub
         source: gcpsm
     spec:
       refreshInterval: 12h
@@ -35,6 +35,32 @@ resource "kubernetes_manifest" "frontend-config" {
       redirectToHttps:
         enabled: true
         responseCodeName: MOVED_PERMANENTLY_DEFAULT
+  EOT
+  )
+}
+
+resource "kubernetes_manifest" "google-maps-api-key" {
+  manifest = yamldecode(<<-EOT
+    apiVersion: external-secrets.io/v1alpha1
+    kind: ExternalSecret
+    metadata:
+      name: googlemaps-api-key
+      namespace: ${var.namespace}
+      labels:
+        app: jupyterhub
+        source: gcpsm
+    spec:
+      refreshInterval: 12h
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: ${var.project_id}
+      target:
+        name: googlemaps-api-key
+        creationPolicy: Owner
+      data:
+      - secretKey: gkey
+        remoteRef:
+          key: ${google_secret_manager_secret.hub-config.secret_id}
   EOT
   )
 }
