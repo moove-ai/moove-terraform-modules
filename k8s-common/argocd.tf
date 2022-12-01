@@ -10,7 +10,7 @@ data "google_secret_manager_secret_version" "argo-cd_git-type" {
 
 data "google_secret_manager_secret_version" "slack-token" {
   project = "moove-secrets"
-  secret  = "argocd_slack-token"
+  secret  = "argo-cd_slack-token"
 }
 
 data "google_secret_manager_secret_version" "grafana-api-key" {
@@ -43,7 +43,7 @@ resource "kubernetes_secret" "argocd-secrets" {
 
 resource "kubernetes_secret" "argocd-notifications-secret" {
   metadata {
-    name      = "k8s-git-ops-repo"
+    name      = local.notification_secret
     namespace = "default"
     labels = {
       "app"                            = "argocd"
@@ -167,3 +167,4 @@ locals {
       name: "argocd-notifications-cm"
   EOT
 }
+`4

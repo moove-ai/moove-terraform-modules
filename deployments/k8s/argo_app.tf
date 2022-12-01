@@ -13,6 +13,7 @@ resource "kubernetes_manifest" "app" {
       namespace: ${var.argo_app_namespace}
       annotations:
         notifications.argoproj.io/subscribe.on-deployed.grafana: "${var.type}|${var.app_name}"
+        notifications.argoproj.io/subscribe.on-sync-succeeded.slack: ${var.slack_channel}
       labels:
         app.kubernetes.io/name: ${var.app_name}
         app.kubernetes.io/app: "true"
