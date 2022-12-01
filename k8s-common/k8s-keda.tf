@@ -15,7 +15,7 @@ resource "google_service_account_iam_member" "k8s-keda-workload-identity" {
 
 resource "google_project_iam_member" "k8s-keda-monitoring-iam" {
   for_each = toset(var.keda_monitor_projects)
-  project = each.key
-  role    = "roles/monitoring.viewer"
-  member  = "serviceAccount:${google_service_account.k8s-keda[0].email}"
+  project  = each.key
+  role     = "roles/monitoring.viewer"
+  member   = "serviceAccount:${google_service_account.k8s-keda[0].email}"
 }

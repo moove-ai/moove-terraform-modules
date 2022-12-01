@@ -53,8 +53,8 @@ resource "kubernetes_secret" "argocd-notifications-secret" {
 
   type = "Opaque"
   data = {
-    "slack-token" = data.google_secret_manager_secret_version.slack-token.secret_data
-    "grafana-api-key"          = data.google_secret_manager_secret_version.grafa.secret_data
+    "slack-token"     = data.google_secret_manager_secret_version.slack-token.secret_data
+    "grafana-api-key" = data.google_secret_manager_secret_version.grafana-api-key.secret_data
   }
 
   depends_on = [
@@ -74,10 +74,10 @@ resource "helm_release" "argo-cd" {
 }
 
 locals {
-  grafana_api_key = "grafana-api-key"
-  slack_token = "slack-token"
+  grafana_api_key     = "grafana-api-key"
+  slack_token         = "slack-token"
   notification_secret = "argocd-notifications-secret"
-  argocd_values = var.argocd_values != "" ? var.argocd_values : <<-EOT
+  argocd_values       = var.argocd_values != "" ? var.argocd_values : <<-EOT
   dex:
     enabled: false
 
