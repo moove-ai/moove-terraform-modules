@@ -22,7 +22,7 @@ resource "null_resource" "geocode" {
     }
   }
   depends_on = [
-    google_secret_manager_secret.google_maps_api_key,
+    google_secret_manager_secret.googlemaps-api-key,
     google_project_service.geocoding
   ]
 }
