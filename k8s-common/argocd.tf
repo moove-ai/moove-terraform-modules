@@ -163,34 +163,50 @@ locals {
       service.slack: |
         token: $slack-token
 
-    subscriptions:
-      - recipients:
-        - slack:devops-bot-test
-        triggers:
-        - on-deployed
-
     templates:
       template.slack-success: |
         message: |
-          :white_check_mark: {{.app.metadata.name}} deployed in ${var.environment}.
+          Deployment Success!
         slack:
           attachments: |
-            [{
-              "title": "{{.app.metadata.name}}",
-              "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
-              "color": "#18be52",
-              "fields": [{
-                "title": "Sync Status",
-                "value": "{{.app.status.sync.status}}",
-                "short": true
-              }, {
-                "title": "Repository",
-                "value": "{{.app.spec.source.repoURL}}",
-                "short": true
-              }]
-            }]
-          groupingKey: "{{.app.status.sync.revision}}"
-          notifyBroadcast: true
+            {
+            	"blocks": [
+            		{
+            			"type": "header",
+            			"text": {
+            				"type": "plain_text",
+            				"text": ":white_check_mark: {{.app.metadata.name}} Deployed in ${var.environment}",
+            				"emoji": true
+            			}
+            		},
+            		{
+            			"type": "section",
+            			"fields": [
+            				{
+            					"type": "mrkdwn",
+            					"text": "*App:*\n {{.app.metadata.name}}"
+            				},
+            				{
+            					"type": "mrkdwn",
+            					"text": "*ArgoCD URL:*\n<{{.context.argocdUrl}}/applications/{{.app.metadata.name}}|{{.app.metadata.name}}>"
+            				}
+            			]
+            		},
+            		{
+            			"type": "section",
+            			"fields": [
+            				{
+            					"type": "mrkdwn",
+            					"text": "*k8s-deployments:*\n<https://github.com/moove-ai/|Deployment URL>"
+            				},
+            				{
+            					"type": "mrkdwn",
+            					"text": "*Grafana Page:*\n<https://grafana.moove.ai/|Grafana>"
+            				}
+            			]
+            		}
+            	]
+            }
       template.slack-fail: |
         message: |
           :x: {{.app.metadata.name}} failed to sync on ${var.environment}.
@@ -213,13 +229,11 @@ locals {
           groupingKey: "{{.app.status.sync.revision}}"
           notifyBroadcast: true
 
-      template.grafana: |
-        message: |
-          Application {{.app.metadata.name}} is now running a new version.
-
     triggers:
       trigger.on-deployed: |
         - when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+          oncePer: app.status.sync.revision
           send: [slack-success]
+
   EOT
 }
