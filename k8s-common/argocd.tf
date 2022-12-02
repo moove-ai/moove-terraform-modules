@@ -167,33 +167,59 @@ locals {
       - recipients:
         - slack:devops-bot-test
         triggers:
-        - sync-operation-change
+        - on-deployed
 
     templates:
-      template.slack: |
+      template.slack-success: |
         message: |
-          Application ${var.environment}: {{.app.metadata.name}} sync is {{.app.status.sync.status}}.
-          Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+          :white_check_mark: {{.app.metadata.name}} deployed in ${var.environment}.
+        slack:
+          attachments: |
+            [{
+              "title": "{{.app.metadata.name}}",
+              "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+              "color": "#18be52",
+              "fields": [{
+                "title": "Sync Status",
+                "value": "{{.app.status.sync.status}}",
+                "short": true
+              }, {
+                "title": "Repository",
+                "value": "{{.app.spec.source.repoURL}}",
+                "short": true
+              }]
+            }]
+          groupingKey: "{{.app.status.sync.revision}}"
+          notifyBroadcast: true
+      template.slack-fail: |
+        message: |
+          :x: {{.app.metadata.name}} failed to sync on ${var.environment}.
+        slack:
+          attachments: |
+            [{
+              "title": "{{.app.metadata.name}}",
+              "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+              "color": "#ff0000",
+              "fields": [{
+                "title": "Sync Status",
+                "value": "{{.app.status.sync.status}}",
+                "short": true
+              }, {
+                "title": "Repository",
+                "value": "{{.app.spec.source.repoURL}}",
+                "short": true
+              }]
+            }]
+          groupingKey: "{{.app.status.sync.revision}}"
+          notifyBroadcast: true
+
       template.grafana: |
         message: |
           Application {{.app.metadata.name}} is now running a new version.
 
     triggers:
       trigger.on-deployed: |
-        - description: Application is synced and healthy. Triggered once per commit.
-          send:
-            - slack
-            - grafana
-          when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
-      trigger.sync-operation-change: |
-        - when: app.status.operationState.phase in ['Succeeded']
-          oncePer: app.status.sync.revision
-          send: [slack]
-        - when: app.status.operationState.phase in ['Running']
-          oncePer: app.status.sync.revision
-          send: [slack:devops-bot-test]
-        - when: app.status.operationState.phase in ['Error', 'Failed']
-          oncePer: app.status.sync.revision
-          send: [slack]
+        - when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+          send: [slack-success]
   EOT
 }
