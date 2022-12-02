@@ -141,6 +141,17 @@ locals {
     name: notifications-controller
     argocdUrl: "https://${var.environment}.deployments.moove.co.in"
 
+    resources: {}
+
+    serviceAccount:
+      create: true
+      name: argocd-notifications-controller
+      annotations: {}
+
+    cm:
+      create: true
+      name: "argocd-notifications-cm"
+
     secret:
       create: false
       name: "${local.notification_secret}"
@@ -153,15 +164,36 @@ locals {
         token: $slack_token
         username: devopsbot
 
-    resources: {}
+    subscriptions:
+      - recipients:
+        - slack:devops-bots-test
+        - slack:devops-bots
+        triggers:
+        - on-sync-status-unknown
+        - on-sync-operation-change
 
-    serviceAccount:
-      create: true
-      name: argocd-notifications-controller
-      annotations: {}
+    templates:
+      template.my-custom-template-slack-template: |
+        message: |
+          Application {{.app.metadata.name}} in ${var.environment} sync is {{.app.status.sync.status}}.
+          Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
 
-    cm:
-      create: true
-      name: "argocd-notifications-cm"
+    triggers:
+      trigger.on-deployed: |
+        - description: Application is synced and healthy. Triggered once per commit.
+          oncePer: app.status.sync.revision
+          send:
+            - app-deployed
+          when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+      trigger.sync-operation-change: |
+        - when: app.status.operationState.phase in ['Succeeded']
+          oncePer: app.status.sync.revision
+          send: [github-commit-status]
+        - when: app.status.operationState.phase in ['Running']
+          oncePer: app.status.sync.revision
+          send: [github-commit-status]
+        - when: app.status.operationState.phase in ['Error', 'Failed']
+          oncePer: app.status.sync.revision
+          send: [app-sync-failed, github-commit-status]
   EOT
 }
