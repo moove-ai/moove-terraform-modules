@@ -74,8 +74,6 @@ resource "helm_release" "argo-cd" {
 }
 
 locals {
-  grafana_api_key     = "grafana-api-key"
-  slack_token         = "slack-token"
   notification_secret = "argocd-notifications-secret"
   argocd_values       = var.argocd_values != "" ? var.argocd_values : <<-EOT
   dex:
@@ -150,9 +148,9 @@ locals {
     notifiers:
       service.grafana: |
         apiUrl: https://grafana.moove.ai/api
-        apiKey: $\${local.grafana_api_key}
+        apiKey: $grafana_api_key
       service.slack: |
-        token: $\${local.slack_token}
+        token: $slack_token
         username: devopsbot
 
     resources: {}
@@ -167,4 +165,3 @@ locals {
       name: "argocd-notifications-cm"
   EOT
 }
-`4
