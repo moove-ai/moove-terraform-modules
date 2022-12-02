@@ -166,51 +166,10 @@ locals {
     templates:
       template.slack-success: |
         message: |
-          Deployment Success!
-        slack:
-          attachments: |
-            {
-            	"blocks": [
-            		{
-            			"type": "header",
-            			"text": {
-            				"type": "plain_text",
-            				"text": ":white_check_mark: {{.app.metadata.name}} Deployed in ${var.environment}",
-            				"emoji": true
-            			}
-            		},
-            		{
-            			"type": "section",
-            			"fields": [
-            				{
-            					"type": "mrkdwn",
-            					"text": "*App:*\n {{.app.metadata.name}}"
-            				},
-            				{
-            					"type": "mrkdwn",
-            					"text": "*ArgoCD URL:*\n<{{.context.argocdUrl}}/applications/{{.app.metadata.name}}|{{.app.metadata.name}}>"
-            				}
-            			]
-            		},
-            		{
-            			"type": "section",
-            			"fields": [
-            				{
-            					"type": "mrkdwn",
-            					"text": "*k8s-deployments:*\n<https://github.com/moove-ai/|Deployment URL>"
-            				},
-            				{
-            					"type": "mrkdwn",
-            					"text": "*Grafana Page:*\n<https://grafana.moove.ai/|Grafana>"
-            				}
-            			]
-            		}
-            	]
-            }
-
+          Deployment Success ({{.app.metadata.name}})!
 
     triggers:
-      trigger.on-deployed: |
+      trigger.custom-deployed: |
         - when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
           oncePer: app.status.sync.revision
           send: [slack-success]
