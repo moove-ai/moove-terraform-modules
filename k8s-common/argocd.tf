@@ -170,17 +170,20 @@ locals {
         - sync-operation-change
 
     templates:
-      template.slack-message: |
+      template.slack: |
         message: |
-          Application {{.app.metadata.name}} in ${var.environment} sync is {{.app.status.sync.status}}.
+          Application ${var.environment}: {{.app.metadata.name}} sync is {{.app.status.sync.status}}.
           Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+      template.grafana: |
+        message: |
+          Application {{.app.metadata.name}} is now running a new version.
 
     triggers:
       trigger.on-deployed: |
         - description: Application is synced and healthy. Triggered once per commit.
-          oncePer: app.status.sync.revision
           send:
-            - app-deployed
+            - slack
+            - grafana
           when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
       trigger.sync-operation-change: |
         - when: app.status.operationState.phase in ['Succeeded']
@@ -191,6 +194,6 @@ locals {
           send: [slack:devops-bot-test]
         - when: app.status.operationState.phase in ['Error', 'Failed']
           oncePer: app.status.sync.revision
-          send: [app-sync-failed, github-commit-status]
+          send: [slack]
   EOT
 }
