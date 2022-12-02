@@ -207,27 +207,7 @@ locals {
             		}
             	]
             }
-      template.slack-fail: |
-        message: |
-          :x: {{.app.metadata.name}} failed to sync on ${var.environment}.
-        slack:
-          attachments: |
-            [{
-              "title": "{{.app.metadata.name}}",
-              "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
-              "color": "#ff0000",
-              "fields": [{
-                "title": "Sync Status",
-                "value": "{{.app.status.sync.status}}",
-                "short": true
-              }, {
-                "title": "Repository",
-                "value": "{{.app.spec.source.repoURL}}",
-                "short": true
-              }]
-            }]
-          groupingKey: "{{.app.status.sync.revision}}"
-          notifyBroadcast: true
+
 
     triggers:
       trigger.on-deployed: |
