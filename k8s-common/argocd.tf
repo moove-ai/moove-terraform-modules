@@ -159,21 +159,18 @@ locals {
     notifiers:
       service.grafana: |
         apiUrl: https://grafana.moove.ai/api
-        apiKey: $grafana_api_key
+        apiKey: $grafana-api-key
       service.slack: |
-        token: $slack_token
-        username: devopsbot
+        token: $slack-token
 
     subscriptions:
       - recipients:
-        - slack:devops-bots-test
-        - slack:devops-bots
+        - slack:devops-bot-test
         triggers:
-        - on-sync-status-unknown
-        - on-sync-operation-change
+        - sync-operation-change
 
     templates:
-      template.my-custom-template-slack-template: |
+      template.slack-message: |
         message: |
           Application {{.app.metadata.name}} in ${var.environment} sync is {{.app.status.sync.status}}.
           Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
@@ -188,10 +185,10 @@ locals {
       trigger.sync-operation-change: |
         - when: app.status.operationState.phase in ['Succeeded']
           oncePer: app.status.sync.revision
-          send: [github-commit-status]
+          send: [slack]
         - when: app.status.operationState.phase in ['Running']
           oncePer: app.status.sync.revision
-          send: [github-commit-status]
+          send: [slack:devops-bot-test]
         - when: app.status.operationState.phase in ['Error', 'Failed']
           oncePer: app.status.sync.revision
           send: [app-sync-failed, github-commit-status]
