@@ -12,7 +12,7 @@ resource "kubernetes_manifest" "app" {
       name: ${var.ci_cd_name_override == "" ? var.app_name : var.ci_cd_name_override}
       namespace: ${var.argo_app_namespace}
       annotations:
-        argocd.argoproj.io/manifest-generate-paths: ${local.app_path}
+        argocd.argoproj.io/manifest-generate-paths: /${local.app_path}
         notifications.argoproj.io/subscribe.on-deployed.slack: devops-bot-test 
       labels:
         app.kubernetes.io/name: ${var.app_name}
