@@ -163,11 +163,11 @@ locals {
       service.slack: |
         token: $slack-token
 
-    subscriptions:
-      - recipients:
-        - slack:devops-bot-test
-        triggers:
-        - on-deployed
+    #subscriptions:
+    #  - recipients:
+    #    - slack:devops-bot-test
+    #    triggers:
+    #    - on-deployed
 
     triggers:
       trigger.on-deployed: |
@@ -196,6 +196,11 @@ locals {
               {
                 "title": "Repository",
                 "value": "{{.app.spec.source.repoURL}}",
+                "short": true
+              },
+              {
+                "title": "Resource Version",
+                "value": "{{.app.metadata.resourceVersion}}",
                 "short": true
               },
               {
