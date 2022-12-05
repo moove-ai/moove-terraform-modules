@@ -163,15 +163,46 @@ locals {
       service.slack: |
         token: $slack-token
 
-    templates:
-      template.slack-success: |
-        message: |
-          Deployment Success ({{.app.metadata.name}})!
+    subscriptions:
+      - recipients:
+        - slack:devops-bot-test
+        triggers:
+        - on-deployed
 
     triggers:
-      trigger.custom-deployed: |
-        - when: app.status.sync.status == 'Synced' and app.status.health.status == 'Healthy'
-          send: [slack-success]
+      trigger.on-deployed: |
+        - description: Application is synced and healthy. Triggered once per commit.
+          oncePer: app.status.sync.revision
+          send:
+          - app-deployed
+          when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
 
+    templates:
+      template.app-deployed: |
+        message: |
+          {{if eq .serviceType "slack"}}:white_check_mark:{{end}} Application {{.app.metadata.name}} deployed to ${var.environment} 
+        slack:
+          attachments: |
+            [{
+              "title": "{{ .app.metadata.name}}",
+              "title_link":"{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+              "color": "#18be52",
+              "fields": [
+              {
+                "title": "Sync Status",
+                "value": "{{.app.status.sync.status}}",
+                "short": true
+              },
+              {
+                "title": "Repository",
+                "value": "{{.app.spec.source.repoURL}}",
+                "short": true
+              },
+              {
+                "title": "Revision",
+                "value": "{{.app.status.sync.revision}}",
+                "short": true
+              }]
+            }]
   EOT
 }

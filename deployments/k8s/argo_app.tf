@@ -11,6 +11,8 @@ resource "kubernetes_manifest" "app" {
     metadata:
       name: ${var.ci_cd_name_override == "" ? var.app_name : var.ci_cd_name_override}
       namespace: ${var.argo_app_namespace}
+      annotations:
+        argocd.argoproj.io/manifest-generate-paths: ${local.app_path}
       labels:
         app.kubernetes.io/name: ${var.app_name}
         app.kubernetes.io/app: "true"
