@@ -170,7 +170,7 @@ locals {
     triggers:
       trigger.on-deployed: |
         - description: Application is synced and healthy. Triggered once per commit.
-          oncePer: app.status.sync.revision
+          oncePer: app.status.syncResult.revision and app.metadata.name
           send:
           - app-deployed
           when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
