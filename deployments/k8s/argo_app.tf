@@ -13,7 +13,7 @@ resource "kubernetes_manifest" "app" {
       namespace: ${var.argo_app_namespace}
       annotations:
         argocd.argoproj.io/manifest-generate-paths: /${local.app_path}
-        notifications.argoproj.io/subscribe.on-deployed.slack: devops-bot-test 
+        notifications.argoproj.io/subscribe.on-deployed.slack: devops-bots
       labels:
         app.kubernetes.io/name: ${var.app_name}
         app.kubernetes.io/app: "true"
