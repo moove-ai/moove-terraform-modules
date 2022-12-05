@@ -30,11 +30,12 @@ resource "google_service_networking_connection" "worker_pool_conn" {
 }
 
 resource "google_cloudbuild_worker_pool" "pool" {
-  name = "${var.region}-common-worker-pool"
-  location = var.region
+  for_each var.regions
+  name = "${each.key}-common-worker-pool"
+  location = each.key
   worker_config {
     disk_size_gb = 100
-    machine_type = "e2-standard-4"
+    machine_type = var.machine_type
     no_external_ip = true
   }
   network_config {
