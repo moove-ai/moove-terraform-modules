@@ -30,6 +30,7 @@ resource "google_service_networking_connection" "worker_pool_conn" {
 }
 
 resource "google_cloudbuild_worker_pool" "pool" {
+  provider = google-beta
   for_each = toset(var.regions)
   name = "${each.key}-common-worker-pool"
   location = each.key
