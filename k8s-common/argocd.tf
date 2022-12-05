@@ -178,7 +178,7 @@ locals {
     templates:
       template.app-deployed: |
         message: |
-          {{if eq .serviceType "slack"}}:white_check_mark:{{end}} Application {{.app.metadata.name}} deployed to {{.context.environment}}-{{.context.region}}
+          {{if eq .serviceType "slack"}}:white_check_mark:{{end}} Application {{.app.metadata.name}} deployed to ${var.environment}-${var.region}
         slack:
           attachments: |
             [{
