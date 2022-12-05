@@ -1,0 +1,119 @@
+dex:
+  enabled: false
+
+server:
+  service:
+    type: LoadBalancer
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: "${var.environment}.deployments.moove.co.in"
+      cloud.google.com/load-balancer-type: Internal
+
+  resources:
+    limits:
+      cpu: 2
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+  config:
+    url: "https://${var.environment}.deployments.moove.co.in"
+    accounts.moove: apiKey, login
+
+  extraArgs:
+    - --insecure
+
+  rbacConfig:
+    policy.csv: |
+      p, role:org-admin, applications, *, */*, allow
+      p, role:org-admin, clusters, get, *, allow
+      p, role:org-admin, repositories, get, *, allow
+      p, role:org-admin, repositories, create, *, allow
+      p, role:org-admin, repositories, update, *, allow
+      p, role:org-admin, repositories, delete, *, allow
+      p, role:deploy-user, applications, get, */*, allow
+      p, role:deploy-user, applications, sync, */*, allow
+      p, role:deploy-user, applications, update, */*, allow
+      p, role:deploy-user, clusters, get, *, allow
+      p, role:deploy-user, repositories, get, *, allow
+      g, moove, role:org-admin
+      g, alex, role:org-admin
+    policy.default: role:''
+
+redis:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 64Mi
+
+repoServer:
+  resources:
+    limits:
+      cpu: 2
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+notifications:
+  enabled: true
+  name: notifications-controller
+  argocdUrl: "https://${var.environment}.deployments.moove.co.in"
+
+  resources: {}
+
+  serviceAccount:
+    create: true
+    name: argocd-notifications-controller
+    annotations: {}
+
+  cm:
+    create: true
+    name: "argocd-notifications-cm"
+
+  secret:
+    create: false
+    name: "${local.notification_secret}"
+
+  notifiers:
+    service.grafana: |
+      apiUrl: https://grafana.moove.ai/api
+      apiKey: $grafana_api_key
+    service.slack: |
+      token: $slack_token
+      username: devopsbot
+
+  subscriptions:
+    - recipients:
+      - slack:devops-bots-test
+      - slack:devops-bots
+      triggers:
+      - on-sync-status-unknown
+      - on-sync-operation-change
+
+  templates:
+    template.my-custom-template-slack-template: |
+      message: |
+        Application {{.app.metadata.name}} in ${var.environment} sync is {{.app.status.sync.status}}.
+        Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+
+  triggers:
+    trigger.on-deployed: |
+      - description: Application is synced and healthy. Triggered once per commit.
+        oncePer: app.status.sync.revision
+        send:
+          - app-deployed
+        when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+    trigger.sync-operation-change: |
+      - when: app.status.operationState.phase in ['Succeeded']
+        oncePer: app.status.sync.revision
+        send: [github-commit-status]
+      - when: app.status.operationState.phase in ['Running']
+        oncePer: app.status.sync.revision
+        send: [github-commit-status]
+      - when: app.status.operationState.phase in ['Error', 'Failed']
+        oncePer: app.status.sync.revision
+        send: [app-sync-failed, github-commit-status]

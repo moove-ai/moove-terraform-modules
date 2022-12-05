@@ -170,8 +170,7 @@ locals {
 
     triggers:
       trigger.custom-deployed: |
-        - when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
-          oncePer: app.status.sync.revision
+        - when: app.status.sync.status == 'Synced' and app.status.health.status == 'Healthy'
           send: [slack-success]
 
   EOT
