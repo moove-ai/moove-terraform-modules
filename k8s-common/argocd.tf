@@ -155,6 +155,10 @@ locals {
     secret:
       create: false
       name: "${local.notification_secret}"
+    
+    context:
+      environment: ${var.environment}
+      region: ${var.region}
 
     notifiers:
       service.grafana: |
@@ -162,12 +166,6 @@ locals {
         apiKey: $grafana-api-key
       service.slack: |
         token: $slack-token
-
-    #subscriptions:
-    #  - recipients:
-    #    - slack:devops-bot-test
-    #    triggers:
-    #    - on-deployed
 
     triggers:
       trigger.on-deployed: |
@@ -180,7 +178,7 @@ locals {
     templates:
       template.app-deployed: |
         message: |
-          {{if eq .serviceType "slack"}}:white_check_mark:{{end}} Application {{.app.metadata.name}} deployed to ${var.environment} 
+          {{if eq .serviceType "slack"}}:white_check_mark:{{end}} Application {{.app.metadata.name}} deployed to {{.context.environment}}-{{.context.region}}
         slack:
           attachments: |
             [{
@@ -196,11 +194,6 @@ locals {
               {
                 "title": "Repository",
                 "value": "{{.app.spec.source.repoURL}}",
-                "short": true
-              },
-              {
-                "title": "Resource Version",
-                "value": "{{.app.metadata.resourceVersion}}",
                 "short": true
               },
               {

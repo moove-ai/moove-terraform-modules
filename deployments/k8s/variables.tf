@@ -228,5 +228,5 @@ variable "build_name" {
 variable slack_channel {
   type        = string
   default     = "devops-bot-test"
-  description = "description"
+  description = "The slack channel that will be notified on deployment"
 }
