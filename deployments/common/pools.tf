@@ -15,7 +15,7 @@ resource "google_project_service" "servicenetworking" {
 }
 
 resource "google_compute_global_address" "worker_range" {
-  name          = "${var.region}-common-worker-pool"
+  name          = "common-worker-pool"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   prefix_length = 28
