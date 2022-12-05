@@ -40,7 +40,7 @@ resource "google_cloudbuild_worker_pool" "pool" {
     no_external_ip = true
   }
   network_config {
-    peered_network = google_compute_network.network.id
+    peered_network = data.google_compute_network.network.id
   }
   depends_on = [google_service_networking_connection.worker_pool_conn]
 }
