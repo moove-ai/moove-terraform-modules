@@ -30,7 +30,7 @@ resource "google_service_networking_connection" "worker_pool_conn" {
 }
 
 resource "google_cloudbuild_worker_pool" "pool" {
-  for_each var.regions
+  for_each = toset(var.region)
   name = "${each.key}-common-worker-pool"
   location = each.key
   worker_config {

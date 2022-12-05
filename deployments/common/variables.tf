@@ -32,7 +32,6 @@ variable regions {
   description = "A list of regions to deploy the worker pools to"
 }
 
-
 variable machine_type {
   type        = string
   default     = "e2-standard-2"
