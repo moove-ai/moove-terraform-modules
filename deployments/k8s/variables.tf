@@ -224,3 +224,9 @@ variable "build_name" {
   default     = ""
   description = "Overrides the name for the build trigger. Optional."
 }
+
+variable slack_channel {
+  type        = string
+  default     = "devops-bot-test"
+  description = "The slack channel that will be notified on deployment"
+}

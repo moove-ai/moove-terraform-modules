@@ -88,61 +88,61 @@ variable "install_keda" {
 }
 
 variable "create_firewall_rules" {
-  type = bool
+  type        = bool
   description = "Set to false to disable the creation of firewall rule"
-  default = true
+  default     = true
 }
 
 variable "argocd_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "cert_manager_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "cert_manager_pilot_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "external_dns_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "external_secrets_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "external_secrets_pilot_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "common_resources_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "keda_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "keda_monitor_projects" {
-  type = list(string)
+  type        = list(string)
   description = "List of projects for keda to monitor"
 }
 

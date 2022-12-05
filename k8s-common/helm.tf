@@ -8,16 +8,6 @@ data "google_secret_manager_secret_version" "devops-bots-ssh-key" {
   secret  = "devops-bots-ssh-key"
 }
 
-data "google_secret_manager_secret_version" "argo-cd_k8s-git-ops-repo-url" {
-  project = "moove-secrets"
-  secret  = "argo-cd_k8s-git-ops-repo-url"
-}
-
-data "google_secret_manager_secret_version" "argo-cd_git-type" {
-  project = "moove-secrets"
-  secret  = "argo-cd_git-type"
-}
-
 resource "kubernetes_namespace" "monitoring" {
   metadata {
     name = "monitoring"
@@ -36,38 +26,6 @@ resource "kubernetes_namespace" "environment" {
   }
 }
 
-resource "kubernetes_secret" "argocd-secrets" {
-  metadata {
-    name      = "k8s-git-ops-repo"
-    namespace = "default"
-    labels = {
-      "app"                            = "argocd"
-      "argocd.argoproj.io/secret-type" = "repository"
-    }
-  }
-
-  type = "Opaque"
-  data = {
-    "sshPrivateKey" = data.google_secret_manager_secret_version.devops-bots-ssh-key.secret_data
-    "url"           = data.google_secret_manager_secret_version.argo-cd_k8s-git-ops-repo-url.secret_data
-    "type"          = data.google_secret_manager_secret_version.argo-cd_git-type.secret_data
-  }
-
-  depends_on = [
-    kubernetes_namespace.monitoring
-  ]
-}
-
-resource "helm_release" "argo-cd" {
-  count            = var.install_argocd ? 1 : 0
-  name             = "argo-cd"
-  version          = "4.9.7"
-  namespace        = "default"
-  create_namespace = true
-  repository       = "https://argoproj.github.io/argo-helm"
-  chart            = "argo-cd"
-  values           = [local.argocd_values]
-}
 
 resource "helm_release" "common-resources" {
   count            = var.install_common_resources ? 1 : 0
