@@ -13,7 +13,6 @@ resource "kubernetes_manifest" "app" {
       namespace: ${var.argo_app_namespace}
       annotations:
         argocd.argoproj.io/manifest-generate-paths: ${local.app_path}
-        test: test
       labels:
         app.kubernetes.io/name: ${var.app_name}
         app.kubernetes.io/app: "true"
