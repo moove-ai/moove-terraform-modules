@@ -23,7 +23,7 @@ resource "google_compute_global_address" "worker_range" {
 }
 
 resource "google_service_networking_connection" "worker_pool_conn" {
-  network                 = google_compute_network.network.id
+  network                 = data.google_compute_network.network.id
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.worker_range.name]
   depends_on              = [google_project_service.servicenetworking]
