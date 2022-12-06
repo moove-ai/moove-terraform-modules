@@ -25,15 +25,3 @@ variable "build_logs_bucket_location" {
   description = "The location of the build cache bucket"
   default = "US"
 }
-
-variable regions {
-  type        = list(string)
-  default     = ["us-central1"]
-  description = "A list of regions to deploy the worker pools to"
-}
-
-variable machine_type {
-  type        = string
-  default     = "e2-standard-2"
-  description = "The machine type used by this pool"
-}
