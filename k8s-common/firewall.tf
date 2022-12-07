@@ -61,7 +61,7 @@ module "gke-firewall-rules" {
       direction   = "INGRESS"
       action      = "allow"
       ranges = [
-        "10.80.0.0/16"
+        "10.0.0.0/16"
       ]
       sources              = []
       targets              = ["private", "gke"]
