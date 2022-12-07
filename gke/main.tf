@@ -11,7 +11,7 @@ data "google_client_config" "default" {}
 
 
 module "gke" {
-  source                           = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster-update-variant"
+  source                           = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster-update-variant"
   version                          = "23.3.0"
   project_id                       = var.project_id
   name                             = var.cluster_name
@@ -22,7 +22,6 @@ module "gke" {
   network_project_id               = var.cluster_network_project_id
   ip_range_pods                    = var.ip_range_pods
   ip_range_services                = var.ip_range_services
-  gce_pd_csi_driver                = var.gce_pd_csi_driver
   http_load_balancing              = var.http_load_balancing
   network_policy                   = var.network_policy
   horizontal_pod_autoscaling       = var.horizontal_pod_autoscaling
@@ -33,8 +32,6 @@ module "gke" {
   remove_default_node_pool         = var.remove_default_node_pool
   enable_network_egress_export     = "true"
   resource_usage_export_dataset_id = google_bigquery_dataset.resource-monitor.dataset_id
-  istio                            = var.istio
-  cloudrun                         = var.cloudrun
   dns_cache                        = var.dns_cache
   node_pools                       = var.node_pools
   node_pools_labels                = var.node_pools_labels
