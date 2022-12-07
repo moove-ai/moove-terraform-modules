@@ -113,7 +113,7 @@ variable "target_revision" {
 variable "prune" {
   type        = string
   description = "If true, deletes resouces when the app is removed from ArgoCD"
-  default     = "true"
+  default     = "false"
 }
 
 variable "self_heal" {
