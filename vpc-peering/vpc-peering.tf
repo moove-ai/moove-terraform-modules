@@ -11,11 +11,11 @@ resource "google_compute_network_peering" "remote-to-local" {
 }
 
 data "google_compute_network" "local" {
-  name                    = var.network_name
+  name    = var.network_name
   project = var.network_project_id
 }
 
 data "google_compute_network" "remote" {
-  name                    = var.remote_network_name
+  name    = var.remote_network_name
   project = var.remote_network_project_id
 }

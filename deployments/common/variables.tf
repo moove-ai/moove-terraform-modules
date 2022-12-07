@@ -17,11 +17,11 @@ variable "environment" {
 variable "build_cache_bucket_location" {
   type        = string
   description = "The location of the build cache bucket"
-  default = "US"
+  default     = "US"
 }
 
 variable "build_logs_bucket_location" {
   type        = string
   description = "The location of the build cache bucket"
-  default = "US"
+  default     = "US"
 }

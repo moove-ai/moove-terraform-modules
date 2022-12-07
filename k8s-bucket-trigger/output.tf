@@ -53,7 +53,7 @@ output "namespace" {
 }
 
 output "service_account" {
-  value = google_service_account.service-account.email
+  value       = google_service_account.service-account.email
   sensitive   = false
   description = "The email for the service account created"
 }

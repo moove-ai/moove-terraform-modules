@@ -65,7 +65,7 @@ variable "environment_size" {
 
 variable "environment" {
   type        = string
-  description = "The environment this cluster is running in."  
+  description = "The environment this cluster is running in."
 }
 
 #variable "cloud_composer_network_ipv4_cidr_block" {
@@ -114,7 +114,7 @@ variable "service_account_name" {
 
 
 variable "image_version" {
-  type = string
+  type        = string
   description = "The version of airflow to deploy"
-  default = "composer-2.0.2-airflow-2.1.4"
+  default     = "composer-2.0.2-airflow-2.1.4"
 }

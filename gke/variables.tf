@@ -265,9 +265,9 @@ variable "cluster_autoscaling" {
 }
 
 variable "kubernetes_version" {
-  type = string
+  type        = string
   description = "The version to install on the gke main node"
-  default = "latest" 
+  default     = "latest"
 }
 
 variable "create_firewall_rules" {
@@ -277,60 +277,60 @@ variable "create_firewall_rules" {
 }
 
 variable "argocd_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "cert_manager_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "cert_manager_pilot_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "external_dns_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "external_secrets_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "external_secrets_pilot_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "common_resources_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "keda_values" {
-  type = string
+  type        = string
   description = "Multiline string holding helm values"
-  default = ""
+  default     = ""
 }
 
 variable "keda_monitor_projects" {
-  type = list(string)
+  type        = list(string)
   description = "List of projects for keda to monitor"
 }
 
 variable "enable_vertical_pod_autoscaling" {
-  type = bool
+  type        = bool
   description = "Enables vertical autoscaling on pods"
 }
 
