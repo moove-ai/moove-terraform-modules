@@ -1,5 +1,5 @@
 variable "network_name" {
-  type = string
+  type        = string
   description = "The name of the network running in this environemt"
 }
 
@@ -9,7 +9,7 @@ variable "network_project_id" {
 }
 
 variable "remote_network_name" {
-  type = string
+  type        = string
   description = "The name of the network to peer to"
 }
 

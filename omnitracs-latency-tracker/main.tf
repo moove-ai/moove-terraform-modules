@@ -1,12 +1,12 @@
 data "google_storage_bucket" "bucket" {
-    name = var.bucket
+  name = var.bucket
 }
 
 resource "google_service_account" "service-account" {
   project      = var.project_id
   account_id   = var.service_account
   display_name = "Omnitracs Latency Tracker (K8s)"
-  description  = "Used for the Omnitracs Latency Tracker. Coresponding K8s sa: ${var.k8s_sa} in namespace: ${var.namespace}" 
+  description  = "Used for the Omnitracs Latency Tracker. Coresponding K8s sa: ${var.k8s_sa} in namespace: ${var.namespace}"
 }
 
 resource "google_service_account_iam_member" "workload-identity" {
@@ -23,6 +23,6 @@ resource "google_project_iam_member" "moove-systems-bq-job-user" {
 
 resource "google_storage_bucket_iam_member" "bucket-member" {
   bucket = data.google_storage_bucket.bucket.name
-  role = "roles/storage.objectViewer"
-  member  = "serviceAccount:${google_service_account.service-account.email}"
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${google_service_account.service-account.email}"
 }

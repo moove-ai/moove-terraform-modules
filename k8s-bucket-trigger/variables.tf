@@ -100,9 +100,9 @@ variable "subscription_name" {
 variable "service_account_id" {}
 
 variable "namespace" {
-  type = string
+  type        = string
   description = "The namespace to deploy the app to"
-  default = ""
+  default     = ""
 }
 
 variable "k8s_sa" {
@@ -133,13 +133,13 @@ variable "output_bucket_lifecycle_rules" {
 }
 
 variable "create_namespace" {
-  type = bool
+  type        = bool
   description = "Creates the namepsace if set to true"
   default     = true
 }
 
 variable "cluster_project_id" {
-  type = string
+  type        = string
   description = "The project ID the cluster is running in, only use if different than project id"
-  default = ""
+  default     = ""
 }
