@@ -192,6 +192,18 @@ resource "google_cloudbuild_trigger" "deployment" {
         env          = "GITHUB_TOKEN"
         version_name = "projects/moove-secrets/secrets/ci-cd_github-token/versions/latest"
       }
+      secret_manager {
+        env          = "ARGOCD_USER"
+        version_name = "projects/${var.project_id}/secrets/ci-cd_argocd-user/versions/latest"
+      }
+      secret_manager {
+        env          = "ARGOCD_PASSWORD"
+        version_name = "projects/${var.project_id}/secrets/ci-cd_argocd-password/versions/latest"
+      }
+    }
+
+    options {
+      worker_pool = "projects/${var.project_id}/locations/${var.region}/workerPools/${var.region}-common-worker-pool"
     }
 
     step {
@@ -240,13 +252,28 @@ resource "google_cloudbuild_trigger" "deployment" {
     }
 
     step {
-      id         = "trigger-cd"
+      id         = "deploy-template"
       wait_for   = ["render-template"]
       name       = "gcr.io/cloud-builders/git"
       entrypoint = "bash"
       args = [
         "-c",
         "cd /workspace/k8s-git-ops/ && git config user.name moove-devopsbot && git config user.email devopsbot@moove.ai && git pull && git add -A ${local.gke_cluster}/${var.type}/ && git commit -m \"deploys ${local.ci_cd_name_override} to ${var.environment}\" && git push origin main"
+      ]
+    }
+
+    step {
+      id         = "trigger-argo"
+      wait_for   = ["deploy-template"]
+      name       = "argoproj/argocd"
+      entrypoint = "bash"
+      args = [
+        "-c",
+        "echo 'Triggering argocd app sync' && argocd --grpc-web --config=./config --plaintext login ${var.environment}.deployments.moove.co.in:80 --username=$$ARGOCD_USER --password=$$ARGOCD_PASSWORD && echo 'Logged in successfuly' && argocd --plaintext --grpc-web app sync --async ${local.ci_cd_name_override}"
+      ]
+      secret_env = [
+        "ARGOCD_USER",
+        "ARGOCD_PASSWORD",
       ]
     }
   }

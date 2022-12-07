@@ -65,7 +65,7 @@ resource "kubernetes_secret" "argocd-notifications-secret" {
 resource "helm_release" "argo-cd" {
   count            = var.install_argocd ? 1 : 0
   name             = "argo-cd"
-  version          = "4.9.7"
+  version          = "5.16.2"
   namespace        = "default"
   create_namespace = true
   repository       = "https://argoproj.github.io/argo-helm"
@@ -170,7 +170,7 @@ locals {
     triggers:
       trigger.on-deployed: |
         - description: Application is synced and healthy. Triggered once per commit.
-          oncePer: app.status.syncResult.revision and app.metadata.name
+          oncePer: app.status.operationState.syncResult.revision
           send:
           - app-deployed
           when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
