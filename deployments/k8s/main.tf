@@ -21,8 +21,8 @@
 
 locals {
   ci_cd_name_override = var.ci_cd_name_override == "" ? var.app_name : var.ci_cd_name_override
-  deployment_name = var.deployment_name == "" ? "${var.prefix}-${var.type}-${var.region}-${var.app_name}" : "${var.prefix}-${var.type}-${var.region}-${var.deployment_name}"
-  build_name = var.build_name == "" ? "build-k8s-${var.type}-${var.app_name}" : "build-k8s-${var.type}-${var.build_name}"
+  deployment_name     = var.deployment_name == "" ? "${var.prefix}-${var.type}-${var.region}-${var.app_name}" : "${var.prefix}-${var.type}-${var.region}-${var.deployment_name}"
+  build_name          = var.build_name == "" ? "build-k8s-${var.type}-${var.app_name}" : "build-k8s-${var.type}-${var.build_name}"
   default_build_args  = ["-t", "gcr.io/${var.project_id}/${var.app_name}:$COMMIT_SHA", "-t", "gcr.io/${var.project_id}/${var.app_name}:latest", "."]
   build_args          = var.build_args == [] ? concat(["build"], local.default_build_args) : concat(["build"], var.build_args, local.default_build_args)
   gke_cluster         = var.gke_cluster == "" ? "${var.environment}-${var.region}" : var.gke_cluster
@@ -172,8 +172,8 @@ resource "google_cloudbuild_trigger" "deployment" {
     "releases/${var.type}/${var.app_name}/values/${var.environment}.yaml",
     "releases/${var.type}/${var.app_name}/values/${var.environment}-pilot.yaml",
     "releases/${var.type}/${var.app_name}/helmfile.yaml",
-  ],
-    var.deploy_included_files 
+    ],
+    var.deploy_included_files
   )
 
   github {

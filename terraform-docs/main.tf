@@ -66,8 +66,8 @@ resource "google_cloudbuild_trigger" "build" {
     }
 
     step {
-      id       = "document-terraform"
-      name     = "quay.io/terraform-docs/terraform-docs:0.16.0"
+      id   = "document-terraform"
+      name = "quay.io/terraform-docs/terraform-docs:0.16.0"
       args = [
         "/workspace/${var.build_repo}"
       ]

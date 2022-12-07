@@ -53,7 +53,7 @@ resource "google_dns_record_set" "proxy" {
 }
 
 module "proxy-firewall" {
-  count = var.create_firewall_rules ? 1 : 0
+  count                   = var.create_firewall_rules ? 1 : 0
   source                  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
   project_id              = var.cluster_network_project_id
   network                 = var.cluster_network

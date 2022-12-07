@@ -4,7 +4,7 @@ resource "google_project_service" "geocoding" {
 }
 
 resource "google_secret_manager_secret" "googlemaps-api-key" {
-  project = var.project_id
+  project   = var.project_id
   secret_id = "jupyter-google_maps_api_key"
 
   replication {
@@ -17,9 +17,9 @@ resource "null_resource" "geocode" {
     command = "chmod +x ${path.module}/get-gmaps-key.sh && sh ${path.module}/get-gmaps-key.sh"
     environment = {
       SERVICE_API = "geocoding-backend.googleapis.com"
-      KEY_NAME = "gkey"
+      KEY_NAME    = "gkey"
       SECRET_NAME = google_secret_manager_secret.googlemaps-api-key.secret_id
-      PROJECT_ID = var.project_id
+      PROJECT_ID  = var.project_id
     }
   }
 
