@@ -18,7 +18,7 @@ data "google_project" "project" {
 }
 
 locals {
-  projects_map           = {for project in data.google_projects.projects.projects[*] : "${project.project_id}" => project.project_id}
+  projects_map = { for project in data.google_projects.projects.projects[*] : "${project.project_id}" => project.project_id }
 }
 
 resource "google_monitoring_monitored_project" "project" {
@@ -35,29 +35,29 @@ resource "google_service_account" "monitor" {
 }
 
 resource "google_project_iam_member" "scopes-iam" {
-  for_each      = local.projects_map
+  for_each = local.projects_map
   project  = each.key
   role     = "roles/monitoring.metricsScopesViewer"
   member   = "serviceAccount:${google_service_account.monitor.email}"
 }
 
 resource "google_project_iam_member" "viewer-iam" {
-  for_each      = local.projects_map
+  for_each = local.projects_map
   project  = each.key
   role     = "roles/monitoring.viewer"
   member   = "serviceAccount:${google_service_account.monitor.email}"
 }
 
 resource "google_project_iam_member" "monitoring-viewer-iam" {
-  project  = var.metrics_scope
-  role     = "roles/monitoring.viewer"
-  member   = "serviceAccount:${google_service_account.monitor.email}"
+  project = var.metrics_scope
+  role    = "roles/monitoring.viewer"
+  member  = "serviceAccount:${google_service_account.monitor.email}"
 }
 
 resource "google_project_iam_member" "browser-iam" {
-  project  = var.metrics_scope
-  role     = "roles/browser"
-  member   = "serviceAccount:${google_service_account.monitor.email}"
+  project = var.metrics_scope
+  role    = "roles/browser"
+  member  = "serviceAccount:${google_service_account.monitor.email}"
 }
 
 resource "google_service_account_key" "monitor-key" {

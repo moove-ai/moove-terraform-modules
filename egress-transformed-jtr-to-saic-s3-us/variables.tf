@@ -1,10 +1,10 @@
-variable labels {
-  type        = map(string)
+variable "labels" {
+  type = map(string)
   default = {
-    function = "data-pipelines"
-    pipeline = "join-to-roads"
-    component = "egress"
-    client = "saic"
+    function    = "data-pipelines"
+    pipeline    = "join-to-roads"
+    component   = "egress"
+    client      = "saic"
     terraformed = "true"
   }
   description = "description"
@@ -26,7 +26,7 @@ variable "k8s_secrets_email" {
 }
 
 variable "gcp_service_account" {
-  type = string
+  type        = string
   description = "The service account being used to copy GCP data"
 }
 

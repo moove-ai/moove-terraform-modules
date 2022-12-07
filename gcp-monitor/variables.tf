@@ -15,6 +15,6 @@ variable "secret_project_id" {
 }
 
 variable "folder_id" {
-  type =  string
+  type        = string
   description = "The folder ID to monitor. Will get all projets in this folder. This module will need to be run again when a new project is added"
 }

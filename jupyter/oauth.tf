@@ -5,10 +5,10 @@ resource "random_string" "suffix" {
 }
 
 resource "google_project" "project" {
-  name = "moove-jupyter-${var.environment}-oauth"
-  project_id = "moove-jupyter-${var.environment}-oauth-${random_string.suffix.result}"
-  folder_id = var.folder_id
-  billing_account = var.billing_account
+  name                = "moove-jupyter-${var.environment}-oauth"
+  project_id          = "moove-jupyter-${var.environment}-oauth-${random_string.suffix.result}"
+  folder_id           = var.folder_id
+  billing_account     = var.billing_account
   auto_create_network = false
 }
 
@@ -23,7 +23,7 @@ resource "google_project_service" "cloud-ident" {
 }
 
 resource "google_secret_manager_secret" "hub-config" {
-  project = var.project_id
+  project   = var.project_id
   secret_id = "jupyter-hub_config"
 
   replication {

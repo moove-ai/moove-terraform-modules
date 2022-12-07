@@ -1,5 +1,5 @@
 locals {
-  app_path = var.ci_cd_name_override == "" ? "${var.gke_cluster}/${var.type}/${var.app_name}" : "${var.gke_cluster}/${var.type}/${var.ci_cd_name_override}"
+  app_path  = var.ci_cd_name_override == "" ? "${var.gke_cluster}/${var.type}/${var.app_name}" : "${var.gke_cluster}/${var.type}/${var.ci_cd_name_override}"
   namespace = var.namespace != "" ? var.namespace : var.environment
 }
 

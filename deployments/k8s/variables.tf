@@ -36,7 +36,7 @@ variable "build_args" {
 variable "namespace" {
   type        = string
   description = "The namespace this app should be deployed to"
-  default = ""
+  default     = ""
 }
 
 variable "tag_path" {
@@ -225,7 +225,7 @@ variable "build_name" {
   description = "Overrides the name for the build trigger. Optional."
 }
 
-variable slack_channel {
+variable "slack_channel" {
   type        = string
   default     = "devops-bot-test"
   description = "The slack channel that will be notified on deployment"
