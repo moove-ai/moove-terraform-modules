@@ -65,7 +65,7 @@ resource "kubernetes_secret" "argocd-notifications-secret" {
 resource "helm_release" "argo-cd" {
   count            = var.install_argocd ? 1 : 0
   name             = "argo-cd"
-  version          = "4.9.7"
+  version          = "5.16.2"
   namespace        = "default"
   create_namespace = true
   repository       = "https://argoproj.github.io/argo-helm"
@@ -74,32 +74,48 @@ resource "helm_release" "argo-cd" {
 }
 
 locals {
+  argocd_url = "${var.environment}.deployments.moove.co.in"
   notification_secret = "argocd-notifications-secret"
   argocd_values       = var.argocd_values != "" ? var.argocd_values : <<-EOT
   dex:
     enabled: false
 
   server:
-    service:
-      type: LoadBalancer
+    ingress:
+      enabled: true
       annotations:
-        external-dns.alpha.kubernetes.io/hostname: "${var.environment}.deployments.moove.co.in"
-        cloud.google.com/load-balancer-type: Internal
+        external-dns.alpha.kubernetes.io/hostname: ${local.argocd_url}
+        kubernetes.io/ingress.class: "gce-internal"
+        kubernetes.io/ingress.allow-http: false
+        cert-manager.io/cluster-issuer: "letsencrypt"
+      hosts:
+        - ${local.argocd_url}
+      pathType: Prefix
+      tls:
+        - secretName: argocd-tls
+          hosts:
+            - ${local.argocd_url}
+      https: true
 
-    resources:
-      limits:
-        cpu: 2
-        memory: 2Gi
-      requests:
-        cpu: 500m
-        memory: 512Mi
-
-    config:
-      url: "https://${var.environment}.deployments.moove.co.in"
-      accounts.moove: apiKey, login
+    service:
+      type: NodePort
+      annotations:
+        cloud.google.com/neg: '{"ingress": true}'
 
     extraArgs:
       - --insecure
+
+    resources:
+      limits:
+        cpu: 4
+        memory: 4Gi
+      requests:
+        cpu: 2
+        memory: 2Gi
+
+    config:
+      url: "${local.argocd_url}"
+      accounts.moove: apiKey, login
 
     rbacConfig:
       policy.csv: |
@@ -139,7 +155,7 @@ locals {
   notifications:
     enabled: true
     name: notifications-controller
-    argocdUrl: "https://${var.environment}.deployments.moove.co.in"
+    argocdUrl: "${local.argocd_url}"
 
     resources: {}
 
@@ -170,7 +186,7 @@ locals {
     triggers:
       trigger.on-deployed: |
         - description: Application is synced and healthy. Triggered once per commit.
-          oncePer: app.status.syncResult.revision and app.metadata.name
+          oncePer: app.status.operationState.syncResult.revision
           send:
           - app-deployed
           when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
