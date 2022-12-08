@@ -83,7 +83,7 @@ locals {
 
   server:
     ingress:
-      enabled: true
+      enabled: false
       annotations:
         external-dns.alpha.kubernetes.io/hostname: ${local.argocd_url}
         kubernetes.io/ingress.class: "gce-internal"
@@ -99,9 +99,11 @@ locals {
       https: true
 
     service:
-      type: NodePort
+      type: LoadBalancer
       annotations:
         cloud.google.com/neg: '{"ingress": true}'
+        external-dns.alpha.kubernetes.io/hostname: ${local.argocd_url}
+        cloud.google.com/load-balancer-type: Internal
 
     extraArgs:
       - --insecure
