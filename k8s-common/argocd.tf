@@ -73,6 +73,7 @@ resource "helm_release" "argo-cd" {
   values           = [local.argocd_values]
 }
 
+
 locals {
   argocd_url = "${var.environment}.deployments.moove.co.in"
   notification_secret = "argocd-notifications-secret"
