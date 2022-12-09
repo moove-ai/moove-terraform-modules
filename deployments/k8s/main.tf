@@ -263,15 +263,25 @@ resource "google_cloudbuild_trigger" "deployment" {
     }
 
     step {
-      id         = "trigger-argo"
+      id         = "init-argo"
       wait_for   = ["deploy-template"]
+      name       = "gcr.io/cloud-builders/git"
+      entrypoint = "bash"
+      args = [
+        "-c",
+        "touch /workspace/config && chmod 0777 /workspace/config"
+      ]
+    }
+
+    step {
+      id         = "trigger-argo"
+      wait_for   = ["init-argo"]
       name       = "argoproj/argocd"
       entrypoint = "bash"
       args = [
         "-c",
-        "echo 'logging into argocd' && touch ./config && chown $$USER:$$USER ./config && argocd --config=./config --plaintext login ${var.environment}.deployments.moove.co.in:80 --username=$$ARGOCD_USER --password=$$ARGOCD_PASSWORD && echo 'triggering app sync' && argocd --config=./config app sync ${local.ci_cd_name_override}"
+        "echo 'logging into argocd' && argocd --config=/workspace/config --plaintext login ${var.environment}.deployments.moove.co.in:80 --username=$$ARGOCD_USER --password=$$ARGOCD_PASSWORD && echo 'triggering app sync' && argocd --config=/workspace/config app sync ${local.ci_cd_name_override}"
       ]
-
       secret_env = [
         "ARGOCD_USER",
         "ARGOCD_PASSWORD",
