@@ -73,33 +73,57 @@ resource "helm_release" "argo-cd" {
   values           = [local.argocd_values]
 }
 
+
 locals {
+  argocd_url = "${var.environment}.deployments.moove.co.in"
   notification_secret = "argocd-notifications-secret"
   argocd_values       = var.argocd_values != "" ? var.argocd_values : <<-EOT
+  configs:
+    cm:
+      create: true
+      timeout.reconciliation: 0
+
   dex:
     enabled: false
 
   server:
+    ingress:
+      enabled: false
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: ${local.argocd_url}
+        kubernetes.io/ingress.class: "gce-internal"
+        kubernetes.io/ingress.allow-http: false
+        cert-manager.io/cluster-issuer: "letsencrypt"
+      hosts:
+        - ${local.argocd_url}
+      pathType: Prefix
+      tls:
+        - secretName: argocd-tls
+          hosts:
+            - ${local.argocd_url}
+      https: true
+
     service:
       type: LoadBalancer
       annotations:
-        external-dns.alpha.kubernetes.io/hostname: "${var.environment}.deployments.moove.co.in"
+        cloud.google.com/neg: '{"ingress": true}'
+        external-dns.alpha.kubernetes.io/hostname: ${local.argocd_url}
         cloud.google.com/load-balancer-type: Internal
-
-    resources:
-      limits:
-        cpu: 2
-        memory: 2Gi
-      requests:
-        cpu: 500m
-        memory: 512Mi
-
-    config:
-      url: "https://${var.environment}.deployments.moove.co.in"
-      accounts.moove: apiKey, login
 
     extraArgs:
       - --insecure
+
+    resources:
+      limits:
+        cpu: 4
+        memory: 4Gi
+      requests:
+        cpu: 2
+        memory: 2Gi
+
+    config:
+      url: "${local.argocd_url}"
+      accounts.moove: apiKey, login
 
     rbacConfig:
       policy.csv: |
@@ -139,7 +163,7 @@ locals {
   notifications:
     enabled: true
     name: notifications-controller
-    argocdUrl: "https://${var.environment}.deployments.moove.co.in"
+    argocdUrl: "${local.argocd_url}"
 
     resources: {}
 

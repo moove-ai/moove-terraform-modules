@@ -36,7 +36,7 @@ module "gke-firewall-rules" {
       ]
       extra_attributes = {}
     }
-    ingress-gke-internal = { # needed for Keda
+    ingress-gke-internal = { 
       description = "Allows access to gke internally."
       direction   = "INGRESS"
       action      = "allow"
@@ -61,7 +61,7 @@ module "gke-firewall-rules" {
       direction   = "INGRESS"
       action      = "allow"
       ranges = [
-        "10.80.0.0/16"
+        "0.0.0.0/0"
       ]
       sources              = []
       targets              = ["private", "gke"]
@@ -134,6 +134,28 @@ module "gke-firewall-rules" {
           protocol = "tcp"
           ports = [
             "6379",
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
+    ingress-gce-l7 = {
+      description = "GCE L7 Firewall Rules"
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "130.211.0.0/22",
+        "35.191.0.0/16",
+      ]
+      sources              = []
+      targets              = ["gke"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "30000-32767",
+            "8080",
           ]
         }
       ]

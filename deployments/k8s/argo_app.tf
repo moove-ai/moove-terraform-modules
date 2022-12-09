@@ -14,6 +14,7 @@ resource "kubernetes_manifest" "app" {
       annotations:
         argocd.argoproj.io/manifest-generate-paths: /${local.app_path}
         notifications.argoproj.io/subscribe.on-deployed.slack: ${var.slack_channel}
+        notifications.argoproj.io/subscribe.on-deployed.grafana: ${local.ci_cd_name_override}|${var.environment}
       labels:
         app.kubernetes.io/name: ${var.app_name}
         app.kubernetes.io/app: "true"
