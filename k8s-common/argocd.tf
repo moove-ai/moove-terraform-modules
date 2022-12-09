@@ -78,6 +78,11 @@ locals {
   argocd_url = "${var.environment}.deployments.moove.co.in"
   notification_secret = "argocd-notifications-secret"
   argocd_values       = var.argocd_values != "" ? var.argocd_values : <<-EOT
+  configs:
+    cm:
+      create: true
+      timeout.reconciliation: 0
+
   dex:
     enabled: false
 
