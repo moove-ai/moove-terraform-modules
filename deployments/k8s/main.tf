@@ -269,8 +269,9 @@ resource "google_cloudbuild_trigger" "deployment" {
       entrypoint = "bash"
       args = [
         "-c",
-        "echo 'Triggering argocd app sync' && argocd --grpc-web --config=./config --plaintext login ${var.environment}.deployments.moove.co.in:80 --username=$$ARGOCD_USER --password=$$ARGOCD_PASSWORD && echo 'Logged in successfuly' && argocd --plaintext --grpc-web app sync --async ${local.ci_cd_name_override}"
+        "echo 'logging into argocd' && argocd --plaintext login ${var.environment}.deployments.moove.co.in:80 --username=$$ARGOCD_USER --password=$$ARGOCD_PASSWORD && echo 'triggering app sync' && argocd app sync ${local.ci_cd_name_override}"
       ]
+
       secret_env = [
         "ARGOCD_USER",
         "ARGOCD_PASSWORD",
