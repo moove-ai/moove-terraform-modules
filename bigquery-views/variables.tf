@@ -22,3 +22,8 @@ variable "views" {
     labels         = map(string),
   }))
 }
+
+variable email_list {
+  type        = list(string)
+  description = "List of emails to share access with"
+}
