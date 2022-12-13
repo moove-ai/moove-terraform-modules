@@ -30,6 +30,7 @@ module "composer" {
   labels                   = var.labels
   worker                   = var.worker_resources
   image_version            = var.image_version
+  pypi_packages            = var.pypi_packages
   depends_on = [
     google_service_account.serviceaccount,
     google_project_service.composer,
