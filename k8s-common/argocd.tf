@@ -65,7 +65,7 @@ resource "kubernetes_secret" "argocd-notifications-secret" {
 resource "helm_release" "argo-cd" {
   count            = var.install_argocd ? 1 : 0
   name             = "argo-cd"
-  version          = "5.16.2"
+  version          = "4.9.7"
   namespace        = "default"
   create_namespace = true
   repository       = "https://argoproj.github.io/argo-helm"
