@@ -34,7 +34,7 @@ resource "google_storage_bucket" "input-bucket" {
   project  = local.input_bucket_project
   location = var.input_bucket_location
   labels = merge({
-    project     = var.project_id,
+    project     = local.input_bucket_project
     terraformed = "true",
     environment = var.environment,
     client      = var.input_bucket_client
@@ -136,7 +136,7 @@ resource "google_storage_bucket" "output-bucket" {
   project  = local.output_bucket_project
   location = var.output_bucket_location
   labels = merge({
-    project     = var.project_id,
+    project     = local.output_bucket_project
     terraformed = "true",
     environment = var.environment,
     client      = var.output_bucket_client
