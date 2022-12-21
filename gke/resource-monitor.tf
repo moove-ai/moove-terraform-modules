@@ -32,7 +32,7 @@ resource "google_project_iam_member" "bq_transfer_permission" {
 }
 
 resource "google_bigquery_data_transfer_config" "billing_query" {
-  depends_on = [google_project_iam_member.permissions]
+  depends_on = [google_project_iam_member.bq_transfer_permission]
 
   display_name           = "${local._cluster_name}_cost_breakdown"
   location               = "US"
