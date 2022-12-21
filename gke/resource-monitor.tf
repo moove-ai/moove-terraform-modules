@@ -20,27 +20,32 @@ resource "google_bigquery_dataset" "resource-monitor" {
 
 }
 
-module "billing_query" {
-  source = "terraform-google-modules/bigquery/google//modules/scheduled_queries"
-  version = "~> 5.3.0"
 
-  project_id = google_bigquery_dataset.resource-monitor.project
-
-  queries = [
-    {
-      name                   = "${local._cluster_name}_cost_breakdown"
-      location               = "US"
-      data_source_id         = "${local._cluster_name}_cost_breakdown"
-      destination_dataset_id = google_bigquery_dataset.resource-monitor.dataset_id
-      schedule               = "every 24 hours"
-      params = {
-        destination_table_name_template = "usage_metering_cost_breakdown"
-        write_disposition               = "WRITE_APPEND"
-        query                           = local.usage_metering_query
-      }
-    }
-  ]
+data "google_project" "project" {
+  project_id = var.project_id
 }
+
+resource "google_project_iam_member" "bq_transfer_permission" {
+  project = data.google_project.project.project_id
+  role    = "roles/iam.serviceAccountShortTermTokenMinter"
+  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com"
+}
+
+resource "google_bigquery_data_transfer_config" "billing_query" {
+  depends_on = [google_project_iam_member.permissions]
+
+  display_name           = "${local._cluster_name}_cost_breakdown"
+  location               = "US"
+  data_source_id         = "${local._cluster_name}_cost_breakdown"
+  schedule               = "every 24 hours"
+  destination_dataset_id = google_bigquery_dataset.resource-monitor.dataset_id
+  params = {
+    destination_table_name_template = "usage_metering_cost_breakdown"
+    write_disposition               = "WRITE_APPEND"
+    query                           = local.usage_metering_query
+  }
+}
+
 
 locals {
   _cluster_name = replace(var.cluster_name, "-", "_")
