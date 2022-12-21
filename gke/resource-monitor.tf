@@ -31,6 +31,12 @@ resource "google_project_iam_member" "bq_transfer_permission" {
   member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com"
 }
 
+resource "google_project_iam_member" "bq_token_creator" {
+  project = data.google_project.project.project_id
+  role    = "roles/iam.serviceAccountTokenCreator"
+  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com"
+}
+
 resource "google_bigquery_data_transfer_config" "billing_query" {
   depends_on = [google_project_iam_member.bq_transfer_permission]
 
