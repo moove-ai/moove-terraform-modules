@@ -34,6 +34,7 @@ resource "google_project_iam_member" "bq_transfer_permission" {
 resource "google_bigquery_data_transfer_config" "billing_query" {
   depends_on = [google_project_iam_member.bq_transfer_permission]
 
+  project                = var.project_id
   display_name           = "${local._cluster_name}_cost_breakdown"
   location               = "US"
   data_source_id         = "${local._cluster_name}_cost_breakdown"
