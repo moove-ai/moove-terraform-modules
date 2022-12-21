@@ -37,7 +37,7 @@ resource "google_bigquery_data_transfer_config" "billing_query" {
   project                = var.project_id
   display_name           = "${local._cluster_name}_cost_breakdown"
   location               = "US"
-  data_source_id         = "${local._cluster_name}_cost_breakdown"
+  data_source_id         = "scheduled_query"
   schedule               = "every 24 hours"
   destination_dataset_id = google_bigquery_dataset.resource-monitor.dataset_id
   params = {
@@ -90,7 +90,7 @@ locals {
     NULL as amount_with_untracked,
     billing_table.rate
   FROM
-    `${var.project_id}.production_us_central1_export.gke_cluster_resource_usage` AS resource_usage
+    `${var.project_id}.${local._cluster_name}_export.gke_cluster_resource_usage` AS resource_usage
   INNER JOIN
     billing_table
   ON
@@ -188,7 +188,7 @@ locals {
     FROM
       billing_table
     INNER JOIN
-      `${var.project_id}.production_us_central1_export.gke_cluster_resource_usage` AS resource_usage
+      `${var.project_id}.${local._cluter_name}_export.gke_cluster_resource_usage` AS resource_usage
     ON
       resource_usage.project.id = billing_table.project_id
       AND resource_usage.end_time <= billing_table.max_usage_end_time
