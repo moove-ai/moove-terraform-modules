@@ -188,7 +188,7 @@ locals {
     FROM
       billing_table
     INNER JOIN
-      `${var.project_id}.${local._cluter_name}_export.gke_cluster_resource_usage` AS resource_usage
+      `${var.project_id}.${local._cluster_name}_export.gke_cluster_resource_usage` AS resource_usage
     ON
       resource_usage.project.id = billing_table.project_id
       AND resource_usage.end_time <= billing_table.max_usage_end_time
