@@ -57,11 +57,19 @@ resource "google_cloudbuild_trigger" "chart" {
     }
 
     step {
+      id         = "download-index"
+      name       = "gcr.io/cloud-builders/gcloud"
+      entrypoint = "gsutil"
+      args = [
+        "cp", "${google_storage_bucket.helm-registry-public.url}/index.yaml", "remote.yaml"
+      ]
+    }
+
+    step {
       id   = "index-charts"
       name = "alpine/helm"
       args = [
-        "repo", "index", "/uploads",
-        #"--url", "${google_storage_bucket.helm-registry-public.name}.storage.googleapis.com"
+        "repo", "index", "--merge", "remote.yaml", "/uploads"
       ]
     }
 
@@ -71,6 +79,15 @@ resource "google_cloudbuild_trigger" "chart" {
       entrypoint = "gsutil"
       args = [
         "rsync", "-r", "/uploads", google_storage_bucket.helm-registry-public.url
+      ]
+    }
+
+    step {
+      id         = "update-cache"
+      name       = "gcr.io/cloud-builders/gcloud"
+      entrypoint = "gsutil"
+      args = [
+        "-m", "setmeta", "-r", "-h", '"Cache-control:public, max-age=60"', google_storage_bucket.helm-registry-public.url
       ]
     }
   }
