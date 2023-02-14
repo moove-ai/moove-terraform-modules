@@ -87,7 +87,7 @@ resource "google_cloudbuild_trigger" "chart" {
       name       = "gcr.io/cloud-builders/gcloud"
       entrypoint = "gsutil"
       args = [
-        "-m", "setmeta", "-r", "-h", '"Cache-control:public, max-age=60"', google_storage_bucket.helm-registry-public.url
+        "-m", "setmeta", "-r", "-h", "Cache-control:public, max-age=60", google_storage_bucket.helm-registry-public.url
       ]
     }
   }
