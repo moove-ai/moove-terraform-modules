@@ -43,3 +43,9 @@ variable proxy_dns {
   description = "The DNS name for the proxy"
   default = ""
 }
+
+variable "create_resource_monitor" {
+  type = bool
+  description = "Set to true to create a BQ database to monitor GKE spend"
+  default = false
+}

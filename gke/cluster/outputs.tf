@@ -1,7 +1,3 @@
-output "resource-monitor-dataset" {
-  value = google_bigquery_dataset.resource-monitor.dataset_id
-}
-
 output "cluster_name" {
   value = "${var.environment}-${var.region}"
 }
