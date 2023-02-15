@@ -11,8 +11,10 @@
 locals {
   _cluster_name = replace(var.cluster_name, "-", "_")
 }
-data "google_service_account" "k8s-nodes" {
 
+data "google_service_account" "k8s-nodes" {
+  account_id = "k8s-nodes"
+  project = var.project_id
 }
 
 
