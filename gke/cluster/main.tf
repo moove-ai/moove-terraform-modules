@@ -11,6 +11,9 @@
 locals {
   _cluster_name = replace(var.cluster_name, "-", "_")
 }
+data "google_service_account" "k8s-nodes" {
+
+}
 
 
 resource "google_bigquery_dataset" "resource-monitor" {
@@ -25,7 +28,7 @@ resource "google_bigquery_dataset" "resource-monitor" {
 
   access {
     role          = "OWNER"
-    user_by_email = google_service_account.k8s-nodes.email
+    user_by_email = data.google_service_account.k8s-nodes.email
   }
 
   access {
