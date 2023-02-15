@@ -1,3 +1,8 @@
+locals {
+  proxy_dns = var.proxy_dns != "" ? var.proxy_dns : "${var.environment}-${var.region}.gke"
+}
+
+
 data "google_compute_subnetwork" "private-subnetwork" {
   project = var.cluster_network_project_id
   name    = var.cluster_subnetwork
@@ -45,7 +50,7 @@ data "google_dns_managed_zone" "moove-internal" {
 }
 
 resource "google_dns_record_set" "proxy" {
-  name         = "${var.proxy_dns}.${data.google_dns_managed_zone.moove-internal.dns_name}"
+  name         = "${local.proxy_dns}.${data.google_dns_managed_zone.moove-internal.dns_name}"
   project      = data.google_dns_managed_zone.moove-internal.project
   managed_zone = data.google_dns_managed_zone.moove-internal.name
   type         = "A"
