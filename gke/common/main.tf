@@ -1,7 +1,15 @@
+/**
+ * # gke
+ *
+ * creates iam resources associated with an environment. This only needs to be applied once per environment (staging, production, etc) 
+ *
+ * 
+ * Written by Alex Merenda for moove.ai
+ */
 # gke/iam.tf
 
 ## k8s nodes IAM
-# The service account running the k8s nodes
+## The service account running the k8s nodes
 resource "google_service_account" "k8s-nodes" {
   project      = var.project_id
   account_id   = "k8s-nodes"
