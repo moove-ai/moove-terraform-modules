@@ -72,10 +72,28 @@ resource "google_project_iam_member" "network-host-service-agent" {
   member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
 }
 
+resource "google_project_iam_member" "cluster-network-service-agent" {
+  project = var.cluster_network_project_id
+  role    = "roles/container.serviceAgent"
+  member  = "serviceAccount:63039372807-compute@developer.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "cluster-network-service-agent" {
+  project = var.cluster_network_project_id
+  role    = "roles/container.serviceAgent"
+  member  = "serviceAccount:service-63039372807@container-engine-robot.iam.gserviceaccount.com"
+}
+
 resource "google_project_iam_member" "cluster-network-host-service-agent" {
   project = var.cluster_network_project_id
   role    = "roles/container.hostServiceAgentUser"
   member  = "serviceAccount:63039372807-compute@developer.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "cluster-network-host-service-agent" {
+  project = var.cluster_network_project_id
+  role    = "roles/container.serviceAgent"
+  member  = "serviceAccount:service-63039372807@container-engine-robot.iam.gserviceaccount.com"
 }
 
 data "google_project" "project" {
