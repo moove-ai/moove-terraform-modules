@@ -56,6 +56,12 @@ resource "google_project_iam_member" "privileged-builder-registry-iam" {
   member  = "serviceAccount:${google_service_account.privileged-builder.email}"
 }
 
+resource "google_project_iam_member" "privileged-builder-k8s" {
+  project = var.project_id
+  role    = "roles/container.developer"
+  member  = "serviceAccount:${google_service_account.privileged-builder.email}"
+}
+
 resource "google_secret_manager_secret_iam_member" "privileged-builder-grafana-iam" {
   project   = data.google_secret_manager_secret.grafana-api-key.project
   secret_id = data.google_secret_manager_secret.grafana-api-key.secret_id
@@ -136,16 +142,3 @@ resource "google_service_account_iam_member" "p-builder-act-as" {
   role               = "roles/iam.serviceAccountUser"
   member             = "serviceAccount:${google_service_account.privileged-builder.email}"
 }
-#
-#resource "google_service_account_iam_member" "builder-act-as-1" {
-#  service_account_id = google_service_account.builder.name
-#  role               = "roles/iam.serviceAccountUser"
-#  member             = "serviceAccount:${data.google_service_account.terraform.email}"
-#}
-#
-#resource "google_service_account_iam_member" "p-builder-act-as-1" {
-#  service_account_id = google_service_account.privileged-builder.name
-#  role               = "roles/iam.serviceAccountUser"
-#  member             = "serviceAccount:${data.google_service_account.terraform.email}"
-#}
-#
