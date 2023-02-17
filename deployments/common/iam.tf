@@ -58,7 +58,7 @@ resource "google_project_iam_member" "privileged-builder-registry-iam" {
 
 resource "google_project_iam_member" "privileged-builder-k8s" {
   project = var.project_id
-  role    = "roles/container.developer"
+  role    = "roles/container.admin"
   member  = "serviceAccount:${google_service_account.privileged-builder.email}"
 }
 
