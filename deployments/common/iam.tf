@@ -15,8 +15,8 @@ data "google_secret_manager_secret" "slack-webhook-token" {
   project   = var.secret_project_id
 }
 
-data "google_secret_manager_secret" "devops-ssh-key" {
-  secret_id = "devops-bots-ssh-key"
+data "google_secret_manager_secret" "argocd-ssh-key" {
+  secret_id = "argocd_ssh-key"
   project   = var.secret_project_id
 }
 
