@@ -60,7 +60,7 @@ resource "google_project_iam_member" "resource-metadata-writer" {
   member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
 }
 
-resource "google_project_iam_member" "network-container-service-agent0" {
+resource "google_project_iam_member" "network-container-service-agent" {
   project = var.cluster_network_project_id
   role    = "roles/containerregistry.ServiceAgent"
   member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
@@ -72,7 +72,7 @@ resource "google_project_iam_member" "network-host-service-agent0" {
   member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
 }
 
-resource "google_project_iam_member" "cluster-network-service-agent" {
+resource "google_project_iam_member" "cluster-network-service-agent0" {
   project = var.cluster_network_project_id
   role    = "roles/container.serviceAgent"
   member  = "serviceAccount:63039372807-compute@developer.gserviceaccount.com"
