@@ -69,6 +69,12 @@ resource "google_project_iam_member" "network-container-service-agent" {
 resource "google_project_iam_member" "network-host-service-agent" {
   project = var.cluster_network_project_id
   role    = "roles/container.hostServiceAgentUser"
+  member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
+}
+
+resource "google_project_iam_member" "cluster-network-host-service-agent" {
+  project = var.cluster_network_project_id
+  role    = "roles/container.hostServiceAgentUser"
   member  = "serviceAccount:service-${data.google_project.project.number}@container-engine-robot.iam.gserviceaccount.com"
 }
 
