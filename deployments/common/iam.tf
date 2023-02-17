@@ -15,6 +15,11 @@ data "google_secret_manager_secret" "slack-webhook-token" {
   project   = var.secret_project_id
 }
 
+data "google_secret_manager_secret" "devops-ssh-key" {
+  secret_id = "devops-bots-ssh-key"
+  project   = var.secret_project_id
+}
+
 data "google_service_account" "terraform" {
   project    = "moove-systems"
   account_id = "terraform"
@@ -61,6 +66,14 @@ resource "google_project_iam_member" "privileged-builder-k8s" {
   role    = "roles/container.admin"
   member  = "serviceAccount:${google_service_account.privileged-builder.email}"
 }
+
+resource "google_secret_manager_secret_iam_member" "privileged-builder-devops-ssh-key-iam" {
+  project   = data.google_secret_manager_secret.devops-ssh-key.project
+  secret_id = data.google_secret_manager_secret.devops-ssh-key.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.privileged-builder.email}"
+}
+
 
 resource "google_secret_manager_secret_iam_member" "privileged-builder-grafana-iam" {
   project   = data.google_secret_manager_secret.grafana-api-key.project
