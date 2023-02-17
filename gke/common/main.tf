@@ -90,7 +90,7 @@ resource "google_project_iam_member" "cluster-network-host-service-agent" {
   member  = "serviceAccount:63039372807-compute@developer.gserviceaccount.com"
 }
 
-resource "google_project_iam_member" "cluster-network-host-service-agent" {
+resource "google_project_iam_member" "cluster-network-host-service-agent1" {
   project = var.cluster_network_project_id
   role    = "roles/container.serviceAgent"
   member  = "serviceAccount:service-63039372807@container-engine-robot.iam.gserviceaccount.com"
