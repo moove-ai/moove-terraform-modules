@@ -68,8 +68,8 @@ resource "google_project_iam_member" "privileged-builder-k8s" {
 }
 
 resource "google_secret_manager_secret_iam_member" "privileged-builder-devops-ssh-key-iam" {
-  project   = data.google_secret_manager_secret.devops-ssh-key.project
-  secret_id = data.google_secret_manager_secret.devops-ssh-key.secret_id
+  project   = data.google_secret_manager_secret.argocd-ssh-key.project
+  secret_id = data.google_secret_manager_secret.argocd-ssh-key.secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.privileged-builder.email}"
 }
