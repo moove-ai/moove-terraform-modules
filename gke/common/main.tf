@@ -40,6 +40,18 @@ resource "google_project_iam_member" "container-network-agent-service" {
   member  = "serviceAccount:service-${data.google_project.project.number}@container-engine-robot.iam.gserviceaccount.com"
 }
 
+resource "google_project_iam_member" "compute-admin" {
+  project = var.project_id
+  role    = "roles/compute.instanceAdmin"
+  member  = "serviceAccount:${data.google_project.project.number}@cloudservices.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "service-account-user-admin" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountUser"
+  member  = "serviceAccount:${data.google_project.project.number}@cloudservices.gserviceaccount.com"
+}
+
 resource "google_project_iam_member" "registry-reader" {
   project = var.project_id
   role    = "roles/artifactregistry.reader"
@@ -75,46 +87,3 @@ resource "google_project_iam_member" "resource-metadata-writer" {
   role    = "roles/stackdriver.resourceMetadata.writer"
   member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
 }
-
-### k8s nodes
-#resource "google_project_iam_member" "nodes-0" {
-#  project = var.cluster_network_project_id
-#  role    = "roles/owner"
-#  member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
-#}
-#
-#resource "google_project_iam_member" "nodes-1" {
-#  project = var.project_id
-#  role    = "roles/owner"
-#  member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
-#}
-#
-### compute
-#resource "google_project_iam_member" "compute-0" {
-#  project = var.project_id
-#  role    = "roles/owner"
-#  member  = "serviceAccount:63039372807-compute@developer.gserviceaccount.com"
-#}
-#
-#resource "google_project_iam_member" "compute-1" {
-#  project = var.cluster_network_project_id
-#  role    = "roles/owner"
-#  member  = "serviceAccount:63039372807-compute@developer.gserviceaccount.com"
-#}
-#
-#
-#
-### api
-#resource "google_project_iam_member" "api-0" {
-#  project = var.cluster_network_project_id
-#  role    = "roles/owner"
-#  member  = "serviceAccount:63039372807@cloudservices.gserviceaccount.com"
-#}
-#
-#resource "google_project_iam_member" "api-1" {
-#  project = var.project_id
-#  role    = "roles/owner"
-#  member  = "serviceAccount:63039372807@cloudservices.gserviceaccount.com"
-#}
-#
-#
