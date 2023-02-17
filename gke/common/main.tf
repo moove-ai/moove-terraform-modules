@@ -8,6 +8,10 @@
  */
 # gke/iam.tf
 
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
 ## k8s nodes IAM
 ## The service account running the k8s nodes
 resource "google_service_account" "k8s-nodes" {
@@ -22,6 +26,18 @@ resource "google_project_iam_member" "network" {
   project = var.cluster_network_project_id
   role    = "roles/compute.networkUser"
   member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
+}
+
+resource "google_project_iam_member" "container-engine-network" {
+  project = var.cluster_network_project_id
+  role    = "roles/compute.networkUser"
+  member  = "serviceAccount:service-${data.google_project.project.number}@container-engine-robot.iam.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "container-network-agent-service" {
+  project = var.cluster_network_project_id
+  role    = "roles/container.serviceAgent"
+  member  = "serviceAccount:service-${data.google_project.project.number}@container-engine-robot.iam.gserviceaccount.com"
 }
 
 resource "google_project_iam_member" "registry-reader" {
@@ -60,42 +76,45 @@ resource "google_project_iam_member" "resource-metadata-writer" {
   member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
 }
 
-resource "google_project_iam_member" "network-container-service-agent" {
-  project = var.cluster_network_project_id
-  role    = "roles/containerregistry.ServiceAgent"
-  member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
-}
-
-resource "google_project_iam_member" "network-host-service-agent0" {
-  project = var.cluster_network_project_id
-  role    = "roles/container.hostServiceAgentUser"
-  member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
-}
-
-resource "google_project_iam_member" "cluster-network-service-agent0" {
-  project = var.cluster_network_project_id
-  role    = "roles/container.serviceAgent"
-  member  = "serviceAccount:63039372807-compute@developer.gserviceaccount.com"
-}
-
-resource "google_project_iam_member" "cluster-network-service-agent" {
-  project = var.cluster_network_project_id
-  role    = "roles/container.serviceAgent"
-  member  = "serviceAccount:service-63039372807@container-engine-robot.iam.gserviceaccount.com"
-}
-
-resource "google_project_iam_member" "cluster-network-host-service-agent" {
-  project = var.cluster_network_project_id
-  role    = "roles/container.hostServiceAgentUser"
-  member  = "serviceAccount:63039372807-compute@developer.gserviceaccount.com"
-}
-
-resource "google_project_iam_member" "cluster-network-host-service-agent1" {
-  project = var.cluster_network_project_id
-  role    = "roles/container.serviceAgent"
-  member  = "serviceAccount:service-63039372807@container-engine-robot.iam.gserviceaccount.com"
-}
-
-data "google_project" "project" {
-  project_id = var.project_id
-}
+### k8s nodes
+#resource "google_project_iam_member" "nodes-0" {
+#  project = var.cluster_network_project_id
+#  role    = "roles/owner"
+#  member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
+#}
+#
+#resource "google_project_iam_member" "nodes-1" {
+#  project = var.project_id
+#  role    = "roles/owner"
+#  member  = "serviceAccount:${google_service_account.k8s-nodes.email}"
+#}
+#
+### compute
+#resource "google_project_iam_member" "compute-0" {
+#  project = var.project_id
+#  role    = "roles/owner"
+#  member  = "serviceAccount:63039372807-compute@developer.gserviceaccount.com"
+#}
+#
+#resource "google_project_iam_member" "compute-1" {
+#  project = var.cluster_network_project_id
+#  role    = "roles/owner"
+#  member  = "serviceAccount:63039372807-compute@developer.gserviceaccount.com"
+#}
+#
+#
+#
+### api
+#resource "google_project_iam_member" "api-0" {
+#  project = var.cluster_network_project_id
+#  role    = "roles/owner"
+#  member  = "serviceAccount:63039372807@cloudservices.gserviceaccount.com"
+#}
+#
+#resource "google_project_iam_member" "api-1" {
+#  project = var.project_id
+#  role    = "roles/owner"
+#  member  = "serviceAccount:63039372807@cloudservices.gserviceaccount.com"
+#}
+#
+#
