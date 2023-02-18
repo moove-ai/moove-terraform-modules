@@ -12,11 +12,11 @@ module "proxy-firewall" {
   ssh_target_tags         = []
   ssh_source_ranges       = []
   custom_rules = {
-    ingress-gke-master = { # needed for Keda
+    ingress-gke-master = {
       description = "Allows access to the GKE master."
       direction   = "INGRESS"
       action      = "allow"
-      ranges = [var.gke_master_ranges]
+      ranges = var.gke_master_ranges
       sources              = []
       targets              = ["gke"]
       use_service_accounts = false
@@ -46,6 +46,48 @@ module "proxy-firewall" {
           ports = [
             "8888",
             "22"
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
+    ingress-redis = {
+      description = "Allows access to redis."
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "10.0.0.0/8"
+      ]
+      sources              = []
+      targets              = ["gke"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "6379",
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
+    ingress-gce-l7 = {
+      description = "GCE L7 Firewall Rules"
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        "130.211.0.0/22",
+        "35.191.0.0/16",
+      ]
+      sources              = []
+      targets              = ["gke"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "30000-32767",
+            "8080",
           ]
         }
       ]
