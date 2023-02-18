@@ -12,6 +12,24 @@ module "proxy-firewall" {
   ssh_target_tags         = []
   ssh_source_ranges       = []
   custom_rules = {
+    ingress-gke-master = { # needed for Keda
+      description = "Allows access to the GKE master."
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [var.gke_master_ranges]
+      sources              = []
+      targets              = ["gke"]
+      use_service_accounts = false
+      rules = [
+        {
+          protocol = "tcp"
+          ports = [
+            "6443",
+          ]
+        }
+      ]
+      extra_attributes = {}
+    }
     ingress-allow-http-proxy = {
       description = "Allows access to the GKE proxy to access private clusters"
       direction   = "INGRESS"

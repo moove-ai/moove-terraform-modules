@@ -12,3 +12,8 @@ variable cluster_network {
   type        = string
   description = "The name of the VPC for this environment"
 }
+
+variable gke_master_ranges {
+  type        = list(string)
+  description = "List of GKE master CIDR ranges for firewall rules"
+}
