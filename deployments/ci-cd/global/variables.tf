@@ -17,3 +17,8 @@ variable apis {
   type        = list(string)
   description = "List of APIs to enable on the build project"
 }
+
+variable k8s_projects {
+  type        = list(string)
+  description = "List of projects where k8s clusters are located"
+}
