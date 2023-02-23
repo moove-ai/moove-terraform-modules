@@ -93,7 +93,7 @@ resource "google_project_iam_member" "deployer-iam" {
 resource "google_project_iam_member" "deplpyer-registry-iam" {
   depends_on = [module.builds]
   project    = module.builds.project_id
-  role       = "roles/artifactregistry.reader"
+  role       = "roles/artifactregistry.writer"
   member     = "serviceAccount:${google_service_account.deployer.email}"
 }
 
