@@ -72,6 +72,12 @@ resource "google_project_iam_member" "builder-registry-iam" {
   member  = "serviceAccount:${google_service_account.builder.email}"
 }
 
+resource "google_storage_bucket_iam_member" "builder-storage" {
+  bucket = google_storage_bucket.logs.name
+  role = "roles/storage.admin"
+  member  = "serviceAccount:${google_service_account.builder.email}"
+}
+
 # Deployer
 resource "google_service_account" "deployer" {
   depends_on = [module.builds]
@@ -110,4 +116,10 @@ resource "google_secret_manager_secret_iam_member" "member" {
   secret_id = "projects/moove-secrets/secrets/ci-cd_github-token"
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.deployer.email}"
+}
+
+resource "google_storage_bucket_iam_member" "deployer-storage" {
+  bucket = google_storage_bucket.logs.name
+  role = "roles/storage.admin"
+  member  = "serviceAccount:${google_service_account.deployer.email}"
 }
