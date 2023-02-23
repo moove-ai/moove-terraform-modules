@@ -33,16 +33,20 @@ resource "google_cloudbuild_trigger" "release-trigger" {
     #}
 
     step {
-      id         = "get-info"
-      name       = "gcr.io/cloud-builders/git"
-      entrypoint = "bash"
+      id         = "clone-repo"
+      name       = "maniator/gh"
+      entrypoint = "sh"
 
       args = ["-c", join(" ", [
-        "ls /workspace", "&&",
-        "echo $(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) > /version/version.txt",
-        "&&",
+        "gh repo clone moove-ai/$REPO_NAME /workspace/repo" , "&&",
+        "cd /workspace/repo", "&&", 
+        "$(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) > /version/version.txt", "&&",
         "git rev-parse --abbrev-ref HEAD"
       ])]
+
+      secret_env = [
+        "GITHUB_TOKEN"
+      ]
 
       volumes {
           name = "version"
