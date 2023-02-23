@@ -60,6 +60,11 @@ resource "google_cloudbuild_trigger" "release-trigger" {
         "GITHUB_TOKEN"
       ]
 
+      volumes {
+          name = "version"
+          path = "/version"
+        }
+
     }
   }
 }
