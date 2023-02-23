@@ -1,13 +1,13 @@
-resource "google_cloudbuild_trigger" "release-trigger" {
-  name            = var.stage_name
-  project         = "moove-builds-a747"
+resource "google_cloudbuild_trigger" "deploy-trigger" {
+  name     = var.deploy_name
+  project = "moove-builds-a747"
   service_account = "projects/moove-builds-a747/serviceAccounts/deployer@moove-builds-a747.iam.gserviceaccount.com"
 
   github {
     owner = "moove-ai"
     name  = var.github_repo
     push {
-      branch = var.cd_branch_pattern
+      branch = var.deploy_branch
     }
   }
 
@@ -25,113 +25,31 @@ resource "google_cloudbuild_trigger" "release-trigger" {
       }
     }
 
-    #dynamic "options" {
-    #  for_each = var.build_instance == "" ? [] : [0]
-    #  content {
-    #    machine_type = var.build_instance
-    #  }
-    #}
-
     step {
-      id         = "clone-repo"
-      name       = "maniator/gh"
+      id   = "clone-k8s-apps"
+      name = "maniator/gh"
       entrypoint = "sh"
-
       args = ["-c", join(" ", [
-        "gh repo clone moove-ai/$REPO_NAME /workspace/repo -- --branch $BRANCH_NAME" , "&&",
-        "cd /workspace/repo", "&&", 
-        "$(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) > /version/version.txt", "&&",
-        "git rev-parse --abbrev-ref HEAD"
+        "gh repo clone moove-ai/k8s-apps", 
       ])]
-
       secret_env = [
         "GITHUB_TOKEN"
       ]
-
-      volumes {
-          name = "version"
-          path = "/version"
-        }
     }
 
     step {
-      id         = "create-pr"
-      name       = "maniator/gh"
+      id   = "deploy"
+      name = "mikefarah/yq"
       entrypoint = "sh"
-
       args = ["-c", join(" ", [
-        "cd /workspace",
-        "&&", 
-        "gh pr create --title \"Release $(cat /version/version.txt)\" --body \"Automated commit releasing version $(cat /version/version.txt)\" -B $_MAIN_BRANCH",
+        "cd /workspace/k8s-apps", "&&",
+        "yq '.argocdApplications.${REPO_NAME}.imageTag = "v$(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.)"' apps/charts/production.yaml", "&&",
+        "git add apps/charts/production.yaml", "&&",
+        "git commit -m '${REPO_NAME} version $(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) deployed to production'"
       ])]
-
       secret_env = [
         "GITHUB_TOKEN"
       ]
-
-      volumes {
-          name = "version"
-          path = "/version"
-        }
-
     }
   }
 }
-
-#resource "google_cloudbuild_trigger" "deploy-trigger" {
-#  name     = var.deploy_name
-#  project = "moove-builds-a747"
-#  service_account = "projects/moove-builds-a747/serviceAccounts/deployer@moove-builds-a747.iam.gserviceaccount.com"
-#
-#  github {
-#    owner = "moove-ai"
-#    name  = var.github_repo
-#    push {
-#      branch = var.cd_branch_pattern
-#    }
-#  }
-#
-#  substitutions = {
-#    _MAIN_BRANCH = "main"
-#  }
-#
-#  build {
-#    logs_bucket = "gs://moove-build-logs"
-#
-#    available_secrets {
-#      secret_manager {
-#        env          = "GITHUB_TOKEN"
-#        version_name = "projects/moove-secrets/secrets/ci-cd_github-token/versions/latest"
-#      }
-#    }
-#
-#    #dynamic "options" {
-#    #  for_each = var.build_instance == "" ? [] : [0]
-#    #  content {
-#    #    machine_type = var.build_instance
-#    #  }
-#    #}
-#
-#    step {
-#      id   = "staging-deploy"
-#      name       = "gcr.io/cloud-builders/git"
-#      entrypoint = "bash"
-#      args = ["-c", join(" ", [
-#        "echo $(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) > /workspace/version.txt",
-#      ])]
-#    }
-#
-#    step {
-#      id   = "create-pr"
-#      name = "maniator/gh"
-#      entrypoint = "sh"
-#      args = ["-c", join(" ", [
-#        "gh pr create --title \"Release $(cat /workspace/version.txt)\" --body \"Automated commit releasing version $(cat /workspace/version.txt)\" -B $_MAIN_BRANCH", 
-#      ])]
-#      secret_env = [
-#        "GITHUB_TOKEN"
-#      ]
-#    }
-#  }
-#}
-#

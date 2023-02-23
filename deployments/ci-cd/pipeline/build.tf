@@ -3,8 +3,6 @@ locals {
   #ci_branch_pattern = var.ci_branch_pattern != "" ? var.ci_branch_pattern : "^release\/.+|^feature\/.+|^hotfix\/.+"
 }
 
-
-
 resource "google_cloudbuild_trigger" "build-trigger" {
   name     = var.build_name
   filename = local.cloudbuild_file
@@ -17,5 +15,4 @@ resource "google_cloudbuild_trigger" "build-trigger" {
       branch = var.ci_branch_pattern
     }
   }
-
 }

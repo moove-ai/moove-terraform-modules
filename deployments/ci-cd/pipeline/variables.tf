@@ -42,3 +42,9 @@ variable "stage_name" {
   type        = string
   description = "The name of the stagnig step"
 }
+
+variable deploy_branch {
+  type        = string
+  default     = "main"
+  description = "The branch that will trigger a production deploy when merged to"
+}
