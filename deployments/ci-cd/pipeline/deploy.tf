@@ -41,12 +41,10 @@ resource "google_cloudbuild_trigger" "release-trigger" {
         "echo $(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) > /version/version.txt",
       ])]
 
-      volumes = [
-        {
+      volumes {
           name = "version"
           path = "/version"
         }
-      ]
     }
 
     step {
@@ -62,12 +60,6 @@ resource "google_cloudbuild_trigger" "release-trigger" {
         "GITHUB_TOKEN"
       ]
 
-      volumes = [
-        {
-          name = "version"
-          path = "/version"
-        }
-      ]
     }
   }
 }
