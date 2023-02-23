@@ -36,20 +36,37 @@ resource "google_cloudbuild_trigger" "release-trigger" {
       id         = "get-info"
       name       = "gcr.io/cloud-builders/git"
       entrypoint = "bash"
+
       args = ["-c", join(" ", [
-        "echo $(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) > /workspace/version.txt",
+        "echo $(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) > /version/version.txt",
       ])]
+
+      volumes = [
+        {
+          name = "version"
+          path = "/version"
+        }
+      ]
     }
 
     step {
       id         = "create-pr"
       name       = "maniator/gh"
       entrypoint = "sh"
+
       args = ["-c", join(" ", [
         "gh pr create --title \"Release $(cat /workspace/version.txt)\" --body \"Automated commit releasing version $(cat /workspace/version.txt)\" -B $_MAIN_BRANCH",
       ])]
+
       secret_env = [
         "GITHUB_TOKEN"
+      ]
+
+      volumes = [
+        {
+          name = "version"
+          path = "/version"
+        }
       ]
     }
   }
