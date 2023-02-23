@@ -53,7 +53,7 @@ resource "google_cloudbuild_trigger" "release-trigger" {
       entrypoint = "sh"
 
       args = ["-c", join(" ", [
-        "gh pr create --title \"Release $(cat /workspace/version.txt)\" --body \"Automated commit releasing version $(cat /workspace/version.txt)\" -B $_MAIN_BRANCH",
+        "gh pr create --title \"Release $(cat /version/version.txt)\" --body \"Automated commit releasing version $(cat /version/version.txt)\" -B $_MAIN_BRANCH",
       ])]
 
       secret_env = [
