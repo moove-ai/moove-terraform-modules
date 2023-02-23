@@ -39,6 +39,8 @@ resource "google_cloudbuild_trigger" "release-trigger" {
 
       args = ["-c", join(" ", [
         "echo $(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) > /version/version.txt",
+        "&&",
+        "git rev-parse --abbrev-ref HEAD"
       ])]
 
       volumes {
