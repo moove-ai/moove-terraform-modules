@@ -56,7 +56,7 @@ resource "google_cloudbuild_trigger" "release-trigger" {
       entrypoint = "sh"
 
       args = ["-c", join(" ", [
-        "git push", 
+        "cd /workspace",
         "&&", 
         "gh pr create --title \"Release $(cat /version/version.txt)\" --body \"Automated commit releasing version $(cat /version/version.txt)\" -B $_MAIN_BRANCH",
       ])]
