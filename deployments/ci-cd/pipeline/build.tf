@@ -8,7 +8,7 @@ locals {
 resource "google_cloudbuild_trigger" "build-trigger" {
   name     = var.build_name
   filename = local.cloudbuild_file
-  project = var.project_id
+  project  = var.project_id
 
   github {
     owner = "moove-ai"

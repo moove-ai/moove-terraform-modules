@@ -1,13 +1,13 @@
 resource "google_cloudbuild_trigger" "release-trigger" {
-  name     = var.stage_name
-  project = "moove-builds-a747"
+  name            = var.stage_name
+  project         = "moove-builds-a747"
   service_account = "projects/moove-builds-a747/serviceAccounts/deployer@moove-builds-a747.iam.gserviceaccount.com"
 
   github {
     owner = "moove-ai"
     name  = var.github_repo
     push {
-    #pull_request {
+      #pull_request {
       branch = var.cd_branch_pattern
     }
   }
@@ -34,7 +34,7 @@ resource "google_cloudbuild_trigger" "release-trigger" {
     #}
 
     step {
-      id   = "get-info"
+      id         = "get-info"
       name       = "gcr.io/cloud-builders/git"
       entrypoint = "bash"
       args = ["-c", join(" ", [
@@ -43,11 +43,11 @@ resource "google_cloudbuild_trigger" "release-trigger" {
     }
 
     step {
-      id   = "create-pr"
-      name = "maniator/gh"
+      id         = "create-pr"
+      name       = "maniator/gh"
       entrypoint = "sh"
       args = ["-c", join(" ", [
-        "gh pr create --title \"Release $(cat /workspace/version.txt)\" --body \"Automated commit releasing version $(cat /workspace/version.txt)\" -B $_MAIN_BRANCH", 
+        "gh pr create --title \"Release $(cat /workspace/version.txt)\" --body \"Automated commit releasing version $(cat /workspace/version.txt)\" -B $_MAIN_BRANCH",
       ])]
       secret_env = [
         "GITHUB_TOKEN"
