@@ -38,7 +38,7 @@ resource "google_cloudbuild_trigger" "release-trigger" {
       entrypoint = "sh"
 
       args = ["-c", join(" ", [
-        "gh repo clone moove-ai/$REPO_NAME /workspace/repo" , "&&",
+        "gh repo clone moove-ai/$REPO_NAME --branch $BRANCH_NAME /workspace/repo" , "&&",
         "cd /workspace/repo", "&&", 
         "$(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) > /version/version.txt", "&&",
         "git rev-parse --abbrev-ref HEAD"
