@@ -144,5 +144,11 @@ resource "google_storage_bucket_iam_member" "read" {
 resource "google_storage_bucket_iam_member" "sa-admin" {
   bucket = google_storage_bucket.bucket.name
   role   = "roles/storage.objectAdmin"
-  member       = "serviceAccount:${var.create_service_account == true ? google_service_account.service-account[0].email : data.google_service_account.service-account.email}"
+  member = "serviceAccount:${var.create_service_account == true ? google_service_account.service-account[0].email : data.google_service_account.service-account.email}"
+}
+
+resource "google_storage_bucket_iam_member" "sa-legacy" {
+  bucket = google_storage_bucket.bucket.name
+  role   = "roles/storage.legacyBucketOwner"
+  member = "serviceAccount:${var.create_service_account == true ? google_service_account.service-account[0].email : data.google_service_account.service-account.email}"
 }

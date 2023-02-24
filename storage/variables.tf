@@ -71,7 +71,7 @@ variable "service_account_id" {
   description = "The name of the service account. Either uses an existing account or creates a new one."
 }
 
-variable service_account_description {
+variable "service_account_description" {
   type        = string
   default     = ""
   description = "The description for the service account if creating"
