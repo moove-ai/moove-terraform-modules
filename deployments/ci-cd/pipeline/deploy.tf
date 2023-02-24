@@ -37,19 +37,19 @@ resource "google_cloudbuild_trigger" "deploy-trigger" {
       ]
     }
 
-    step {
-      id   = "deploy"
-      name = "mikefarah/yq"
-      entrypoint = "sh"
-      args = ["-c", join(" ", [
-        "cd /workspace/k8s-apps", "&&",
-        "yq '.argocdApplications.${REPO_NAME}.imageTag = "v$(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.)"' apps/charts/production.yaml", "&&",
-        "git add apps/charts/production.yaml", "&&",
-        "git commit -m '${REPO_NAME} version $(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) deployed to production'"
-      ])]
-      secret_env = [
-        "GITHUB_TOKEN"
-      ]
-    }
+    #step {
+    #  id   = "deploy"
+    #  name = "mikefarah/yq"
+    #  entrypoint = "sh"
+    #  args = ["-c", join(" ", [
+    #    "cd /workspace/k8s-apps", "&&",
+    #    "yq '.argocdApplications.${REPO_NAME}.imageTag = "v$(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.)"' apps/charts/production.yaml", "&&",
+    #    "git add apps/charts/production.yaml", "&&",
+    #    "git commit -m '${REPO_NAME} version $(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) deployed to production'"
+    #  ])]
+    #  secret_env = [
+    #    "GITHUB_TOKEN"
+    #  ]
+    #}
   }
 }

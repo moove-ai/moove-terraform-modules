@@ -6,7 +6,7 @@ resource "google_cloudbuild_trigger" "release-trigger" {
   github {
     owner = "moove-ai"
     name  = var.github_repo
-    pull_request {
+    push {
       branch = var.cd_branch_pattern
     }
   }
@@ -43,7 +43,8 @@ resource "google_cloudbuild_trigger" "release-trigger" {
       args = ["-c", join(" ", [
         "gh repo clone moove-ai/$REPO_NAME /workspace/repo -- --branch $BRANCH_NAME" , "&&",
         "cd /workspace/repo", "&&", 
-        "echo $(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) > /workspace/version.txt"
+        "echo $(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) > /workspace/version.txt", "&&",
+        "cat /workspace/version.txt"
       ])]
 
       secret_env = [
@@ -54,12 +55,23 @@ resource "google_cloudbuild_trigger" "release-trigger" {
     step {
       id         = "build"
       name       = "gcr.io/cloud-builders/docker"
-
+      entrypoint = "bash"
       args = ["-c", join(" ", [
-        "build", "-t", "gcr.io/$PROJECT_ID/$REPO_NAME:v$(cat /workspace/version.txt)",
-        "--cache-from",
-        "gcr.io/$PROJECT_ID/$REPO_NAME:cache",
+        "docker", "build", 
+        "-t", "gcr.io/$PROJECT_ID/$REPO_NAME:v$(cat /workspace/version.txt)",
+        "-t", "gcr.io/$PROJECT_ID/$REPO_NAME:cache",
+        "--cache-from", "gcr.io/$PROJECT_ID/$REPO_NAME:cache",
         "."
+      ])]
+    }
+
+    step {
+      id         = "push"
+      name       = "gcr.io/cloud-builders/docker"
+      entrypoint = "bash"
+      args = ["-c", join(" ", [
+        "docker", "image", "push", "--all-tags",
+        "gcr.io/$PROJECT_ID/$REPO_NAME"
       ])]
     }
 
@@ -69,7 +81,7 @@ resource "google_cloudbuild_trigger" "release-trigger" {
       entrypoint = "sh"
 
       args = ["-c", join(" ", [
-        "gh repo clone moove-ai/k8s-apps /workspace/k8s-apps" , "&&",
+        "gh repo clone moove-ai/k8s-apps /workspace/k8s-apps"
       ])]
 
       secret_env = [
@@ -78,13 +90,24 @@ resource "google_cloudbuild_trigger" "release-trigger" {
     }
 
     step {
+      id         = "set-permissions"
+      name       = "gcr.io/cloud-builders/docker"
+      entrypoint = "bash"
+      args = ["-c", join(" ", [
+        "chmod 0777 /workspace/k8s-apps/apps/charts/staging.yaml"
+      ])]
+    }
+
+    step {
       id         = "configure-staging"
       name       = "mikefarah/yq"
       entrypoint = "/bin/sh"
       args = ["-c", join(" ", [
         "cd /workspace/k8s-apps", "&&",
-        "yq \".argocdApplications.${REPO_NAME}.disable = \"false\"\" apps/charts/staging.yaml", "&&",
-        "yq \".argocdApplications.${REPO_NAME}.imageTag = \"v$(cat /workspace/version.txt)\"\" apps/charts/staging.yaml"
+        "export VERSION=v$(cat /workspace/version.txt)", "&&",
+        "cd /workspace/k8s-apps", "&&",
+        "yq -i '.argocdApplications.$REPO_NAME.disable = false' apps/charts/staging.yaml", "&&",
+        "yq -i '.argocdApplications.$REPO_NAME.imageTag = strenv(VERSION)' apps/charts/staging.yaml"
       ])]
     }
 
@@ -94,8 +117,11 @@ resource "google_cloudbuild_trigger" "release-trigger" {
       entrypoint = "sh"
       args = ["-c", join(" ", [
         "cd /workspace/k8s-apps", "&&",
+        "git config user.name 'devopsbot'", "&&",
+        "git config user.email 'devopsbot@moove.ai'", "&&",
+        "git remote set-url origin https://devopsbot:$$GITHUB_TOKEN@github.com/moove-ai/k8s-apps.git", "&&",
         "git add apps/charts/staging.yaml", "&&",
-        "git commit -m 'staging ${REPO_NAME}. version: $(cat /workspace/version.txt)", "&&",
+        "git commit -m \"staging $REPO_NAME. version: $(cat /workspace/version.txt)\"", "&&",
         "git push"
       ])]
 
