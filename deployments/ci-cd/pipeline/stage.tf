@@ -26,7 +26,17 @@ resource "google_cloudbuild_trigger" "release-trigger" {
     }
 
     step {
-      id         = "clone-repo"
+      id         = "cache"
+      name       = "gcr.io/cloud-builders/docker"
+      entrypoint = "bash"
+
+      args = ["-c", join(" ", [
+        "docker pull gcr.io/$PROJECT_ID/$REPO_NAME:cache || exit 0"
+      ])]
+    }
+
+    step {
+      id         = "get-release-version"
       name       = "maniator/gh"
       entrypoint = "sh"
 
@@ -42,14 +52,24 @@ resource "google_cloudbuild_trigger" "release-trigger" {
     }
 
     step {
-      id         = "create-pr"
+      id         = "build"
+      name       = "gcr.io/cloud-builders/docker"
+
+      args = ["-c", join(" ", [
+        "build", "-t", "gcr.io/$PROJECT_ID/$REPO_NAME:v$(cat /workspace/version.txt)",
+        "--cache-from",
+        "gcr.io/$PROJECT_ID/$REPO_NAME:cache",
+        "."
+      ])]
+    }
+
+    step {
+      id         = "clone-apps-repo"
       name       = "maniator/gh"
       entrypoint = "sh"
 
       args = ["-c", join(" ", [
-        "cd /workspace/repo",
-        "&&", 
-        "gh pr create --title \"Release $(cat /workspace/version.txt)\" --body \"Automated commit releasing version $(cat /workspace/version.txt)\" -B $_MAIN_BRANCH > /workspace/url.txt",
+        "gh repo clone moove-ai/k8s-apps /workspace/k8s-apps" , "&&",
       ])]
 
       secret_env = [
@@ -58,12 +78,25 @@ resource "google_cloudbuild_trigger" "release-trigger" {
     }
 
     step {
-      id         = "print-pr"
+      id         = "configure-staging"
+      name       = "mikefarah/yq"
+      entrypoint = "/bin/sh"
+      args = ["-c", join(" ", [
+        "cd /workspace/k8s-apps", "&&",
+        "yq \".argocdApplications.${REPO_NAME}.disable = \"false\"\" apps/charts/staging.yaml", "&&",
+        "yq \".argocdApplications.${REPO_NAME}.imageTag = \"v$(cat /workspace/version.txt)\"\" apps/charts/staging.yaml"
+      ])]
+    }
+
+    step {
+      id         = "staging-deploy"
       name       = "maniator/gh"
       entrypoint = "sh"
-
       args = ["-c", join(" ", [
-        "cat /workspace/url.txt"
+        "cd /workspace/k8s-apps", "&&",
+        "git add apps/charts/staging.yaml", "&&",
+        "git commit -m 'staging ${REPO_NAME}. version: $(cat /workspace/version.txt)", "&&",
+        "git push"
       ])]
 
       secret_env = [
