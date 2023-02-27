@@ -25,7 +25,6 @@ resource "google_cloudbuild_trigger" "build-trigger" {
 
   included_files = local.build_included_files
   ignored_files = local.build_ignored_files
-  
 
   github {
     owner = "moove-ai"
