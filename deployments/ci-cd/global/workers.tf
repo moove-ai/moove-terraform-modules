@@ -20,6 +20,7 @@ resource "google_compute_global_address" "worker_range" {
   project       = "moove-systems"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
+  address       = lookup(var.subnets, )
   prefix_length = 24
   network       = data.google_compute_network.network.id
 }
@@ -41,7 +42,7 @@ resource "google_cloudbuild_worker_pool" "pool" {
   worker_config {
     disk_size_gb   = 100
     machine_type   = "e2-standard-2"
-    no_external_ip = true
+    no_external_ip = false
   }
   network_config {
     peered_network = data.google_compute_network.network.id

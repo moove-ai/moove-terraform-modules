@@ -78,6 +78,15 @@ resource "google_storage_bucket_iam_member" "builder-storage" {
   member = "serviceAccount:${google_service_account.builder.email}"
 }
 
+resource "google_project_iam_member" "builder-service-agent-iam" {
+  for_each   = toset(var.k8s_projects)
+  depends_on = [module.builds]
+  project    = each.key
+  role       = "roles/cloudbuild.serviceAgent"
+  member     = "serviceAccount:${google_service_account.builder.email}"
+}
+
+
 # Deployer
 resource "google_service_account" "deployer" {
   depends_on = [module.builds]
@@ -107,7 +116,23 @@ resource "google_project_iam_member" "deployer-container-iam" {
   for_each   = toset(var.k8s_projects)
   depends_on = [module.builds]
   project    = each.key
+  role       = "roles/container.clusterAdmin"
+  member     = "serviceAccount:${google_service_account.deployer.email}"
+}
+
+resource "google_project_iam_member" "deployer-container-dev-iam" {
+  for_each   = toset(var.k8s_projects)
+  depends_on = [module.builds]
+  project    = each.key
   role       = "roles/container.developer"
+  member     = "serviceAccount:${google_service_account.deployer.email}"
+}
+
+resource "google_project_iam_member" "deployer-service-agent-iam" {
+  for_each   = toset(var.k8s_projects)
+  depends_on = [module.builds]
+  project    = each.key
+  role       = "roles/cloudbuild.serviceAgent"
   member     = "serviceAccount:${google_service_account.deployer.email}"
 }
 
@@ -122,4 +147,43 @@ resource "google_storage_bucket_iam_member" "deployer-storage" {
   bucket = google_storage_bucket.logs.name
   role   = "roles/storage.admin"
   member = "serviceAccount:${google_service_account.deployer.email}"
+}
+
+resource "google_storage_bucket_iam_member" "deployer-build-storage" {
+  bucket = "${module.builds.project_id}_cloudbuild"
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${google_service_account.deployer.email}"
+}
+
+# worker pool
+resource "google_project_iam_member" "deployer-pool-user" {
+  depends_on = [module.builds]
+
+  project = module.builds.project_id
+  role    = "roles/cloudbuild.workerPoolUser"
+  member  = "serviceAccount:${google_service_account.deployer.email}"
+}
+
+resource "google_project_iam_member" "builder-pool-user" {
+  depends_on = [module.builds]
+
+  project = module.builds.project_id
+  role    = "roles/cloudbuild.workerPoolUser"
+  member  = "serviceAccount:${google_service_account.builder.email}"
+}
+
+resource "google_project_iam_member" "deployer-compute-user" {
+  depends_on = [module.builds]
+
+  project = module.builds.project_id
+  role    = "roles/compute.networkUser"
+  member  = "serviceAccount:${google_service_account.deployer.email}"
+}
+
+resource "google_project_iam_member" "builder-compute-user" {
+  depends_on = [module.builds]
+
+  project = module.builds.project_id
+  role    = "roles/compute.networkUser"
+  member  = "serviceAccount:${google_service_account.builder.email}"
 }
