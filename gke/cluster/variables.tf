@@ -18,11 +18,6 @@ variable "region" {
   description = "The GCP Region to deploy this module into"
 }
 
-variable proxy_zone {
-  type        = string
-  description = "The zone to create the GKE proxy in"
-}
-
 variable cluster_network_project_id {
   type        = string
   description = "The project the cluster network is located in"
@@ -36,12 +31,6 @@ variable cluster_network {
 variable cluster_subnetwork {
   type        = string
   description = "The subnetwork the cluster is running on"
-}
-
-variable proxy_dns {
-  type        = string
-  description = "The DNS name for the proxy"
-  default = ""
 }
 
 variable "create_resource_monitor" {

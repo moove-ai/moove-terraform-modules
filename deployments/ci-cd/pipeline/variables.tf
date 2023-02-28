@@ -104,3 +104,18 @@ variable deploy_ignored_files {
   default     = []
   description = "List of files which will NOT trigger a deploy"
 }
+
+variable region {
+  type        = string
+  description = "The region this app is deploying to"
+}
+
+variable environment {
+  type        = string
+  description = "The environment this app is deploying to"
+}
+
+variable cluster_project {
+  type        = string
+  description = "The project where the GKE cluster running this app is running"
+}

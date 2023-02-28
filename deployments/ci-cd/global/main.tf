@@ -120,6 +120,20 @@ resource "google_project_iam_member" "deployer-container-iam" {
   member     = "serviceAccount:${google_service_account.deployer.email}"
 }
 
+resource "google_project_iam_member" "deployer-reader-iam" {
+  depends_on = [module.builds]
+  project    = module.builds.project_id
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${google_service_account.deployer.email}"
+}
+
+resource "google_project_iam_member" "builder-reader-iam" {
+  depends_on = [module.builds]
+  project    = module.builds.project_id
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${google_service_account.builder.email}"
+}
+
 resource "google_project_iam_member" "deployer-container-dev-iam" {
   for_each   = toset(var.k8s_projects)
   depends_on = [module.builds]

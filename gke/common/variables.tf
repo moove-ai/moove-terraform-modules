@@ -17,3 +17,13 @@ variable gke_master_ranges {
   type        = list(string)
   description = "List of GKE master CIDR ranges for firewall rules"
 }
+
+variable environment {
+  type        = string
+  description = "The environment GKE common resources are being deployed on."
+}
+
+variable keda_monitor_projects {
+  type        = list(string)
+  description = "List of projects to monitor via keda"
+}

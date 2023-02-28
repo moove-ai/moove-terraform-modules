@@ -1,20 +1,19 @@
 locals {
   build_file  = var.build_file != "" ? var.build_file : "build.yaml"
   stage_file  = var.stage_file != "" ? var.stage_file : "stage.yaml"
-  deploy_file = var.deploy_file != "" ? var.deploy_file : "stage.yaml"
+  deploy_file = var.deploy_file != "" ? var.deploy_file : "deploy.yaml"
 
   build_name  = var.build_name != "" ? var.build_name : "build-k8s-app-${var.github_repo}"
   stage_name  = var.stage_name != "" ? var.stage_name : "stage-k8s-app-${var.github_repo}"
   deploy_name = var.deploy_name != "" ? var.deploy_name : "deploy-k8s-app-${var.github_repo}"
 
-  build_included_files = var.build_included_files != "" ? var.build_included_files : ["**"]
-  stage_included_files = var.stage_included_files != "" ? var.stage_included_files : ["**"]
-  deploy_included_files = var.deploy_included_files != "" ? var.deploy_included_files : ["**"]
+  build_included_files = var.build_included_files != [] ? var.build_included_files : ["**"]
+  stage_included_files = var.stage_included_files != [] ? var.stage_included_files : ["**"]
+  deploy_included_files = var.deploy_included_files != [] ? var.deploy_included_files : ["**"]
 
-  build_ignored_files = var.build_ignored_files != "" ? var.build_ignored_files : ["helm/**", "deploy.yaml", "stage.yaml"]
-  stage_ignored_files = var.stage_ignored_files != "" ? var.stage_ignored_files : ["deploy.yaml", "build.yaml"]
-  deploy_ignored_files = var.deploy_ignored_files != "" ? var.deploy_ignored_files : ["build.yaml", "stage.yaml"]
-
+  build_ignored_files = var.build_ignored_files != [] ? var.build_ignored_files : ["helm/**", "deploy.yaml", "stage.yaml"]
+  stage_ignored_files = var.stage_ignored_files != [] ? var.stage_ignored_files : ["deploy.yaml", "build.yaml"]
+  deploy_ignored_files = var.deploy_ignored_files != [] ? var.deploy_ignored_files : ["build.yaml", "stage.yaml"]
 }
 
 resource "google_cloudbuild_trigger" "build-trigger" {
@@ -44,6 +43,12 @@ resource "google_cloudbuild_trigger" "stage-trigger" {
   included_files = local.stage_included_files
   ignored_files = local.stage_ignored_files
 
+  substitutions = {
+    _CLUSTER_PROJECT = var.cluster_project
+    _ENVIRONMENT = var.environment
+    _REGION = var.region
+  }
+
   github {
     owner = "moove-ai"
     name  = var.github_repo
@@ -61,6 +66,12 @@ resource "google_cloudbuild_trigger" "deploy-trigger" {
 
   included_files = local.deploy_included_files
   ignored_files = local.deploy_ignored_files
+
+  substitutions = {
+    _CLUSTER_PROJECT = var.cluster_project
+    _ENVIRONMENT = var.environment
+    _REGION = var.region
+  }
 
   github {
     owner = "moove-ai"
