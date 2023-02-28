@@ -48,6 +48,13 @@ variable "create_bucket" {
   description = "Set to false to use an existing bucket"
 }
 
+variable bucket_project {
+  type        = string
+  default     = ""
+  description = "Optional. Overrides the project to create or view the bucket in."
+}
+
+
 variable "create_service_account" {
   type        = bool
   default     = true
@@ -101,4 +108,10 @@ variable topic_enabled {
   type        = bool
   default     = true
   description = "Enable or disable a pub/sub topic"
+}
+
+variable admin_access {
+  type        = string
+  default     = true
+  description = "Optional. Gives the service account admin access to the bucket created/defined by this module."
 }
