@@ -143,6 +143,13 @@ resource "google_storage_bucket_iam_member" "read" {
   member   = each.key
 }
 
+resource "google_storage_bucket_iam_member" "read-legacy" {
+  for_each = toset(var.read_members)
+  bucket   = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
+  role     = "roles/storage.legacyBucketReader"
+  member   = each.key
+}
+
 resource "google_storage_bucket_iam_member" "sa-admin" {
   count    = var.admin_access ? 1 : 0
   bucket   = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
