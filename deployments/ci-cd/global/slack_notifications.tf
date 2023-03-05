@@ -198,10 +198,6 @@ locals {
 	  			{
 	  				"type": "mrkdwn",
 	  				"text": "<https://github.com/moove-ai/{{.Build.Substitutions.REPO_NAME}}/commit/{{.Build.Substitutions.COMMIT_SHA}}|{{.Build.Substitutions.SHORT_SHA}}>"
-	  			},
-	  			{
-	  				"type": "mrkdwn",
-	  				"text": "<https://console.cloud.google.com/cloud-build/builds?project=moove-builds-a747&pageState=(%22builds%22:(%22f%22:%22%255B%257B_22k_22_3A_22Trigger%2520Name_22_2C_22t_22_3A10_2C_22v_22_3A_22_5C_22{{.Build.Substitutions.PROJECT_ID}}_5C_22_22_2C_22s_22_3Atrue_2C_22i_22_3A_22triggerName_22%257D%255D%22))|View Build History>"
 	  			}
 	  		]
 	  	},
