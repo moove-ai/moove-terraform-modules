@@ -193,7 +193,7 @@ locals {
 	  		"fields": [
 	  			{
 	  				"type": "mrkdwn",
-	  				"text": "<https://github.com/moove-ai/{{.Build.Substitutions.REPO_NAME}}|{{.Build.Substitutions.REPO_NAME}}>"
+	  				"text": "update: <https://github.com/moove-ai/{{.Build.Substitutions.REPO_NAME}}|{{.Build.Substitutions.REPO_NAME}}>"
 	  			},
 	  			{
 	  				"type": "mrkdwn",
@@ -201,7 +201,7 @@ locals {
 	  			},
 	  			{
 	  				"type": "mrkdwn",
-	  				"text": "<https://console.cloud.google.com/cloud-build/builds;region=global/{{.Build.Substitutions.BUILD_ID}}?project=moove-builds-a747|View Build History>"
+	  				"text": "<https://console.cloud.google.com/cloud-build/builds;region=global/{{.Build.Substitutions.BUILD_ID}}?project={{.Build.Substitutions.PROJECT_ID}}|View Build History>"
 	  			}
 	  		]
 	  	},
