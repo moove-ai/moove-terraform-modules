@@ -175,42 +175,43 @@ locals {
         value: projects/moove-secrets/secrets/ci-cd_slack-builds-hook/versions/latest  
   EOT
   slack_config = <<EOT
-    [
-      {
-       "type": "section",
-       "text": {
-        "type": "plain_text",
-        "text": "{{.Build.Substitutions.REPO_NAME}} - {{.Build.Substitutions.BRANCH_NAME}}: {{.Build.Status}}"
-       },
-       "accessory": {
-        "type": "image",
-        "image_url": "https://moove.ai/assets/images/spyglass.svg",
-        "alt_text": "moove.ai"
-       }
-      },
-      {
-       "type": "divider"
-      },
-      {
-       "type": "section",
-       "text": {
-        "type": "mrkdwn",
-        "text": "*Status:* {{.Build.Status}}\n*Repo:* <https://github.com/{orgName}/{{.Build.Substitutions.REPO_NAME}}|{{.Build.Substitutions.REPO_NAME}}>"
-       },
-       "accessory": {
-        "type": "button",
-        "text": {
-         "type": "mrkdwn",
-         "text": "<https://console.cloud.google.com/cloud-build/builds;region=global/{{.Build.Substitutions.BUILD_ID}}?project=${data.google_project.project.project_id}|View Build History>"
-        },
-        "value": "mooveAI",
-        "style": "primary",
-        "action_id": "button-action"
-       }
-      },
-      {
-       "type": "divider"
-      }
-     ]
+	  [
+	  	{
+	  		"type": "section",
+	  		"text": {
+	  			"type": "plain_text",
+	  			"text": "{{.Build.Substitutions.REPO_NAME}} - {{.Build.Substitutions.BRANCH_NAME}}: {{.Build.Status}}"
+	  		},
+	  		"accessory": {
+	  			"type": "image",
+	  			"image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Robot_arm_icon.svg/2162px-Robot_arm_icon.svg.png",
+	  			"alt_text": "devopsbot"
+	  		}
+	  	},
+	  	{
+	  		"type": "divider"
+	  	},
+	  	{
+	  		"type": "section",
+	  		"text": {
+	  			"type": "mrkdwn",
+	  			"text": "<https://github.com/moove-ai/{{.Build.Substitutions.REPO_NAME}}/commit/{{.Build.Substitutions.COMMIT_SHA}}|{{.Build.Substitutions.SHORT_SHA}}>"
+	  		},
+	  		"accessory": {
+	  			"type": "button",
+	  			"text": {
+	  				"type": "plain_text",
+	  				"text": "View Build History",
+	  				"emoji": true
+	  			},
+	  			"value": "Build Logs",
+	  			"url": "https://console.cloud.google.com/cloud-build/builds;region=global/{{.Build.Substitutions.BUILD_ID}}?project=${data.google_project.project.project_id}",
+	  			"action_id": "button-action"
+	  		}
+	  	},
+	  	{
+	  		"type": "divider"
+	  	}
+	  ]
   EOT
 }
