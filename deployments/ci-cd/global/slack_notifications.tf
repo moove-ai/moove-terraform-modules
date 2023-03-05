@@ -201,7 +201,7 @@ locals {
         "type": "button",
         "text": {
          "type": "mrkdwn",
-         "text": "<https://console.cloud.google.com/cloud-build/builds;region=global/{{.Build.Substitutions.BUILD_ID}}?project=moove-builds-a747|View Build History>"
+         "text": "<https://console.cloud.google.com/cloud-build/builds;region=global/{{.Build.Substitutions.BUILD_ID}}?project=${data.google_project.project.project_id}|View Build History>"
         },
         "value": "mooveAI",
         "style": "primary",
