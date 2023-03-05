@@ -189,25 +189,21 @@ locals {
 	  		}
 	  	},
 	  	{
-	  		"type": "divider"
+	  		"type": "section",
+	  		"fields": [
+	  			{
+	  				"type": "mrkdwn",
+	  				"text": "<https://github.com/moove-ai/{{.Build.Substitutions.REPO_NAME}}/commit/{{.Build.Substitutions.COMMIT_SHA}}|{{.Build.Substitutions.SHORT_SHA}}>"
+	  			},
+	  			{
+	  				"type": "plain_text",
+	  				"text": "<https://console.cloud.google.com/cloud-build/builds;region=global/{{.Build.Substitutions.BUILD_ID}}?project=${data.google_project.project.project_id}|View Build History>",
+	  				"emoji": true
+	  			}
+	  		]
 	  	},
 	  	{
-	  		"type": "section",
-	  		"text": {
-	  			"type": "mrkdwn",
-	  			"text": "<https://github.com/moove-ai/{{.Build.Substitutions.REPO_NAME}}/commit/{{.Build.Substitutions.COMMIT_SHA}}|{{.Build.Substitutions.SHORT_SHA}}>"
-	  		},
-	  		"accessory": {
-	  			"type": "button",
-	  			"text": {
-	  				"type": "plain_text",
-	  				"text": "View Build History",
-	  				"emoji": true
-	  			},
-	  			"value": "Build Logs",
-	  			"url": "https://console.cloud.google.com/cloud-build/builds;region=global/{{.Build.Substitutions.BUILD_ID}}?project=${data.google_project.project.project_id}",
-	  			"action_id": "button-action"
-	  		}
+	  		"type": "divider"
 	  	},
 	  	{
 	  		"type": "divider"
