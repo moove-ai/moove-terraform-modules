@@ -200,10 +200,10 @@ locals {
        "accessory": {
         "type": "button",
         "text": {
-         "type": "plain_text",
-         "text": "View Build History"
+         "type": "mrkdwn",
+         "text": "<https://console.cloud.google.com/cloud-build/builds;region=global/{{.Build.Substitutions.BUILD_ID}}?project=moove-builds-a747|View Build History>"
         },
-        "value": "moove.ai",
+        "value": "mooveAI",
         "style": "primary",
         "action_id": "button-action"
        }
