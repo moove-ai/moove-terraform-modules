@@ -175,38 +175,40 @@ locals {
         value: projects/moove-secrets/secrets/ci-cd_slack-builds-hook/versions/latest  
   EOT
   slack_config = <<EOT
-	  [
-	  	{
-	  		"type": "section",
-	  		"text": {
-	  			"type": "plain_text",
-	  			"text": "{{.Build.Substitutions.REPO_NAME}} - {{.Build.Substitutions.BRANCH_NAME}}: {{.Build.Status}}"
-	  		},
-	  		"accessory": {
-	  			"type": "image",
-	  			"image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Robot_arm_icon.svg/2162px-Robot_arm_icon.svg.png",
-	  			"alt_text": "devopsbot"
-	  		}
-	  	},
-	  	{
-	  		"type": "section",
-	  		"fields": [
-	  			{
-	  				"type": "mrkdwn",
-	  				"text": "<https://github.com/moove-ai/{{.Build.Substitutions.REPO_NAME}}/commit/{{.Build.Substitutions.COMMIT_SHA}}|{{.Build.Substitutions.SHORT_SHA}}>"
-	  			},
-	  			{
-	  				"type": "mrkdwn",
-	  				"text": "<https://console.cloud.google.com/cloud-build/builds;region=global/{{.Build.Substitutions.BUILD_ID}}?project=moove-builds-a747|View Build History>",
-	  			}
-	  		]
-	  	},
-	  	{
-	  		"type": "divider"
-	  	},
-	  	{
-	  		"type": "divider"
-	  	}
-	  ]
+    {
+    	"blocks": [
+    		{
+    			"type": "section",
+    			"text": {
+    				"type": "plain_text",
+    				"text": "{{.Build.Substitutions.REPO_NAME}} - {{.Build.Substitutions.BRANCH_NAME}}: {{.Build.Status}}"
+    			},
+    			"accessory": {
+    				"type": "image",
+    				"image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Robot_arm_icon.svg/2162px-Robot_arm_icon.svg.png",
+    				"alt_text": "devopsbot"
+    			}
+    		},
+    		{
+    			"type": "section",
+    			"fields": [
+    				{
+    					"type": "mrkdwn",
+    					"text": "<https://github.com/moove-ai/{{.Build.Substitutions.REPO_NAME}}/commit/{{.Build.Substitutions.COMMIT_SHA}}|{{.Build.Substitutions.SHORT_SHA}}>"
+    				},
+    				{
+    					"type": "mrkdwn",
+    					"text": "<https://console.cloud.google.com/cloud-build/builds;region=global/{{.Build.Substitutions.BUILD_ID}}?project=moove-builds-a747|View Build History>"
+    				}
+    			]
+    		},
+    		{
+    			"type": "divider"
+    		},
+    		{
+    			"type": "divider"
+    		}
+    	]
+    }
   EOT
 }
