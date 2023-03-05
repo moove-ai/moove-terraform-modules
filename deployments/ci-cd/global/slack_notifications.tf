@@ -196,9 +196,8 @@ locals {
 	  				"text": "<https://github.com/moove-ai/{{.Build.Substitutions.REPO_NAME}}/commit/{{.Build.Substitutions.COMMIT_SHA}}|{{.Build.Substitutions.SHORT_SHA}}>"
 	  			},
 	  			{
-	  				"type": "plain_text",
+	  				"type": "mrkdwn",
 	  				"text": "<https://console.cloud.google.com/cloud-build/builds;region=global/{{.Build.Substitutions.BUILD_ID}}?project=${data.google_project.project.project_id}|View Build History>",
-	  				"emoji": true
 	  			}
 	  		]
 	  	},
