@@ -119,3 +119,18 @@ variable cluster_project {
   type        = string
   description = "The project where the GKE cluster running this app is running"
 }
+
+
+
+# BUILD VARIABLES
+variable build_timeout {
+  type        = string
+  default     = "300s"
+  description = "description"
+}
+
+variable build_args {
+  type        = string
+  default     = []
+  description = "description"
+}

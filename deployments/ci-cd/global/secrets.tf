@@ -93,27 +93,3 @@ resource "google_secret_manager_secret_iam_member" "argocd-alex-password-iam-mem
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.deployer.email}"
 }
-
-resource "google_secret_manager_secret" "ci-cd-slack-builds-hook" {
-  project   = "moove-secrets"
-  secret_id = "ci-cd_slack-builds-hook"
-
-  labels = {
-    environment = "mgmt"
-    function    = "cicd"
-    client      = "moove"
-    terraformed = "true"
-    secret-data = "manual-input"
-  }
-
-  replication {
-    automatic = true
-  }
-}
-
-resource "google_secret_manager_secret_iam_member" "ci-cd-slack-builds-iam-member" {
-  project   = google_secret_manager_secret.ci-cd-slack-builds-hook.project
-  secret_id = google_secret_manager_secret.ci-cd-slack-builds-hook.secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.deployer.email}"
-}
