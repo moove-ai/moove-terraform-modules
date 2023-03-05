@@ -193,7 +193,7 @@ locals {
 	  		"fields": [
 	  			{
 	  				"type": "mrkdwn",
-	  				"text": "<https://github.com/{orgName}/{{.Build.Substitutions.REPO_NAME}}|{{.Build.Substitutions.REPO_NAME}}>"
+	  				"text": "<https://github.com/moove-ai/{{.Build.Substitutions.REPO_NAME}}|{{.Build.Substitutions.REPO_NAME}}>"
 	  			},
 	  			{
 	  				"type": "mrkdwn",
