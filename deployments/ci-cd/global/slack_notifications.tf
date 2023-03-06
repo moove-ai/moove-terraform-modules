@@ -193,11 +193,15 @@ locals {
 	  		"fields": [
 	  			{
 	  				"type": "mrkdwn",
-	  				"text": "update: <https://github.com/moove-ai/{{.Build.Substitutions.REPO_NAME}}|{{.Build.Substitutions.REPO_NAME}}>"
+	  				"text": "<https://github.com/moove-ai/{{.Build.Substitutions.REPO_NAME}}|{{.Build.Substitutions.REPO_NAME}}>"
 	  			},
 	  			{
 	  				"type": "mrkdwn",
 	  				"text": "<https://github.com/moove-ai/{{.Build.Substitutions.REPO_NAME}}/commit/{{.Build.Substitutions.COMMIT_SHA}}|{{.Build.Substitutions.SHORT_SHA}}>"
+	  			},
+	  			{
+	  				"type": "mrkdwn",
+	  				"text": "<{{.Build.LogUrl}}|View Build Log>"
 	  			}
 	  		]
 	  	},
