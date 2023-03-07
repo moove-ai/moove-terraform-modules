@@ -20,6 +20,4 @@ locals {
 
   test_entrypoint     = var.test_entrypoint != "" ? var.test_entrypoint : "python"
   test_args           = var.test_args != [] ? var.test_args : "-m unittest discover -s tests -t ."
-
 }
-
