@@ -1,22 +1,22 @@
-resource "google_cloudstage_trigger" "build" {
-  name     = local.stage_name
+resource "google_cloudbuild_trigger" "build" {
+  name     = local.build_name
   project  = var.project_id
   service_account = "projects/moove-builds-a747/serviceAccounts/deployer@moove-builds-a747.iam.gserviceaccount.com"
 
-  included_files = local.stage_included_files
-  ignored_files = local.stage_ignored_files
+  included_files = local.build_included_files
+  ignored_files = local.build_ignored_files
 
   github {
     owner = "moove-ai"
     name  = var.github_repo
     push {
-      branch = var.stage_branch_pattern
+      branch = var.build_branch_pattern
     }
   }
 
   build {
     logs_bucket = "gs://moove-build-logs"
-    timeout     = var.stage_timeout
+    timeout     = var.build_timeout
     images = [
       "gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA",
       "gcr.io/$PROJECT_ID/$REPO_NAME:cache",
@@ -30,9 +30,9 @@ resource "google_cloudstage_trigger" "build" {
     }
 
     dynamic "options" {
-      for_each = var.stage_instance != "" ? [0] : []
+      for_each = var.build_instance != "" ? [0] : []
       content {
-        machine_type = var.stage_instance
+        machine_type = var.build_instance
       }
     }
 
