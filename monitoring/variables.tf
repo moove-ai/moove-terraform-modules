@@ -1,5 +1,5 @@
-variable project_id {
+variable "project_id" {
   type        = string
-  default = "moove-systems"
+  default     = "moove-systems"
   description = "The project ID for this"
 }

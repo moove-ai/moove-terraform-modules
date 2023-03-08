@@ -119,7 +119,7 @@ variable "image_version" {
   default     = "composer-2.0.2-airflow-2.1.4"
 }
 
-variable pypi_packages {
+variable "pypi_packages" {
   type        = map(string)
   description = "Map of python packages and versions to install"
 }

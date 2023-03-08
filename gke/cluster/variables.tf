@@ -18,23 +18,23 @@ variable "region" {
   description = "The GCP Region to deploy this module into"
 }
 
-variable cluster_network_project_id {
+variable "cluster_network_project_id" {
   type        = string
   description = "The project the cluster network is located in"
 }
 
-variable cluster_network {
+variable "cluster_network" {
   type        = string
   description = "The name of the VPC network"
 }
 
-variable cluster_subnetwork {
+variable "cluster_subnetwork" {
   type        = string
   description = "The subnetwork the cluster is running on"
 }
 
 variable "create_resource_monitor" {
-  type = bool
+  type        = bool
   description = "Set to true to create a BQ database to monitor GKE spend"
-  default = false
+  default     = false
 }

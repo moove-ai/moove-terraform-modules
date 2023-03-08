@@ -23,7 +23,7 @@ variable "build_branch_pattern" {
 
 variable "stage_branch_pattern" {
   type        = string
-  default     = "^release/.+"
+  default     = "^main$"
   description = "The pattern which will trigger deployments"
 }
 
@@ -51,86 +51,138 @@ variable "deploy_name" {
   description = "The name of the deployment"
 }
 
-variable build_file {
+variable "build_file" {
   type        = string
   default     = ""
   description = "Optional. Overrides the default `build.yaml` file location"
 }
 
-variable stage_file {
+variable "stage_file" {
   type        = string
   default     = ""
   description = "Optional. Overrides the default `stage.yaml` file location"
 }
 
-variable deploy_file {
+variable "deploy_file" {
   type        = string
   default     = ""
   description = "Optional. Overrides the default `deploy.yaml` file location"
 }
 
-variable build_included_files {
+variable "build_included_files" {
   type        = list(string)
   default     = []
   description = "List of files or patterns to trigger the build step"
 }
 
-variable stage_included_files {
+variable "stage_included_files" {
   type        = list(string)
   default     = []
   description = "List of files or patterns to trigger the stage step"
 }
 
-variable deploy_included_files {
+variable "deploy_included_files" {
   type        = list(string)
   default     = []
   description = "List of files or patterns to trigger the deploy step"
 }
 
-variable build_ignored_files {
+variable "build_ignored_files" {
   type        = list(string)
   default     = []
   description = "List of files which will NOT trigger a build"
 }
 
-variable stage_ignored_files {
+variable "stage_ignored_files" {
   type        = list(string)
   default     = []
   description = "List of files which will NOT trigger a stage"
 }
 
-variable deploy_ignored_files {
+variable "deploy_ignored_files" {
   type        = list(string)
   default     = []
   description = "List of files which will NOT trigger a deploy"
 }
 
-variable region {
-  type        = string
-  description = "The region this app is deploying to"
-}
-
-variable environment {
+variable "environment" {
   type        = string
   description = "The environment this app is deploying to"
 }
 
-variable cluster_project {
+variable "cluster_region" {
   type        = string
+  default     = "us-west1"
+  description = "The region the deployment cluster is located in"
+}
+
+variable "cluster_project" {
+  type        = string
+  default     = "moove-systems"
   description = "The project where the GKE cluster running this app is running"
+}
+
+variable "cluster_name" {
+  type        = string
+  default     = "mgmt-us-west1"
+  description = "The name of the GKE cluster which controls deployments"
 }
 
 
 
 # BUILD VARIABLES
-variable build_timeout {
+variable "build_timeout" {
   type        = string
   default     = "300s"
-  description = "description"
+  description = "How long should this build run before automatically failing"
 }
 
-variable build_args {
+variable "build_instance" {
   type        = string
+  default     = ""
+  description = "The machine type to use for this build"
+}
+
+variable "build_args" {
+  type        = string
+  default     = ""
+  description = "Full docker command to pass to the build"
+}
+
+variable "unit_test_entrypoint" {
+  type        = string
+  default     = ""
+  description = "Optional. Defaults to `python`. The entrypoint used in the testing step"
+}
+
+variable "unit_test_args" {
+  type        = list(string)
   default     = []
-  description = "description"
+  description = "Optional. Defaults to `-m unittest discover -s tests -t .`. The entrypoint used in the testing step"
+}
+
+variable "unit_test_enabled" {
+  type        = bool
+  default     = true
+  description = "Enables or disables unit tests for this build"
+}
+
+# STAGE VARIABLES
+variable "stage_timeout" {
+  type        = string
+  default     = "600s"
+  description = "Sets the timeout to 10 minutes"
+}
+
+variable "stage_enabled" {
+  type        = bool
+  default     = true
+  description = "Set to false to disable the stage step"
+}
+
+# STAGE VARIABLES
+variable "deploy_timeout" {
+  type        = string
+  default     = "600s"
+  description = "Sets the timeout to 10 minutes"
 }

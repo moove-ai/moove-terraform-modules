@@ -36,7 +36,7 @@ module "gke-firewall-rules" {
       ]
       extra_attributes = {}
     }
-    ingress-gke-internal = { 
+    ingress-gke-internal = {
       description = "Allows access to gke internally."
       direction   = "INGRESS"
       action      = "allow"

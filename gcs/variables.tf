@@ -1,24 +1,24 @@
-variable name {
+variable "name" {
   type        = string
   description = "The name of the GCS bucket to create"
 }
 
-variable project_id {
+variable "project_id" {
   type        = string
   description = "The project the bucket is in"
 }
 
-variable location {
+variable "location" {
   type        = string
   description = "The Storage Location for the bucket us-central1, US, etc."
 }
 
-variable client {
+variable "client" {
   type        = string
   description = "The client this bucket is being used for"
 }
 
-variable environment {
+variable "environment" {
   type        = string
   description = "The environment this bucket is running in"
 }
@@ -28,7 +28,7 @@ variable "lifecycle_rules" {
   default     = []
 }
 
-variable labels {
+variable "labels" {
   type        = map(string)
   default     = {}
   description = "List of additonal labels to add"

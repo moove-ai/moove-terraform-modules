@@ -33,3 +33,8 @@ variable "monitoring_project" {
   default     = "moove-systems"
   description = "The project BQ queries are executed in"
 }
+
+variable "regions" {
+  type        = list(string)
+  description = "A list of regions this app is deployed in. Used to create a GKE workload identity."
+}

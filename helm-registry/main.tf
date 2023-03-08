@@ -27,7 +27,7 @@ resource "google_storage_bucket_access_control" "public_rule" {
 resource "google_storage_bucket_iam_member" "automation" {
   bucket = google_storage_bucket.helm-registry-public.name
   role   = "roles/storage.admin"
-  member = "serviceAccount:privileged-builder@moove-systems.iam.gserviceaccount.com"
+  member = "serviceAccount:${data.google_service_account.build_service_account.email}"
 }
 
 resource "google_storage_bucket_iam_member" "public" {

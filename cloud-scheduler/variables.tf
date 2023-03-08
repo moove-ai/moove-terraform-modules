@@ -1,52 +1,52 @@
-variable job_name {
+variable "job_name" {
   type        = string
   default     = ""
   description = "description"
 }
 
-variable job_description {
+variable "job_description" {
   type        = string
   default     = ""
   description = "description"
 }
 
-variable job_schedule {
+variable "job_schedule" {
   type        = string
   default     = ""
   description = "description"
 }
 
-variable job_timezone {
+variable "job_timezone" {
   type        = string
   default     = ""
   description = "description"
 }
 
-variable job_deadline {
+variable "job_deadline" {
   type        = string
   default     = ""
   description = "description"
 }
 
-variable job_retry_count {
+variable "job_retry_count" {
   type        = string
   default     = ""
   description = "description"
 }
 
-variable http_method {
+variable "http_method" {
   type        = string
   default     = ""
   description = "description"
 }
 
-variable http_uri {
+variable "http_uri" {
   type        = string
   default     = ""
   description = "description"
 }
 
-variable service_account_id {
+variable "service_account_id" {
   type        = string
   default     = ""
   description = "description"

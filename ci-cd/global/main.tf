@@ -4,7 +4,7 @@ module "builds" {
   version = "~> 14.1"
 
   name                    = "moove-builds"
-  random_project_id       = true
+  random_project_id       = false
   org_id                  = var.org_id
   billing_account         = var.billing_account
   folder_id               = var.folder_id

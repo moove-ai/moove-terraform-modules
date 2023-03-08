@@ -1,8 +1,8 @@
 resource "google_service_account" "k8s-thanos" {
   account_id   = "k8s-thanos"
   display_name = "Monitoring"
-  description = "Service account used for the the persistent monitoring application"
-  project = var.project_id
+  description  = "Service account used for the the persistent monitoring application"
+  project      = var.project_id
 }
 
 resource "google_service_account_key" "k8s-thanos" {

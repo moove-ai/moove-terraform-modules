@@ -13,10 +13,10 @@ module "proxy-firewall" {
   ssh_source_ranges       = []
   custom_rules = {
     ingress-gke-master = {
-      description = "Allows access to the GKE master."
-      direction   = "INGRESS"
-      action      = "allow"
-      ranges = var.gke_master_ranges
+      description          = "Allows access to the GKE master."
+      direction            = "INGRESS"
+      action               = "allow"
+      ranges               = var.gke_master_ranges
       sources              = []
       targets              = ["gke"]
       use_service_accounts = false

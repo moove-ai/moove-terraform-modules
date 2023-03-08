@@ -9,7 +9,7 @@
 
 locals {
   service_account_project_id = var.service_account_project_id != "" ? var.service_account_project_id : var.project_id
-  bucket_project  = var.bucket_project != "" ? var.bucket_project : var.project_id
+  bucket_project             = var.bucket_project != "" ? var.bucket_project : var.project_id
 }
 
 
@@ -33,7 +33,7 @@ data "google_storage_project_service_account" "gcs_account" {
 }
 
 resource "google_storage_bucket" "bucket" {
-  count = var.create_bucket ? 1 : 0
+  count    = var.create_bucket ? 1 : 0
   name     = var.name
   project  = local.bucket_project
   location = var.location
@@ -110,7 +110,7 @@ resource "google_pubsub_topic_iam_binding" "binding" {
 }
 
 resource "google_pubsub_subscription" "subscription" {
-  count   = var.topic_enabled ? 1 : 0
+  count                = var.topic_enabled ? 1 : 0
   name                 = var.subscription_name == "" ? var.name : var.subscription_name
   project              = google_pubsub_topic.topic[0].project
   topic                = google_pubsub_topic.topic[0].id
@@ -122,7 +122,7 @@ resource "google_pubsub_subscription" "subscription" {
 }
 
 resource "google_pubsub_subscription_iam_member" "subscriber" {
-  count   = var.topic_enabled ? 1 : 0
+  count        = var.topic_enabled ? 1 : 0
   subscription = google_pubsub_subscription.subscription[0].name
   project      = google_pubsub_subscription.subscription[0].project
   role         = "roles/pubsub.subscriber"
@@ -151,15 +151,15 @@ resource "google_storage_bucket_iam_member" "read-legacy" {
 }
 
 resource "google_storage_bucket_iam_member" "sa-admin" {
-  count    = var.admin_access ? 1 : 0
-  bucket   = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
+  count  = var.admin_access ? 1 : 0
+  bucket = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${var.create_service_account == true ? google_service_account.service-account[0].email : data.google_service_account.service-account.email}"
 }
 
 resource "google_storage_bucket_iam_member" "sa-legacy" {
-  count    = var.admin_access ? 1 : 0
-  bucket   = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
+  count  = var.admin_access ? 1 : 0
+  bucket = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
   role   = "roles/storage.legacyBucketOwner"
   member = "serviceAccount:${var.create_service_account == true ? google_service_account.service-account[0].email : data.google_service_account.service-account.email}"
 }

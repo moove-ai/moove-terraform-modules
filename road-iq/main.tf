@@ -1,7 +1,7 @@
 locals {
-    k8s_sa = var.k8s_sa != "" ? var.k8s_sa : "road-iq"
-    namespace = var.namespace != "" ? var.namespace : var.environment
-    cluster_project_id = var.cluster_project_id != "" ? var.cluster_project_id : var.project_id
+  k8s_sa             = var.k8s_sa != "" ? var.k8s_sa : "road-iq"
+  namespace          = var.namespace != "" ? var.namespace : var.environment
+  cluster_project_id = var.cluster_project_id != "" ? var.cluster_project_id : var.project_id
 }
 
 

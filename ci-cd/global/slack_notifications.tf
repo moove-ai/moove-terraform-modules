@@ -3,7 +3,7 @@ data "google_project" "project" {
 }
 
 resource "google_service_account" "notifier" {
-  project = data.google_project.project.project_id
+  project    = data.google_project.project.project_id
   account_id = "notifier"
 }
 
@@ -14,38 +14,38 @@ resource "google_project_service" "cloud-run" {
 
 resource "google_project_iam_member" "invoker" {
   project = data.google_project.project.project_id
-  role = "roles/run.invoker"
-  member = "serviceAccount:${google_service_account.notifier.email}"
+  role    = "roles/run.invoker"
+  member  = "serviceAccount:${google_service_account.notifier.email}"
 }
 
 resource "google_project_iam_member" "service-account-user" {
   project = data.google_project.project.project_id
-  role = "roles/iam.serviceAccountTokenCreator"
-  member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+  role    = "roles/iam.serviceAccountTokenCreator"
+  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
 }
 
 resource "google_storage_bucket" "notifications" {
-  name = "moove-build-notifications"
-  project = data.google_project.project.project_id
-  location = "US"
+  name                        = "moove-build-notifications"
+  project                     = data.google_project.project.project_id
+  location                    = "US"
   uniform_bucket_level_access = true
 }
 
 resource "google_storage_bucket_iam_member" "notifier-iam" {
   bucket = google_storage_bucket.notifications.name
-  role = "roles/storage.objectViewer"
+  role   = "roles/storage.objectViewer"
   member = "serviceAccount:${google_service_account.notifier.email}"
 }
 
 resource "google_storage_bucket_object" "slack" {
-  name   = "slack.json"
-  bucket = google_storage_bucket.notifications.name
+  name    = "slack.json"
+  bucket  = google_storage_bucket.notifications.name
   content = local.slack_config
 }
 
 resource "google_storage_bucket_object" "notifier" {
-  name   = "notifier.yaml"
-  bucket = google_storage_bucket.notifications.name
+  name    = "notifier.yaml"
+  bucket  = google_storage_bucket.notifications.name
   content = local.notifier_config
 }
 
@@ -98,7 +98,7 @@ resource "google_pubsub_subscription" "subscription" {
 
     oidc_token {
       service_account_email = google_service_account.notifier.email
-      audience = google_cloud_run_service.build-notifier.status[0].url
+      audience              = google_cloud_run_service.build-notifier.status[0].url
     }
 
     attributes = {
@@ -109,7 +109,7 @@ resource "google_pubsub_subscription" "subscription" {
 
 resource "google_cloud_run_service" "build-notifier" {
   name     = "build-notifier"
-  project = data.google_project.project.project_id
+  project  = data.google_project.project.project_id
   location = "us-central1"
 
   template {
@@ -124,7 +124,7 @@ resource "google_cloud_run_service" "build-notifier" {
         env {
           name  = "PROJECT_ID"
           value = "moove-systems"
-        }        
+        }
       }
     }
   }
@@ -145,9 +145,9 @@ data "google_iam_policy" "auth" {
 }
 
 resource "google_cloud_run_service_iam_policy" "auth" {
-  location    = google_cloud_run_service.build-notifier.location
-  project     = google_cloud_run_service.build-notifier.project
-  service     = google_cloud_run_service.build-notifier.name
+  location = google_cloud_run_service.build-notifier.location
+  project  = google_cloud_run_service.build-notifier.project
+  service  = google_cloud_run_service.build-notifier.name
 
   policy_data = data.google_iam_policy.auth.policy_data
 }
@@ -161,7 +161,7 @@ locals {
       name: slack-notifier
     spec:
       notification:
-        filter: build.status in [Build.Status.SUCCESS, Build.Status.FAILURE, Build.Status.TIMEOUT]
+        filter: build.status in [Build.Status.FAILURE, Build.Status.TIMEOUT]
         params:
           buildStatus: $(build.status)
         delivery:
@@ -174,7 +174,7 @@ locals {
       - name: webhook-url
         value: projects/moove-secrets/secrets/ci-cd_slack-builds-hook/versions/latest  
   EOT
-  slack_config = <<EOT
+  slack_config    = <<EOT
 	  [
 	  	{
 	  		"type": "section",
