@@ -1,66 +1,88 @@
-resource "google_cloudstage_trigger" "build" {
-  name     = local.stage_name
-  project  = var.project_id
-  service_account = "projects/moove-builds-a747/serviceAccounts/deployer@moove-builds-a747.iam.gserviceaccount.com"
-
-  included_files = local.stage_included_files
-  ignored_files = local.stage_ignored_files
+resource "google_cloudbuild_trigger" "build-template" {
+  count           = var.build_file != "" ? 0 : 1
+  name            = local.build_name
+  project         = var.project_id
+  service_account = "projects/${var.project_id}/serviceAccounts/deployer@${var.project_id}.iam.gserviceaccount.com"
+  included_files  = local.build_included_files
+  ignored_files   = local.build_ignored_files
+  tags            = local.build_tags
 
   github {
     owner = "moove-ai"
     name  = var.github_repo
     push {
-      branch = var.stage_branch_pattern
+      branch = var.build_branch_pattern
     }
   }
 
   build {
     logs_bucket = "gs://moove-build-logs"
-    timeout     = var.stage_timeout
+    timeout     = var.build_timeout
     images = [
       "gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA",
       "gcr.io/$PROJECT_ID/$REPO_NAME:cache",
     ]
 
-    available_secrets {
-      secret_manager {
-        env          = "GITHUB_TOKEN"
-        version_name = "projects/moove-secrets/secrets/ci-cd_github-token/versions/latest"
-      }
-    }
-
     dynamic "options" {
-      for_each = var.stage_instance != "" ? [0] : []
+      for_each = var.build_instance != "" ? [0] : []
       content {
-        machine_type = var.stage_instance
+        machine_type = var.build_instance
       }
     }
 
     step {
-      id   = "build-container"
-      name = "gcr.io/cloud-builders/docker"
-      args = local.build_args
+      id         = "build-container"
+      name       = "gcr.io/cloud-builders/docker"
+      entrypoint = "bash"
+      args = ["-c", <<-EOF
+        docker build \
+          -t gcr.io/$PROJECT_ID/$REPO_NAME:cache \
+          -t gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA \
+          --cache-from gcr.io/$PROJECT_ID/$REPO_NAME:cache .
+      EOF
+      ]
     }
 
-    step {
-      id         = "unit-tests"
-      wait_for   = ["build-container"]
-      name       = "gcr.io/cloud-builders/git"
-      entrypoint = local.test_entrypoint
-      args = local.test_args
+    dynamic "step" {
+      for_each = var.unit_test_enabled == true ? [0] : []
+      content {
+        id         = "unit-tests"
+        wait_for   = ["build-container"]
+        name       = "gcr.io/cloud-builders/git"
+        entrypoint = local.unit_test_entrypoint
+        args       = local.unit_test_args
+      }
     }
 
     step {
       id         = "push-cache"
       name       = "gcr.io/cloud-builders/docker"
-      wait_for   = ["unit-tests"]
       entrypoint = "bash"
-      args = ["-c", join(" ", [
-        "docker",
-        "push",
-        "gcr.io/$PROJECT_ID/$REPO_NAME:cache",
-        "&& echo 'pushed container'"
-      ])]
+      args = ["-c", <<-EOF
+        docker push gcr.io/$PROJECT_ID/$REPO_NAME:cache
+        echo 'pushed cache'
+      EOF
+      ]
+    }
+  }
+}
+
+resource "google_cloudbuild_trigger" "build-file" {
+  count           = var.build_file != "" ? 1 : 0
+  name            = local.build_name
+  project         = var.project_id
+  service_account = "projects/${var.project_id}/serviceAccounts/deployer@${var.project_id}.iam.gserviceaccount.com"
+  included_files  = local.build_included_files
+  ignored_files   = local.build_ignored_files
+  tags            = local.build_tags
+
+  filename = var.build_file
+
+  github {
+    owner = "moove-ai"
+    name  = var.github_repo
+    push {
+      branch = var.build_branch_pattern
     }
   }
 }
