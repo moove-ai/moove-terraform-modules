@@ -18,7 +18,7 @@ resource "google_service_account" "service-account" {
   count        = var.create_service_account ? 1 : 0
   project      = local.service_account_project_id
   account_id   = var.service_account_id
-  display_name = var.name
+  display_name = var.service_account_name
   description  = var.service_account_description
 }
 

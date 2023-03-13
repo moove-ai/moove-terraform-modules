@@ -84,6 +84,10 @@ variable "service_account_description" {
   description = "The description for the service account if creating"
 }
 
+variable "service_account_name" {
+  type        = string
+  description = "The description for the service account if creating"
+}
 
 
 variable "topic_name" {
