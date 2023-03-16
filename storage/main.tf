@@ -38,7 +38,7 @@ resource "google_storage_bucket" "bucket" {
   project  = local.bucket_project
   location = var.location
   labels = merge({
-    project     = var.project_id
+    project     = local.bucket_project
     terraformed = "true",
     environment = var.environment,
   }, var.labels)
