@@ -1,3 +1,29 @@
+resource "google_service_account" "k8s-grafana" {
+  account_id   = "k8s-grafana"
+  display_name = "Grfana"
+  description  = "Service account used for the the persistent monitoring grafana application"
+  project      = var.project_id
+}
+
+resource "google_service_account_iam_member" "workload-identity" {
+  for_each           = toset(var.regions)
+  member             = "serviceAccount:${var.cluster_project_id}.svc.id.goog[systems/monitoring-prometheus-mgmt-${each.key}-grafana]"
+  role               = "roles/iam.workloadIdentityUser"
+  service_account_id = google_service_account.k8s-grafana.name
+}
+
+resource "google_project_iam_member" "k8s-grafana-iam-bq" {
+  project = var.project_id
+  role    = "roles/bigquery.dataViewer"
+  member  = "serviceAccount:${google_service_account.k8s-grafana.email}"
+}
+
+resource "google_project_iam_member" "k8s-grafana-iam-monitoring" {
+  project = var.project_id
+  role    = "roles/monitoring.viewer"
+  member  = "serviceAccount:${google_service_account.k8s-grafana.email}"
+}
+
 resource "google_service_account" "k8s-thanos" {
   account_id   = "k8s-thanos"
   display_name = "Monitoring"

@@ -84,6 +84,11 @@ variable "service_account_description" {
   description = "The description for the service account if creating"
 }
 
+variable "service_account_name" {
+  type        = string
+  default     = "service account"
+  description = "The description for the service account if creating"
+}
 
 
 variable "topic_name" {
@@ -114,4 +119,10 @@ variable "admin_access" {
   type        = string
   default     = true
   description = "Optional. Gives the service account admin access to the bucket created/defined by this module."
+}
+
+variable "notification_prefix" {
+  type        = string
+  default     = ""
+  description = "description"
 }

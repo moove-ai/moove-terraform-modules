@@ -9,12 +9,6 @@ variable "service_account_id" {
   description = "The project ID road-iq is running in"
 }
 
-variable "k8s_sa" {
-  type        = string
-  default     = ""
-  description = "The name of the service account in kubernetes"
-}
-
 variable "namespace" {
   type        = string
   default     = ""
@@ -36,4 +30,9 @@ variable "network_project_id" {
   type        = string
   default     = ""
   description = "The name of the project the k8s network is in"
+}
+
+variable "regions" {
+  type        = list(string)
+  description = "List of regions road-iq is running in"
 }
