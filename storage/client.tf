@@ -23,7 +23,7 @@ resource "google_secret_manager_secret_version" "client-id-version" {
 
 resource "google_storage_hmac_key" "key" {
   count                 = var.client_hmac_key ? 1 : 0
-  service_account_email = var.create_service_account ? google_service_account.service-account.email : data.google_service_account.service-account.email
+  service_account_email = var.create_service_account ? google_service_account.service-account[0].email : data.google_service_account.service-account[0].email
 }
 
 resource "google_secret_manager_secret" "client-hmac-key" {
