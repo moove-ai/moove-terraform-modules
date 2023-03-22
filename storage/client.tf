@@ -56,12 +56,12 @@ resource "google_secret_manager_secret_version" "client-key-version" {
   secret_data = local.client-key
 }
 
-locals {
-  client-key = <<-EOT
-    ACCESS_KEY=${var.client_hmac_key ? google_storage_hmac_key.key[0].access_id : "null"}
-    SECRET_ACCESS_KEY=${var.client_hmac_key ? google_storage_hmac_key[0].key.secret : "null"}
-    EOT
-}
+#locals {
+#  client-key = <<-EOT
+#    ACCESS_KEY=${var.client_hmac_key ? google_storage_hmac_key.key[0].access_id : "null"}
+#    SECRET_ACCESS_KEY=${var.client_hmac_key ? google_storage_hmac_key[0].key.secret : "null"}
+#    EOT
+#}
 
 resource "google_secret_manager_secret" "client-sa-key" {
   count     = var.client_sa_key ? 1 : 0
