@@ -158,3 +158,8 @@ variable "client_sa_key" {
   description = "Optional. Set to true to create a gcp service account key for the client. Stored in a secret."
 }
 
+variable "secret_project" {
+  type        = string
+  default     = "moove-secrets"
+  description = "The project holding client secrets"
+}
