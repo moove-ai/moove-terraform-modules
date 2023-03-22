@@ -79,8 +79,8 @@ resource "google_secret_manager_secret" "client-sa-key" {
   }
 }
 
-resource "google_secret_manager_secret_version" "client-sa-key-version" {
-  count       = var.client_hmac_key ? 1 : 0
-  secret      = google_secret_manager_secret.client-sa-key[0].id
-  secret_data = local.client-key
-}
+#resource "google_secret_manager_secret_version" "client-sa-key-version" {
+#  count       = var.client_hmac_key ? 1 : 0
+#  secret      = google_secret_manager_secret.client-sa-key[0].id
+#  secret_data = local.client-key
+#}
