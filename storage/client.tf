@@ -42,3 +42,14 @@ resource "google_secret_manager_secret" "client-hmac-key" {
   }
 }
 
+resource "google_secret_manager_secret_version" "client-hmac-key" {
+  secret      = google_secret_manager_secret.client-hmac-key.id
+  secret_data = local.hmac_key_data
+}
+
+locals {
+  hmac_key_data = <<-EOT
+    ACCESS_KEY=${var.client_hmac_key ? google_storage_hmac_key.client-hmac-key[0].access_id : null}
+    SECRET_KEY=${var.client_hmac_key ? google_storage_hmac_key.client-hmac-key[0].secret : null} 
+    EOT
+}
