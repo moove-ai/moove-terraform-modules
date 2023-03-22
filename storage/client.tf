@@ -1,5 +1,5 @@
 resource "google_secret_manager_secret" "client-id" {
-  count     = var.client_id ? 1 : 0
+  count     = var.client_id != "" ? 1 : 0
   project   = var.secret_project
   secret_id = "client-id_${var.client_name}"
 
@@ -15,7 +15,7 @@ resource "google_secret_manager_secret" "client-id" {
 }
 
 resource "google_secret_manager_secret_version" "client-id-version" {
-  count       = var.client_id ? 1 : 0
+  count       = var.client_id != "" ? 1 : 0
   secret      = google_secret_manager_secret.client-id[0].id
   secret_data = var.client_id
 }
