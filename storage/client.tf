@@ -49,7 +49,7 @@ resource "google_secret_manager_secret_version" "client-hmac-key" {
 
 locals {
   hmac_key_data = <<-EOT
-    ACCESS_KEY=${var.client_hmac_key ? google_storage_hmac_key.client-hmac-key[0].access_id : null}
-    SECRET_KEY=${var.client_hmac_key ? google_storage_hmac_key.client-hmac-key[0].secret : null} 
+    ACCESS_KEY=${var.client_hmac_key ? google_storage_hmac_key.client-hmac-key[0].access_id : "null"}
+    SECRET_KEY=${var.client_hmac_key ? google_storage_hmac_key.client-hmac-key[0].secret : "null"} 
     EOT
 }
