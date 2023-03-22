@@ -40,6 +40,7 @@ resource "google_storage_bucket" "bucket" {
     project     = local.bucket_project
     terraformed = "true",
     environment = var.environment,
+    client      = var.client_name != "" ? var.client_name : "moove"
   }, var.labels)
 
   dynamic "lifecycle_rule" {

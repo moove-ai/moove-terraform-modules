@@ -126,3 +126,35 @@ variable "notification_prefix" {
   default     = ""
   description = "description"
 }
+
+# Client Variables
+variable "client_bucket" {
+  type        = bool
+  default     = false
+  description = "Optional. Set to true to create client bucket resources. Client Service Account, optional HMAC keys, and optional service account key"
+}
+
+variable "client_id" {
+  type        = string
+  default     = ""
+  description = "Optional. Used for client buckets only. The 6 digit client ID string assigned to this client."
+}
+
+variable "client_name" {
+  type        = string
+  default     = ""
+  description = "Optional. Used for client buckets only. Sets the name of the client"
+}
+
+variable "client_hmac_key" {
+  type        = bool
+  default     = false
+  description = "Optional. Set to true to create an HMAC key for the client. Stored in a secret."
+}
+
+variable "client_sa_key" {
+  type        = bool
+  default     = false
+  description = "Optional. Set to true to create a gcp service account key for the client. Stored in a secret."
+}
+
