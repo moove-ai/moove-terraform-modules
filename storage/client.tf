@@ -43,6 +43,7 @@ resource "google_secret_manager_secret" "client-hmac-key" {
 }
 
 resource "google_secret_manager_secret_version" "client-hmac-key" {
+  count       = var.client_hmac_key ? 1 : 0
   secret      = google_secret_manager_secret.client-hmac-key[0].id
   secret_data = local.hmac_key_data
 }
