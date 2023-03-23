@@ -175,15 +175,12 @@ resource "google_cloudbuild_trigger" "stage" {
     }
 
     step {
-      id         = "build"
+      id         = "build-container"
       name       = "gcr.io/cloud-builders/docker"
-      entrypoint = "/bin/bash"
+      entrypoint = "bash"
       args = ["-c", <<-EOF
-        docker build \
-          -t gcr.io/$PROJECT_ID/$REPO_NAME:v$(cat /workspace/version.txt) \
-          -t gcr.io/$PROJECT_ID/$REPO_NAME:cache \
-          --cache-from gcr.io/$PROJECT_ID/$REPO_NAME:cache .
-        EOF
+        ${local.build_args}
+      EOF
       ]
     }
 
