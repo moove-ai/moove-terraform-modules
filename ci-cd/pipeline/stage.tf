@@ -384,8 +384,8 @@ resource "google_cloudbuild_trigger" "stage-no-test" {
   github {
     owner = "moove-ai"
     name  = var.github_repo
-    push {
-      branch = var.build_branch_pattern
+    pull_request {
+      branch = var.stage_branch_pattern
     }
   }
 
