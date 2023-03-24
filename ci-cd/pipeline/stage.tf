@@ -397,11 +397,36 @@ resource "google_cloudbuild_trigger" "stage-no-test" {
       "gcr.io/$PROJECT_ID/$REPO_NAME:cache",
     ]
 
+    available_secrets {
+      secret_manager {
+        env          = "GITHUB_TOKEN"
+        version_name = "projects/moove-secrets/secrets/ci-cd_github-token/versions/latest"
+      }
+      secret_manager {
+        env          = "SLACK_HOOK"
+        version_name = "projects/moove-secrets/secrets/cicd-slack-deploys-hook/versions/latest"
+      }
+    }
+
+
     dynamic "options" {
       for_each = var.build_instance != "" ? [0] : []
       content {
         machine_type = var.build_instance
       }
+    }
+
+    step {
+      id         = "get-release-version"
+      name       = "maniator/gh"
+      entrypoint = "sh"
+      secret_env = ["GITHUB_TOKEN"]
+      args = ["-c", <<-EOF
+        gh repo clone moove-ai/$REPO_NAME /workspace/repo -- --branch $BRANCH_NAME
+        cd /workspace/repo
+        echo $(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) > /workspace/version.txt
+        EOF
+      ]
     }
 
     # TODO enable java cache 
@@ -475,7 +500,7 @@ resource "google_cloudbuild_trigger" "stage-no-test" {
           			"type": "section",
           			"text": {
           				"type": "mrkdwn",
-          				"text": ":white_check_mark: Release Built: $(cat /workspace/name.txt) | Version: $(cat /workspace/version.txt)"
+          				"text": ":white_check_mark: Release Built: $REPO_NAME | Version: $(cat /workspace/version.txt)"
           			}
           		},
           		{
