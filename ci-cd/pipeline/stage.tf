@@ -442,23 +442,6 @@ resource "google_cloudbuild_trigger" "stage-no-test" {
       ]
     }
 
-    # TODO enable java cache 
-    # build java outside of Dockerfile
-    # copy jar to Docker
-    #dynamic "step" {
-    #  for_each = var.java_build == true ? [0] : []
-    #  content {
-    #    id         = "download-maven-cache"
-    #    wait_for   = ["build-container"]
-    #    name       = "gcr.io/cloud-builders/gsutil"
-    #    entrypoint = "bash"
-    #    args       = ["-c", <<-EOF
-    #      gsutil cp gs://moove-platform-production-cache-dependencies/cache/$REPO_NAME.tgz $REPO_NAME.tgz || exit 0 \
-    #        tar -zxf $REPO_NAME.tgz --directory / || exit 0 
-    #    EOF]
-    #  }
-    #}
-
     step {
       id         = "build-container"
       name       = "gcr.io/cloud-builders/docker"
