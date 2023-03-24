@@ -177,7 +177,7 @@ resource "google_cloudbuild_trigger" "stage" {
     step {
       id         = "build-container"
       name       = "docker"
-      entrypoint = "bash"
+      entrypoint = "sh"
       args = ["-c", <<-EOF
         ${local.build_args}
       EOF
