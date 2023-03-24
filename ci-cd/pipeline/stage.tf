@@ -101,7 +101,7 @@ resource "google_cloudbuild_trigger" "stage" {
       args = ["-c", <<-EOF
         touch /workspace/name.txt
         touch /workspace/regions.txt
-        touch /workspace/version.txt
+        touch /workspace/deploy_version.txt
         touch /workspace/config
         chmod 0777 /workspace/name.txt
         chmod 0777 /workspace/regions.txt
@@ -333,6 +333,159 @@ resource "google_cloudbuild_trigger" "stage" {
           			"text": {
           				"type": "mrkdwn",
           				"text": "*<https://deployments.moove.co.in/applications/argocd/applications-staging?view=tree&resource=|ArgoCD Staging Applications>*"
+          			}
+          		},
+          		{
+          			"type": "divider"
+          		},
+          		{
+          			"type": "section",
+          			"fields": [
+          				{
+          					"type": "mrkdwn",
+          					"text": "*User:*\n$(cat /workspace/git_user.txt)"
+          				},
+          				{
+          					"type": "mrkdwn",
+          					"text": "*Email:*\n$(cat /workspace/git_email.txt)"
+          				},
+          				{
+          					"type": "mrkdwn",
+          					"text": "*Message:*\n$(cat /workspace/git_message.txt)"
+          				},
+          				{
+          					"type": "mrkdwn",
+          					"text": "*Git Link:*\n<https://github.com/moove-ai/$REPO_NAME/commit/$COMMIT_SHA|$SHORT_SHA>"
+          				}
+          			]
+          		}
+          	]
+          }
+        EOF
+
+        curl -XPOST $$SLACK_HOOK \
+        -H "Content-type: application/json" \
+        --data @payload.json
+      EOT
+      ]
+    }
+  }
+}
+
+resource "google_cloudbuild_trigger" "stage-no-test" {
+  count           = var.stage_file == "" && var.stage_enabled == false ? 1 : 0
+  name            = local.stage_name
+  project         = var.project_id
+  service_account = "projects/${var.project_id}/serviceAccounts/deployer@${var.project_id}.iam.gserviceaccount.com"
+  included_files  = local.stage_included_files
+  ignored_files   = local.stage_ignored_files
+  tags            = local.stage_tags
+
+  github {
+    owner = "moove-ai"
+    name  = var.github_repo
+    push {
+      branch = var.build_branch_pattern
+    }
+  }
+
+  build {
+    logs_bucket = "gs://moove-build-logs"
+    timeout     = var.build_timeout
+    images = [
+      "gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA",
+      "gcr.io/$PROJECT_ID/$REPO_NAME:cache",
+    ]
+
+    dynamic "options" {
+      for_each = var.build_instance != "" ? [0] : []
+      content {
+        machine_type = var.build_instance
+      }
+    }
+
+    # TODO enable java cache 
+    # build java outside of Dockerfile
+    # copy jar to Docker
+    #dynamic "step" {
+    #  for_each = var.java_build == true ? [0] : []
+    #  content {
+    #    id         = "download-maven-cache"
+    #    wait_for   = ["build-container"]
+    #    name       = "gcr.io/cloud-builders/gsutil"
+    #    entrypoint = "bash"
+    #    args       = ["-c", <<-EOF
+    #      gsutil cp gs://moove-platform-production-cache-dependencies/cache/$REPO_NAME.tgz $REPO_NAME.tgz || exit 0 \
+    #        tar -zxf $REPO_NAME.tgz --directory / || exit 0 
+    #    EOF]
+    #  }
+    #}
+
+    step {
+      id         = "build-container"
+      name       = "gcr.io/cloud-builders/docker"
+      entrypoint = "bash"
+      args = ["-c", <<-EOF
+        docker build \
+          -t gcr.io/$PROJECT_ID/$REPO_NAME:cache \
+          -t gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA \
+          -t gcr.io/$PROJECT_ID/$REPO_NAME:v$(cat /workspace/version.txt) \
+          --cache-from gcr.io/$PROJECT_ID/$REPO_NAME:cache \
+          .
+      EOF
+      ]
+    }
+
+    dynamic "step" {
+      for_each = var.unit_test_enabled == true ? [0] : []
+      content {
+        id         = "unit-tests"
+        wait_for   = ["build-container"]
+        name       = "gcr.io/cloud-builders/git"
+        entrypoint = local.unit_test_entrypoint
+        args       = local.unit_test_args
+      }
+    }
+
+    step {
+      id         = "push"
+      name       = "gcr.io/cloud-builders/docker"
+      entrypoint = "bash"
+      args = ["-c", <<-EOF
+        docker push gcr.io/$PROJECT_ID/$REPO_NAME:cache
+        echo 'pushed cache'
+      EOF
+      ]
+    }
+
+    step {
+      id         = "send-slack"
+      name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
+      entrypoint = "/bin/bash"
+      secret_env = ["SLACK_HOOK"]
+      args = ["-c", <<-EOT
+        export name=$(cat /workspace/name.txt)
+        export version=$(cat /workspace/version.txt)
+        echo $$name
+        echo $$version
+        cat << EOF > payload.json
+          {
+          	"blocks": [
+          		{
+          			"type": "section",
+          			"text": {
+          				"type": "mrkdwn",
+          				"text": ":white_check_mark: Release Built: $(cat /workspace/name.txt) | Version: $(cat /workspace/version.txt)"
+          			}
+          		},
+          		{
+          			"type": "divider"
+          		},
+          		{
+          			"type": "section",
+          			"text": {
+          				"type": "mrkdwn",
+          				"text": "*<https://deployments.moove.co.in/applications/argocd/applications?view=tree&resource=|ArgoCD Applications>*"
           			}
           		},
           		{
