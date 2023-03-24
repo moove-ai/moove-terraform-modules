@@ -429,6 +429,16 @@ resource "google_cloudbuild_trigger" "stage-no-test" {
       ]
     }
 
+    step {
+      id         = "cache"
+      name       = "gcr.io/cloud-builders/docker"
+      entrypoint = "/bin/bash"
+      args = ["-c", <<-EOF
+        docker pull gcr.io/$PROJECT_ID/$REPO_NAME:cache || exit 0
+        EOF
+      ]
+    }
+
     # TODO enable java cache 
     # build java outside of Dockerfile
     # copy jar to Docker
