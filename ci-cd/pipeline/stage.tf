@@ -425,6 +425,9 @@ resource "google_cloudbuild_trigger" "stage-no-test" {
         gh repo clone moove-ai/$REPO_NAME /workspace/repo -- --branch $BRANCH_NAME
         cd /workspace/repo
         echo $(git rev-parse --abbrev-ref HEAD |  tr -d -c 0-9.) > /workspace/version.txt
+        echo $(git log -1 --pretty=%B) > /workspace/git_message.txt
+        echo $(git log -1 --pretty=format:'%an') > /workspace/git_user.txt
+        echo $(git log -1 --pretty=format:'%ae') > /workspace/git_email.txt
         EOF
       ]
     }
