@@ -14,7 +14,7 @@ resource "google_service_account" "service-account" {
 
 resource "google_service_account_iam_member" "workload-identity" {
   for_each           = toset(var.regions)
-  member             = "serviceAccount:${local.cluster_project_id}.svc.id.goog[${local.namespace}/road-iq-backend-${var.environment}-${each.key}-deployment]"
+  member             = "serviceAccount:${local.cluster_project_id}.svc.id.goog[${local.namespace}/scoring-${var.environment}-${each.key}-road-iq]"
   role               = "roles/iam.workloadIdentityUser"
   service_account_id = google_service_account.service-account.name
 }
