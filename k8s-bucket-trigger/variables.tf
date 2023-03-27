@@ -14,7 +14,6 @@ variable "app_name" {
   description = "The name of the k8s app. Must match the name in the k8s-deployments repo"
 }
 
-
 variable "labels" {
   type        = map(string)
   description = "Map of additional labels to apply"
@@ -36,6 +35,13 @@ variable "regions" {
   type        = list(string)
   description = "List of regions this app is being deployed to"
 }
+
+variable "cluster_project_id" {
+  type        = string
+  description = "Optional. The project the cluster is running in. Defaults to project_id"
+  default     = ""
+}
+
 
 # Input Bucket
 variable "input_bucket" {
