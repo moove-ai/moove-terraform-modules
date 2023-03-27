@@ -42,6 +42,12 @@ variable "cluster_project_id" {
   default     = ""
 }
 
+variable "k8s_sa_prefix" {
+  type        = string
+  description = "The prefix of the k8s service account name"
+}
+
+
 
 # Input Bucket
 variable "input_bucket" {

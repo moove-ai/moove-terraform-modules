@@ -33,7 +33,7 @@ resource "google_storage_bucket_iam_member" "output-bucket-legacy-iam" {
 
 resource "google_service_account_iam_member" "workload-identity" {
   for_each           = toset(var.regions)
-  member             = "serviceAccount:${local.cluster_project_id}.svc.id.goog[${local.namespace}/join-to-roads-${var.environment}-${each.key}]"
+  member             = "serviceAccount:${local.cluster_project_id}.svc.id.goog[${local.namespace}/${var.k8s_sa_prefix}-${var.environment}-${each.key}]"
   role               = "roles/iam.workloadIdentityUser"
   service_account_id = google_service_account.service-account.name
 }
