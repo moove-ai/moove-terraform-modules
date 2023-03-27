@@ -473,8 +473,8 @@ resource "google_cloudbuild_trigger" "stage-no-test" {
       name       = "gcr.io/cloud-builders/docker"
       entrypoint = "bash"
       args = ["-c", <<-EOF
-        docker push gcr.io/$PROJECT_ID/$REPO_NAME:cache
-        echo 'pushed cache'
+        docker image push --all-tags gcr.io/$PROJECT_ID/$REPO_NAME
+        echo 'pushed images'
       EOF
       ]
     }
