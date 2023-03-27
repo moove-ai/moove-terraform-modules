@@ -9,10 +9,8 @@
 
 locals {
   namespace             = var.namespace == "" ? var.environment : var.namespace
-  k8s_sa                = var.k8s_sa == "" ? var.app_name : var.k8s_sa
   output_bucket_project = var.output_bucket_project == "" ? var.project_id : var.output_bucket_project
   input_bucket_project  = var.input_bucket_project == "" ? var.project_id : var.input_bucket_project
-  cluster_project_id    = var.cluster_project_id == "" ? var.project_id : var.cluster_project_id
 }
 
 # Application
