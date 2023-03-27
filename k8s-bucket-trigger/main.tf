@@ -20,7 +20,7 @@ resource "google_service_account" "service-account" {
   project      = var.project_id
   account_id   = var.service_account_id
   display_name = "${title(replace(var.app_name, "-", " "))} (K8s)"
-  description  = "Used for the ${var.app_name} application. Coresponding K8s sa: ${local.k8s_sa} in namespace: ${local.namespace}"
+  description  = "Used for the ${var.app_name} application."
 }
 
 # Input Bucket
