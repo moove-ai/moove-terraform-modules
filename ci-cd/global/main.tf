@@ -3,7 +3,7 @@ module "builds" {
   source  = "terraform-google-modules/project-factory/google"
   version = "~> 14.1"
 
-  name                    = "moove-builds"
+  name                    = "moove-builds-a747"
   random_project_id       = false
   org_id                  = var.org_id
   billing_account         = var.billing_account
