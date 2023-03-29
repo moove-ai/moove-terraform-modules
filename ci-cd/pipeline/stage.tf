@@ -194,6 +194,17 @@ resource "google_cloudbuild_trigger" "stage" {
       ]
     }
 
+    dynamic "step" {
+      for_each = var.unit_test_enabled == true ? [0] : []
+      content {
+        id         = "unit-tests"
+        wait_for   = ["build-container"]
+        name       = "gcr.io/cloud-builders/docker"
+        entrypoint = "bash"
+        args       = local.unit_test_args
+      }
+    }
+
     step {
       id         = "mark-deployments"
       name       = "mikefarah/yq"
