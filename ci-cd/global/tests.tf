@@ -29,7 +29,7 @@ resource "google_secret_manager_secret" "build-tests" {
 
 resource "google_secret_manager_secret_version" "secret-version-basic" {
   secret      = google_secret_manager_secret.test-key.id
-  secret_data = base64decode(google_service_account_key.test.private_key)
+  secret_data = base64decode(google_service_account_key.test-key.private_key)
 }
 
 resource "google_secret_manager_secret_iam_member" "test-key-iam-member" {
