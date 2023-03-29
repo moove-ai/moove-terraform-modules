@@ -32,7 +32,7 @@ resource "google_secret_manager_secret_version" "secret-version-basic" {
   secret_data = base64decode(google_service_account.test-key.private_key)
 }
 
-resource "google_secret_manager_secret_iam_member" "argocd-ssh-key-iam-member" {
+resource "google_secret_manager_secret_iam_member" "test-key-iam-member" {
   project   = google_secret_manager_secret.build-tests.project
   secret_id = google_secret_manager_secret.build-tests.secret_id
   role      = "roles/secretmanager.secretAccessor"
