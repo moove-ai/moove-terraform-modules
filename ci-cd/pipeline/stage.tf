@@ -33,7 +33,7 @@ resource "google_cloudbuild_trigger" "stage" {
   github {
     owner = "moove-ai"
     name  = var.github_repo
-    pull_request {
+    push {
       branch = var.stage_branch_pattern
     }
   }
