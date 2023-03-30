@@ -310,9 +310,12 @@ resource "google_cloudbuild_trigger" "stage" {
           while [ $(argocd app --config=/workspace/config get $$app_name | grep 'Health Status' | awk '{ print $3 }') != "Healthy" ]; do
               argocd --config=/workspace/config app sync $$_app_name 
               sleep 10;
-              echo "App Status: $(argocd app --config=/workspace/config get $$_app_name | grep 'Health Status' | awk '{ print $3 }')"
+              echo "App Status: $(argocd app --config=/workspace/config get $$app_name | grep 'Health Status' | awk '{ print $3 }')"
             done
-          echo " $$app_name: $(argocd app --config=/workspace/config get $$_app_name | grep 'Health Status' | awk '{ print $3 }')"
+          echo " $$app_name: $(argocd app --config=/workspace/config get $$app_name | grep 'Health Status' | awk '{ print $3 }')"
+          argocd app get $$app_name | grep 'URL:' | awk '{ print $2 }'
+
+
           done
         EOF
       ]
