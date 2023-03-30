@@ -156,8 +156,8 @@ variable "unit_test_entrypoint" {
 }
 
 variable "unit_test_args" {
-  type        = list(string)
-  default     = []
+  type        = string
+  default     = ""
   description = "Optional. Defaults to `-m unittest discover -s tests -t .`. The entrypoint used in the testing step"
 }
 
