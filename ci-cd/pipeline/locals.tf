@@ -27,7 +27,7 @@ locals {
     -m unittest discover -s tests -t .
   EOF
 
-  unit_test_args = var.unit_test_arg != "" ? var.unit_test_args : local.default_test_args
+  unit_test_args = var.unit_test_args != "" ? var.unit_test_args : local.default_test_args
 
 
   build_tags  = [var.github_repo, "build"]
