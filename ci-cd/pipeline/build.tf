@@ -62,7 +62,7 @@ resource "google_cloudbuild_trigger" "build-template" {
       content {
         id         = "unit-tests"
         wait_for   = ["build-container"]
-        name       = "gcr.io/cloud-builders/git"
+        name       = "docker"
         entrypoint = "bash"
         args = ["-c", <<-EOF
           ${local.unit_test_args}
