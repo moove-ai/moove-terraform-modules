@@ -63,7 +63,7 @@ resource "google_cloudbuild_trigger" "build-template" {
         id         = "unit-tests"
         wait_for   = ["build-container"]
         name       = "gcr.io/cloud-builders/git"
-        entrypoint = local.unit_test_entrypoint
+        entrypoint = "bash"
         args       = local.unit_test_args
       }
     }
