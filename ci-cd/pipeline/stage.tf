@@ -34,7 +34,7 @@ resource "google_cloudbuild_trigger" "stage" {
     owner = "moove-ai"
     name  = var.github_repo
     push {
-      branch = var.stage_branch_pattern
+      branch = "${var.stage_branch_pattern}:main"
     }
   }
 
