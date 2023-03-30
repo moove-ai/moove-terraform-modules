@@ -120,9 +120,10 @@ resource "google_cloudbuild_trigger" "stage" {
       args = ["-c", <<-EOF
         cd /workspace/k8s-apps
         yq .argocdApplications.$REPO_NAME.deployVersion apps/staging.yaml > /workspace/deploy_version.txt
+        cat /workspace/deploy_version.txt
         if [[ $(cat /workspace/deploy_version.txt) != $(cat /workspace/version.txt) ]] && [[ $(cat /workspace/deploy_version.txt) != "null" ]]; then
           echo "Deployment in process."
-          echo "Please finish release/$$deploy_version"
+          echo "Please finish release/$(cat /workspace/deploy_version.txt)"
           exit 1
         fi
         EOF
@@ -137,6 +138,7 @@ resource "google_cloudbuild_trigger" "stage" {
       args = ["-c", <<-EOF
         cd /workspace/k8s-apps
         yq '.global.spec.destination.deployServers[].region' apps/staging.yaml > /workspace/regions.txt
+        cat /workspace/regions.txt
         EOF
       ]
     }
