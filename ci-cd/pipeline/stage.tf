@@ -474,7 +474,7 @@ resource "google_cloudbuild_trigger" "stage-no-test" {
         id         = "unit-tests"
         wait_for   = ["build-container"]
         name       = "docker"
-        entrypoint = "bash"
+        entrypoint = "sh"
         args = ["-c", <<-EOF
           ${local.unit_test_args}
         EOF
