@@ -475,7 +475,10 @@ resource "google_cloudbuild_trigger" "stage-no-test" {
         wait_for   = ["build-container"]
         name       = "gcr.io/cloud-builders/git"
         entrypoint = "bash"
-        args       = local.unit_test_args
+        args = ["-c", <<-EOF
+          ${local.unit_test_args}
+        EOF
+        ]
       }
     }
 
