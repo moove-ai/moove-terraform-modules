@@ -20,8 +20,14 @@ locals {
   EOF
   build_args         = var.build_args != "" ? var.build_args : local.default_build_args
 
-  unit_test_entrypoint = var.unit_test_entrypoint != "" ? var.unit_test_entrypoint : "python"
-  unit_test_args       = length(var.unit_test_args) > 0 ? var.unit_test_args : ["-m", "unittest", "discover", "-s", "tests", "-t", "."]
+  default_test_args = <<-EOF
+  docker run  \
+    --entrypoint python \
+    gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA \
+    -m unittest discover -s tests -t .
+  EOF
+
+  unit_test_args = var.unit_test_arg != "" ? var.unit_test_args : local.default_test_args
 
 
   build_tags  = [var.github_repo, "build"]
