@@ -75,6 +75,61 @@ resource "google_cloudbuild_trigger" "build-template" {
       EOF
       ]
     }
+
+    step {
+      id         = "send-slack-build"
+      name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
+      entrypoint = "/bin/bash"
+      secret_env = ["SLACK_HOOK"]
+      args = ["-c", <<-EOT
+        export name=$(cat /workspace/name.txt)
+        export version=$(cat /workspace/version.txt)
+        echo $$name
+        echo $$version
+        cat << EOF > payload.json
+          {
+          	"blocks": [
+          		{
+          			"type": "section",
+          			"text": {
+          				"type": "mrkdwn",
+          				"text": ":white_check_mark: Image Built + Tested: $REPO_NAME | Branch: $BRANCH_NAME"
+          			}
+          		},
+          		{
+          			"type": "divider"
+          		},
+          		{
+          			"type": "section",
+          			"fields": [
+          				{
+          					"type": "mrkdwn",
+          					"text": "*User:*\n$(cat /workspace/git_user.txt)"
+          				},
+          				{
+          					"type": "mrkdwn",
+          					"text": "*Email:*\n$(cat /workspace/git_email.txt)"
+          				},
+          				{
+          					"type": "mrkdwn",
+          					"text": "*Message:*\n$(cat /workspace/git_message.txt)"
+          				},
+          				{
+          					"type": "mrkdwn",
+          					"text": "*Git Link:*\n<https://github.com/moove-ai/$REPO_NAME/commit/$COMMIT_SHA|$SHORT_SHA>"
+          				}
+          			]
+          		}
+          	]
+          }
+        EOF
+
+        curl -XPOST $$SLACK_HOOK \
+        -H "Content-type: application/json" \
+        --data @payload.json
+      EOT
+      ]
+    }
   }
 }
 
