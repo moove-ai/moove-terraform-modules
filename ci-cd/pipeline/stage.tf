@@ -117,6 +117,7 @@ resource "google_cloudbuild_trigger" "stage" {
         touch /workspace/deploy_version.txt
         touch /workspace/config
         chmod 0777 /workspace/name.txt
+        chmod 0777 /workspace/deploy_version.txt
         chmod 0777 /workspace/version.txt
         chmod 0777 /workspace/config
         chmod 0777 /workspace/k8s-apps/apps/staging.yaml
@@ -136,8 +137,9 @@ resource "google_cloudbuild_trigger" "stage" {
         fi
         cd /workspace/k8s-apps
         yq .argocdApplications.$REPO_NAME.deployVersion apps/staging.yaml > /workspace/deploy_version.txt
-        cat /workspace/deploy_version.txt
-        if [[ $(cat /workspace/deploy_version.txt) != $(cat /workspace/version.txt) ]] && [[ $(cat /workspace/deploy_version.txt) != "null" ]]; then
+        export deploy_version=$(cat /workspace/deploy_version.txt)
+        export version=$(cat /workspace/version.txt)
+        if [[ $$deploy_version != $$version ]] && [[ $$deploy_version != "null" ]]; then
           echo "Deployment in process."
           echo "Please finish release/$(cat /workspace/deploy_version.txt)"
           exit 1
@@ -435,31 +437,7 @@ resource "google_cloudbuild_trigger" "stage" {
           		{
           			"type": "section",
           			"text": {
-          				"type": "mrkdwn",
-          				"text": ":white_check_mark: Release Built: $REPO_NAME | Version: $(cat /workspace/version.txt)"
-          			}
-          		},
-          		{
-          			"type": "divider"
-          		},
-          		{
-          			"type": "section",
-          			"text": {
-          				"type": "mrkdwn",
-          				"text": "*<https://deployments.moove.co.in/applications/argocd/applications?view=tree&resource=|ArgoCD Applications>*"
-          			}
-          		},
-          		{
-          			"type": "divider"
-          		},
-          		{
-          			"type": "section",
-          			"fields": [
-          				{
-          					"type": "mrkdwn",
-          					"text": "*User:*\n$(cat /workspace/git_user.txt)"
-          				},
-          				{
+          				"type": "mrkdwn",          echo "Release not detected. Skipping step."
           					"type": "mrkdwn",
           					"text": "*Email:*\n$(cat /workspace/git_email.txt)"
           				},
