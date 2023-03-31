@@ -1,6 +1,6 @@
 variable "project_id" {
   type        = string
-  default     = "moove-builds-a747"
+  default     = "moove-build"
   description = "description"
 }
 
@@ -195,26 +195,22 @@ variable "deploy_timeout" {
 
 
 # INTERGRATGION TESTS
-variable "intergration_test_enabled" {
-  type        = bool
-  default     = false
-  description = "Set to true to enable intergration tests"
-}
-
-variable "intergration_test_container" {
-  type        = string
-  default     = ""
-  description = "Optional. The container running integration tests"
-}
-
-variable "intergration_test_entrypoint" {
-  type        = string
-  default     = ""
-  description = "Optional. The entrypoint for the integration tests container"
-}
-
-variable "intergration_test_args" {
-  type        = string
-  default     = ""
-  description = "Optional. The arguments for the integration tests container"
+variable "integration_steps" {
+  description = "A list of maps containing the step's id, name, args, entrypoint, wait_for, volumes, and secret_envs fields."
+  type = list(object({
+    id         = string
+    name       = string
+    args       = list(string)
+    entrypoint = string
+    wait_for   = list(string)
+    volumes = list(object({
+      name = string
+      path = string
+    }))
+    secret_envs = list(object({
+      name           = string
+      secret_version = string
+    }))
+  }))
+  default = []
 }

@@ -109,6 +109,12 @@ variable "ack_deadline_seconds" {
   description = "Optional. Sets the ack deadline for this pub/sub subscription"
 }
 
+variable "subscription_enabled" {
+  type        = bool
+  default     = true
+  description = "Enable or disable a pub/sub subscription"
+}
+
 variable "topic_enabled" {
   type        = bool
   default     = true

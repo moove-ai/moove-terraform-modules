@@ -16,7 +16,6 @@ resource "google_cloudbuild_trigger" "stage-file" {
     pull_request {
       branch = var.stage_branch_pattern
     }
-
   }
 }
 
@@ -352,16 +351,38 @@ resource "google_cloudbuild_trigger" "stage" {
       ]
     }
 
-    dynamic "step" {
-      for_each = var.intergration_test_enabled == true ? [0] : []
-      content {
-        id         = "intergration-tests"
-        wait_for   = ["sync-app"]
-        name       = var.intergration_test_container
-        entrypoint = var.intergration_test_entrypoint
-        args       = [var.intergration_test_args]
-      }
-    }
+    #dynamic "step" {
+    #  for_each = var.steps
+    #  content {
+    #    id         = step.value.id
+    #    name       = step.value.name
+    #    args       = step.value.args
+    #    entrypoint = step.value.entrypoint
+
+    #    dynamic "wait_for" {
+    #      for_each = step.value.wait_for
+    #      content {
+    #        wait_for = wait_for.value
+    #      }
+    #    }
+
+    #    dynamic "volumes" {
+    #      for_each = step.value.volumes
+    #      content {
+    #        name = volumes.value.name
+    #        path = volumes.value.path
+    #      }
+    #    }
+
+    #    dynamic "secret_env" {
+    #      for_each = step.value.secret_envs
+    #      content {
+    #        name = secret_env.value.name
+    #        secret_version = secret_env.value.secret_version
+    #      }
+    #    }
+    #  }
+    #}
 
     step {
       id         = "send-slack-release"

@@ -3,7 +3,7 @@ module "builds" {
   source  = "terraform-google-modules/project-factory/google"
   version = "~> 14.1"
 
-  name                    = "moove-builds-a747"
+  name                    = "moove-build"
   random_project_id       = false
   org_id                  = var.org_id
   billing_account         = var.billing_account
@@ -75,6 +75,12 @@ resource "google_project_iam_member" "builder-registry-iam" {
 resource "google_storage_bucket_iam_member" "builder-storage" {
   bucket = google_storage_bucket.logs.name
   role   = "roles/storage.admin"
+  member = "serviceAccount:${google_service_account.builder.email}"
+}
+
+resource "google_storage_bucket_iam_member" "builder-image-storage" {
+  bucket = "artifacts.moove-build.appspot.com"
+  role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${google_service_account.builder.email}"
 }
 
@@ -163,11 +169,17 @@ resource "google_storage_bucket_iam_member" "deployer-storage" {
   member = "serviceAccount:${google_service_account.deployer.email}"
 }
 
-resource "google_storage_bucket_iam_member" "deployer-build-storage" {
-  bucket = "${module.builds.project_id}_cloudbuild"
-  role   = "roles/storage.admin"
+resource "google_storage_bucket_iam_member" "deployer-image-storage" {
+  bucket = "artifacts.moove-build.appspot.com"
+  role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${google_service_account.deployer.email}"
 }
+
+#resource "google_storage_bucket_iam_member" "deployer-build-storage" {
+#  bucket = "${module.builds.project_id}_cloudbuild"
+#  role   = "roles/storage.admin"
+#  member = "serviceAccount:${google_service_account.deployer.email}"
+#}
 
 # worker pool
 resource "google_project_iam_member" "deployer-pool-user" {

@@ -111,7 +111,7 @@ resource "google_pubsub_topic_iam_member" "binding" {
 }
 
 resource "google_pubsub_subscription" "subscription" {
-  count                = var.topic_enabled ? 1 : 0
+  count                = var.topic_enabled && var.subscription_enabled ? 1 : 0
   name                 = var.subscription_name == "" ? var.name : var.subscription_name
   project              = google_pubsub_topic.topic[0].project
   topic                = google_pubsub_topic.topic[0].id
@@ -123,7 +123,7 @@ resource "google_pubsub_subscription" "subscription" {
 }
 
 resource "google_pubsub_subscription_iam_member" "subscriber" {
-  count        = var.topic_enabled ? 1 : 0
+  count        = var.topic_enabled && var.subscription_enabled ? 1 : 0
   subscription = google_pubsub_subscription.subscription[0].name
   project      = google_pubsub_subscription.subscription[0].project
   role         = "roles/pubsub.subscriber"
