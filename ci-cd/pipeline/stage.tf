@@ -69,7 +69,7 @@ resource "google_cloudbuild_trigger" "stage" {
     }
 
     step {
-      id         = "get-release-version"
+      id         = "get-release-info"
       name       = "maniator/gh"
       entrypoint = "sh"
       secret_env = ["GITHUB_TOKEN"]
@@ -80,6 +80,10 @@ resource "google_cloudbuild_trigger" "stage" {
         echo $(git log -1 --pretty=%B) > /workspace/git_message.txt
         echo $(git log -1 --pretty=format:'%an') > /workspace/git_user.txt
         echo $(git log -1 --pretty=format:'%ae') > /workspace/git_email.txt
+        if [[ "$_HEAD_BRANCH" == *"release"* ]]; then
+          echo "Found release PR"
+          touch /workspace/release
+        fi
         EOF
       ]
     }
@@ -90,6 +94,10 @@ resource "google_cloudbuild_trigger" "stage" {
       entrypoint = "/bin/sh"
       secret_env = ["GITHUB_TOKEN"]
       args = ["-c", <<-EOF
+        if ! [ -e /workspace/release ]; then
+          echo "Release not detected. Skipping step.
+          exit 0
+        fi
         gh repo clone moove-ai/k8s-apps /workspace/k8s-apps
         EOF
       ]
@@ -100,12 +108,15 @@ resource "google_cloudbuild_trigger" "stage" {
       name       = "gcr.io/cloud-builders/docker"
       entrypoint = "/bin/bash"
       args = ["-c", <<-EOF
+        if ! [ -e /workspace/release ]; then
+          echo "Release not detected. Skipping step.
+          exit 0
+        fi
         touch /workspace/name.txt
         touch /workspace/regions.txt
         touch /workspace/deploy_version.txt
         touch /workspace/config
         chmod 0777 /workspace/name.txt
-        chmod 0777 /workspace/regions.txt
         chmod 0777 /workspace/version.txt
         chmod 0777 /workspace/config
         chmod 0777 /workspace/k8s-apps/apps/staging.yaml
@@ -119,6 +130,10 @@ resource "google_cloudbuild_trigger" "stage" {
       entrypoint = "/bin/sh"
       secret_env = ["GITHUB_TOKEN"]
       args = ["-c", <<-EOF
+        if ! [ -e /workspace/release ]; then
+          echo "Release not detected. Skipping step.
+          exit 0
+        fi
         cd /workspace/k8s-apps
         yq .argocdApplications.$REPO_NAME.deployVersion apps/staging.yaml > /workspace/deploy_version.txt
         cat /workspace/deploy_version.txt
@@ -132,26 +147,14 @@ resource "google_cloudbuild_trigger" "stage" {
     }
 
     step {
-      id         = "get-deployment-regions"
-      name       = "mikefarah/yq"
-      entrypoint = "/bin/sh"
-      secret_env = ["GITHUB_TOKEN"]
-      args = ["-c", <<-EOF
-        cd /workspace/k8s-apps
-        yq '.global.spec.destination.deployServers[].region' apps/staging.yaml > /workspace/regions.txt
-        cat /workspace/regions.txt
-        EOF
-      ]
-    }
-
-    step {
       id         = "get-argo-cluster-config"
       name       = "gcr.io/cloud-builders/gcloud"
       entrypoint = "bash"
       args = ["-c", <<-EOF
-        echo "PR NUMBER: $_PR_NUMBER"
-        echo "HEAD BRANCH: $_HEAD_BRANCH"
-        echo "BASE BRANCH: $_BASE_BRANCH"
+        if ! [ -e /workspace/release ]; then
+          echo "Release not detected. Skipping step.
+          exit 0
+        fi
         gcloud config set project $_CLUSTER_PROJECT
         gcloud container clusters get-credentials $_CLUSTER_NAME --region $_CLUSTER_REGION --project $_CLUSTER_PROJECT
         EOF
@@ -217,6 +220,11 @@ resource "google_cloudbuild_trigger" "stage" {
       entrypoint = "/bin/sh"
       secret_env = ["GITHUB_TOKEN"]
       args = ["-c", <<-EOF
+        if ! [ -e /workspace/release ]; then
+          echo "Release not detected. Skipping step.
+          exit 0
+        fi
+
         cd /workspace/k8s-apps
         export _release_version=$(cat /workspace/version.txt)
         yq -i ".argocdApplications.$REPO_NAME.deployVersion = strenv(_release_version)" apps/staging.yaml
@@ -230,6 +238,11 @@ resource "google_cloudbuild_trigger" "stage" {
       entrypoint = "/bin/sh"
       secret_env = ["GITHUB_TOKEN"]
       args = ["-c", <<-EOF
+        if ! [ -e /workspace/release ]; then
+          echo "Release not detected. Skipping step.
+          exit 0
+        fi
+
         cd /workspace/k8s-apps
         export VERSION=v$(cat /workspace/version.txt)
         cd /workspace/k8s-apps
@@ -252,6 +265,11 @@ resource "google_cloudbuild_trigger" "stage" {
       entrypoint = "/bin/sh"
       secret_env = ["GITHUB_TOKEN"]
       args = ["-c", <<-EOF
+        if ! [ -e /workspace/release ]; then
+          echo "Release not detected. Skipping step.
+          exit 0
+        fi
+
         cd /workspace/k8s-apps
         git config user.name 'devopsbot'
         git config user.email 'devopsbot@moove.ai'
@@ -269,6 +287,11 @@ resource "google_cloudbuild_trigger" "stage" {
       entrypoint = "/bin/bash"
       env        = ["KUBECONFIG=/kube_config/config"]
       args = ["-c", <<-EOF
+        if ! [ -e /workspace/release ]; then
+          echo "Release not detected. Skipping step.
+          exit 0
+        fi
+
         docker run --name network -itd --network-alias argocd-server.local \
           -e CLOUDSDK_COMPUTE_REGION="$_CLUSTER_REGION" \
           -e CLOUDSDK_CONTAINER_CLUSTER="$_CLUSTER_NAME" \
@@ -290,10 +313,27 @@ resource "google_cloudbuild_trigger" "stage" {
       id         = "sync-app"
       name       = "gcr.io/${var.project_id}/argo-app-sync:latest"
       secret_env = ["ARGOCD_TOKEN"]
-      args = [<<-EOF
-        --token $$ARGOCD_TOKEN --repo $REPO_NAME --config_file /workspace/k8s-apps/apps/staging.yaml
+      entrypoint = "bash"
+      args = ["-c", <<-EOF
+        if ! [ -e /workspace/release ]; then
+          echo "Release not detected. Skipping step.
+          exit 0
+        fi
+
+        python main.py --token $$ARGOCD_TOKEN --repo $REPO_NAME --config_file /workspace/k8s-apps/apps/staging.yaml
         EOF
       ]
+    }
+
+    dynamic "step" {
+      for_each = var.intergration_test_enabled == true ? [0] : []
+      content {
+        id         = "intergration-tests"
+        wait_for   = ["sync-app"]
+        name       = var.intergration_test_container
+        entrypoint = var.intergration_test_entrypoint
+        args       = [var.intergration_test_args]
+      }
     }
 
     step {
@@ -302,6 +342,11 @@ resource "google_cloudbuild_trigger" "stage" {
       entrypoint = "/bin/bash"
       secret_env = ["SLACK_HOOK"]
       args = ["-c", <<-EOT
+        if ! [ -e /workspace/release ]; then
+          echo "Release not detected. Skipping step.
+          exit 0
+        fi
+
         export name=$(cat /workspace/name.txt)
         export version=$(cat /workspace/version.txt)
         echo $$name
@@ -324,6 +369,84 @@ resource "google_cloudbuild_trigger" "stage" {
           			"text": {
           				"type": "mrkdwn",
           				"text": "*<https://deployments.moove.co.in/applications/argocd/applications-staging?view=tree&resource=|ArgoCD Staging Applications>*"
+          			}
+          		},
+          		{
+          			"type": "divider"
+          		},
+          		{
+          			"type": "section",
+          			"text": {
+          				"type": "mrkdwn",
+          				"text": "<https://github.com/moove-ai/$REPO_NAME/pull/$_PR_NUMBER|Pull Request To Deploy>"
+          			}
+          		},
+          		{
+          			"type": "divider"
+          		},
+          		{
+          			"type": "section",
+          			"fields": [
+          				{
+          					"type": "mrkdwn",
+          					"text": "*User:*\n$(cat /workspace/git_user.txt)"
+          				},
+          				{
+          					"type": "mrkdwn",
+          					"text": "*Email:*\n$(cat /workspace/git_email.txt)"
+          				},
+          				{
+          					"type": "mrkdwn",
+          					"text": "*Message:*\n$(cat /workspace/git_message.txt)"
+          				},
+          				{
+          					"type": "mrkdwn",
+          					"text": "*Git Link:*\n<https://github.com/moove-ai/$REPO_NAME/commit/$COMMIT_SHA|$SHORT_SHA>"
+          				}
+          			]
+          		}
+          	]
+          }
+        EOF
+
+        curl -XPOST $$SLACK_HOOK \
+        -H "Content-type: application/json" \
+        --data @payload.json
+      EOT
+      ]
+    }
+
+    step {
+      id         = "send-slack-build"
+      name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
+      entrypoint = "/bin/bash"
+      secret_env = ["SLACK_HOOK"]
+      args = ["-c", <<-EOT
+        if [ -e /workspace/release ]; then
+          exit 0
+        fi
+        export name=$(cat /workspace/name.txt)
+        export version=$(cat /workspace/version.txt)
+        echo $$name
+        echo $$version
+        cat << EOF > payload.json
+          {
+          	"blocks": [
+          		{
+          			"type": "section",
+          			"text": {
+          				"type": "mrkdwn",
+          				"text": ":white_check_mark: Release Built: $REPO_NAME | Version: $(cat /workspace/version.txt)"
+          			}
+          		},
+          		{
+          			"type": "divider"
+          		},
+          		{
+          			"type": "section",
+          			"text": {
+          				"type": "mrkdwn",
+          				"text": "*<https://deployments.moove.co.in/applications/argocd/applications?view=tree&resource=|ArgoCD Applications>*"
           			}
           		},
           		{

@@ -186,3 +186,26 @@ variable "deploy_timeout" {
   default     = "600s"
   description = "Sets the timeout to 10 minutes"
 }
+
+
+# INTERGRATGION TESTS
+variable "intergration_test_enabled" {
+  type        = bool
+  default     = false
+  description = "Set to true to enable intergration tests"
+}
+
+variable "intergration_test_container" {
+  type        = string
+  description = "The container running integration tests"
+}
+
+variable "intergration_test_entrypoint" {
+  type        = string
+  description = "The entrypoint for the integration tests container"
+}
+
+variable "intergration_test_args" {
+  type        = string
+  description = "The arguments for the integration tests container"
+}
