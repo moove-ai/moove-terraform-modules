@@ -432,13 +432,10 @@ resource "google_cloudbuild_trigger" "stage" {
 
     step {
       id         = "send-slack-build"
-      name       = "gcr.io/cloud-builders/gcloud"
+      name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
       entrypoint = "/bin/bash"
       secret_env = ["SLACK_HOOK"]
       args = ["-c", <<-EOT
-        if [ -e /workspace/release ]; then
-          exit 0
-        fi
         export name=$(cat /workspace/name.txt)
         export version=$(cat /workspace/version.txt)
         echo $$name
@@ -450,6 +447,30 @@ resource "google_cloudbuild_trigger" "stage" {
           			"type": "section",
           			"text": {
           				"type": "mrkdwn",
+          				"text": ":white_check_mark: Release Built: $REPO_NAME | Version: $(cat /workspace/version.txt)"
+          			}
+          		},
+          		{
+          			"type": "divider"
+          		},
+          		{
+          			"type": "section",
+          			"text": {
+          				"type": "mrkdwn",
+          				"text": "*<https://deployments.moove.co.in/applications/argocd/applications?view=tree&resource=|ArgoCD Applications>*"
+          			}
+          		},
+          		{
+          			"type": "divider"
+          		},
+          		{
+          			"type": "section",
+          			"fields": [
+          				{
+          					"type": "mrkdwn",
+          					"text": "*User:*\n$(cat /workspace/git_user.txt)"
+          				},
+          				{
           					"type": "mrkdwn",
           					"text": "*Email:*\n$(cat /workspace/git_email.txt)"
           				},
