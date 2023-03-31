@@ -49,9 +49,6 @@ resource "google_cloudbuild_trigger" "stage" {
   build {
     logs_bucket = "gs://moove-build-logs"
     timeout     = var.stage_timeout
-    images = [
-      "gcr.io/$PROJECT_ID/$REPO_NAME:cache",
-    ]
 
     available_secrets {
       secret_manager {
