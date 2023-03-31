@@ -447,17 +447,7 @@ resource "google_cloudbuild_trigger" "stage" {
           			"type": "section",
           			"text": {
           				"type": "mrkdwn",
-          				"text": ":white_check_mark: Release Built: $REPO_NAME | Version: $(cat /workspace/version.txt)"
-          			}
-          		},
-          		{
-          			"type": "divider"
-          		},
-          		{
-          			"type": "section",
-          			"text": {
-          				"type": "mrkdwn",
-          				"text": "*<https://deployments.moove.co.in/applications/argocd/applications?view=tree&resource=|ArgoCD Applications>*"
+          				"text": ":white_check_mark: Release Built + Tested: $REPO_NAME | Commit: $COMMIT_SHA"
           			}
           		},
           		{
