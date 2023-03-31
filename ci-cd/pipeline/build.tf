@@ -23,6 +23,13 @@ resource "google_cloudbuild_trigger" "build-template" {
       "gcr.io/$PROJECT_ID/$REPO_NAME:cache",
     ]
 
+    available_secrets {
+      secret_manager {
+        env          = "SLACK_HOOK"
+        version_name = "projects/moove-secrets/secrets/cicd-slack-deploys-hook/versions/latest"
+      }
+    }
+
     dynamic "options" {
       for_each = var.build_instance != "" ? [0] : []
       content {
