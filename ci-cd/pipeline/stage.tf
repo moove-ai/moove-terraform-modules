@@ -178,6 +178,7 @@ resource "google_cloudbuild_trigger" "stage" {
 
     step {
       id         = "cache"
+      wait_for   = ["-"]
       name       = "gcr.io/cloud-builders/docker"
       entrypoint = "/bin/bash"
       args = ["-c", <<-EOF
