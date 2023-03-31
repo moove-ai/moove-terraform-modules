@@ -223,7 +223,7 @@ resource "google_cloudbuild_trigger" "stage" {
       secret_env = ["GITHUB_TOKEN"]
       args = ["-c", <<-EOF
         if ! [ -e /workspace/release ]; then
-          echo "Release not detected. Skipping step.
+          echo "Release not detected. Skipping step."
           exit 0
         fi
 
