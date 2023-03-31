@@ -139,6 +139,12 @@ resource "google_cloudbuild_trigger" "stage" {
         yq .argocdApplications.$REPO_NAME.deployVersion apps/staging.yaml > /workspace/deploy_version.txt
         export deploy_version=$(cat /workspace/deploy_version.txt)
         export version=$(cat /workspace/version.txt)
+        
+        echo "Deploy Version: $$deploy_version"
+        echo "Version       : $$version"
+
+
+
         if [[ $$deploy_version != $$version ]] && [[ $$deploy_version != "null" ]]; then
           echo "Deployment in process."
           echo "Please finish release/$(cat /workspace/deploy_version.txt)"
