@@ -290,7 +290,7 @@ resource "google_cloudbuild_trigger" "stage" {
       id         = "sync-app"
       name       = "gcr.io/${var.project_id}/argo-app-sync:latest"
       secret_env = ["ARGOCD_TOKEN"]
-      args = ["-c", <<-EOF
+      args = [<<-EOF
         --token $$ARGOCD_TOKEN --repo $REPO_NAME --config_file /workspace/k8s-apps/apps/staging.yaml
         EOF
       ]
