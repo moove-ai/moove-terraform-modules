@@ -449,7 +449,7 @@ resource "google_cloudbuild_trigger" "stage" {
           		{
           			"type": "section",
           			"text": {
-          				"type": "mrkdwn",          echo "Release not detected. Skipping step."
+          				"type": "mrkdwn",
           					"type": "mrkdwn",
           					"text": "*Email:*\n$(cat /workspace/git_email.txt)"
           				},
