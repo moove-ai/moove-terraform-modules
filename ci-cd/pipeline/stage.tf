@@ -66,6 +66,10 @@ resource "google_cloudbuild_trigger" "stage" {
         env          = "SLACK_HOOK"
         version_name = "projects/moove-secrets/secrets/cicd-slack-deploys-hook/versions/latest"
       }
+      secret_manager {
+        env          = "ARGOCD_TOKEN"
+        version_name = "projects/moove-secrets/secrets/argocd_token/versions/latest"
+      }
     }
 
     step {
@@ -289,40 +293,11 @@ resource "google_cloudbuild_trigger" "stage" {
     step {
       id         = "sync-app"
       name       = "gcr.io/${var.project_id}/argo-app-sync:latest"
-      entrypoint = "/bin/bash"
-      env        = ["KUBECONFIG=/kube_config/config"]
-      secret_env = ["DEVOPSBOT_PASSWORD"]
+      secret_env = ["ARGOCD_TOKEN"]
       args = ["-c", <<-EOF
-        echo "checking: $(cat /workspace/name.txt)"
-        argocd --config=/workspace/config login --insecure argocd-server.local:8888 --username=devopsbot --password=$$DEVOPSBOT_PASSWORD
-        argocd --config=/workspace/config app sync applications || exit 0
-        echo "waiting for app to sync"
-        sleep 10;
-        echo "checking status"
-        while [ $(argocd app --config=/workspace/config get applications-staging | grep 'Health Status' | awk '{ print $3 }') != "Healthy" ]; do
-          argocd --config=/workspace/config app sync applications-staging
-          sleep 10;
-          echo "App Status: $(argocd app --config=/workspace/config get applications-staging | grep 'Health Status' | awk '{ print $3 }')"
-        done
-        for region in $(cat /workspace/regions.txt); do
-          export app_name=$(cat /workspace/name.txt)-staging-$$region
-          echo "Checking $$app_name"
-          while [ $(argocd app --config=/workspace/config get $$app_name | grep 'Health Status' | awk '{ print $3 }') != "Healthy" ]; do
-              argocd --config=/workspace/config app sync $$_app_name 
-              sleep 10;
-              echo "App Status: $(argocd app --config=/workspace/config get $$app_name | grep 'Health Status' | awk '{ print $3 }')"
-            done
-          echo " $$app_name: $(argocd app --config=/workspace/config get $$app_name | grep 'Health Status' | awk '{ print $3 }')"
-          argocd app get $$app_name | grep 'URL:' | awk '{ print $2 }'
-
-
-          done
+        --token $ARGOCD_TOKEN --repo $REPO_NAME --config_file /workspace/k8s-apps/apps/staging.yaml
         EOF
       ]
-      volumes {
-        name = "kube-config"
-        path = "/kube_config"
-      }
     }
 
     step {
