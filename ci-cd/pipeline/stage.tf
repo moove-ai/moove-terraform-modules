@@ -351,7 +351,7 @@ resource "google_cloudbuild_trigger" "stage" {
 
     step {
       id         = "send-slack-release"
-      name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
+      name       = "gcr.io/google.com/cloudsdktool/gcloud"
       entrypoint = "/bin/bash"
       secret_env = ["SLACK_HOOK"]
       args = ["-c", <<-EOT
