@@ -168,6 +168,12 @@ variable "unit_test_enabled" {
 }
 
 # STAGE VARIABLES
+variable "stage_build_args" {
+  type        = string
+  default     = ""
+  description = "Full docker command to pass to the build"
+}
+
 variable "stage_timeout" {
   type        = string
   default     = "600s"

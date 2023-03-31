@@ -18,7 +18,17 @@ locals {
     --cache-from gcr.io/$PROJECT_ID/$REPO_NAME:cache \
     .
   EOF
-  build_args         = var.build_args != "" ? var.build_args : local.default_build_args
+
+  default_stage_build_args = <<-EOF
+  docker build \
+    -t gcr.io/$PROJECT_ID/$REPO_NAME:cache \
+    -t gcr.io/$PROJECT_ID/$REPO_NAME:v$(cat /workspace/version.txt) \
+    -t gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA \
+    --cache-from gcr.io/$PROJECT_ID/$REPO_NAME:cache \
+    .
+  EOF
+  build_args               = var.build_args != "" ? var.build_args : local.default_build_args
+  stage_build_args         = var.stage_build_args != "" ? var.stage_build_args : local.default_stage_build_args
 
   default_test_args = <<-EOF
   docker run  \
