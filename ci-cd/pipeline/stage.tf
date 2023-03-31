@@ -306,6 +306,8 @@ resource "google_cloudbuild_trigger" "stage" {
           --network cloudbuild \
           gcr.io/cloud-builders/kubectl \
           port-forward -n argocd svc/argocd-server --address 0.0.0.0 8888:443
+          sleep 10;
+          docker ps
           docker logs -t network
         EOF
       ]
