@@ -143,8 +143,6 @@ resource "google_cloudbuild_trigger" "stage" {
         echo "Deploy Version: $$deploy_version"
         echo "Version       : $$version"
 
-
-
         if [[ $$deploy_version != $$version ]] && [[ $$deploy_version != "null" ]]; then
           echo "Deployment in process."
           echo "Please finish release/$(cat /workspace/deploy_version.txt)"
@@ -328,7 +326,7 @@ resource "google_cloudbuild_trigger" "stage" {
           exit 0
         fi
 
-        python main.py --token $$ARGOCD_TOKEN --repo $REPO_NAME --config_file /workspace/k8s-apps/apps/staging.yaml
+        python /app/main.py --token $$ARGOCD_TOKEN --repo $REPO_NAME --config_file /workspace/k8s-apps/apps/staging.yaml
         EOF
       ]
     }
@@ -345,7 +343,7 @@ resource "google_cloudbuild_trigger" "stage" {
     }
 
     step {
-      id         = "send-slack"
+      id         = "send-slack-stage"
       name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
       entrypoint = "/bin/bash"
       secret_env = ["SLACK_HOOK"]
