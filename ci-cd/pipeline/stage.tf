@@ -95,7 +95,7 @@ resource "google_cloudbuild_trigger" "stage" {
       secret_env = ["GITHUB_TOKEN"]
       args = ["-c", <<-EOF
         if ! [ -e /workspace/release ]; then
-          echo "Release not detected. Skipping step.
+          echo "Release not detected. Skipping step."
           exit 0
         fi
         gh repo clone moove-ai/k8s-apps /workspace/k8s-apps
@@ -109,7 +109,7 @@ resource "google_cloudbuild_trigger" "stage" {
       entrypoint = "/bin/bash"
       args = ["-c", <<-EOF
         if ! [ -e /workspace/release ]; then
-          echo "Release not detected. Skipping step.
+          echo "Release not detected. Skipping step."
           exit 0
         fi
         touch /workspace/name.txt
@@ -131,7 +131,7 @@ resource "google_cloudbuild_trigger" "stage" {
       secret_env = ["GITHUB_TOKEN"]
       args = ["-c", <<-EOF
         if ! [ -e /workspace/release ]; then
-          echo "Release not detected. Skipping step.
+          echo "Release not detected. Skipping step."
           exit 0
         fi
         cd /workspace/k8s-apps
@@ -152,7 +152,7 @@ resource "google_cloudbuild_trigger" "stage" {
       entrypoint = "bash"
       args = ["-c", <<-EOF
         if ! [ -e /workspace/release ]; then
-          echo "Release not detected. Skipping step.
+          echo "Release not detected. Skipping step."
           exit 0
         fi
         gcloud config set project $_CLUSTER_PROJECT
@@ -239,7 +239,7 @@ resource "google_cloudbuild_trigger" "stage" {
       secret_env = ["GITHUB_TOKEN"]
       args = ["-c", <<-EOF
         if ! [ -e /workspace/release ]; then
-          echo "Release not detected. Skipping step.
+          echo "Release not detected. Skipping step."
           exit 0
         fi
 
@@ -266,7 +266,7 @@ resource "google_cloudbuild_trigger" "stage" {
       secret_env = ["GITHUB_TOKEN"]
       args = ["-c", <<-EOF
         if ! [ -e /workspace/release ]; then
-          echo "Release not detected. Skipping step.
+          echo "Release not detected. Skipping step."
           exit 0
         fi
 
@@ -288,7 +288,7 @@ resource "google_cloudbuild_trigger" "stage" {
       env        = ["KUBECONFIG=/kube_config/config"]
       args = ["-c", <<-EOF
         if ! [ -e /workspace/release ]; then
-          echo "Release not detected. Skipping step.
+          echo "Release not detected. Skipping step."
           exit 0
         fi
 
@@ -316,7 +316,7 @@ resource "google_cloudbuild_trigger" "stage" {
       entrypoint = "bash"
       args = ["-c", <<-EOF
         if ! [ -e /workspace/release ]; then
-          echo "Release not detected. Skipping step.
+          echo "Release not detected. Skipping step."
           exit 0
         fi
 
@@ -343,7 +343,7 @@ resource "google_cloudbuild_trigger" "stage" {
       secret_env = ["SLACK_HOOK"]
       args = ["-c", <<-EOT
         if ! [ -e /workspace/release ]; then
-          echo "Release not detected. Skipping step.
+          echo "Release not detected. Skipping step."
           exit 0
         fi
 
