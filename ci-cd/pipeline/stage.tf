@@ -182,6 +182,10 @@ resource "google_cloudbuild_trigger" "stage" {
       name       = "gcr.io/cloud-builders/docker"
       entrypoint = "/bin/bash"
       args = ["-c", <<-EOF
+        if ! [ -e /workspace/release ]; then
+          echo "Release not detected. Skipping step."
+          exit 0
+        fi
         docker pull gcr.io/$PROJECT_ID/$REPO_NAME:cache || exit 0
         EOF
       ]
@@ -192,6 +196,10 @@ resource "google_cloudbuild_trigger" "stage" {
       name       = "docker"
       entrypoint = "sh"
       args = ["-c", <<-EOF
+        if ! [ -e /workspace/release ]; then
+          echo "Release not detected. Skipping step."
+          exit 0
+        fi
         ${local.stage_build_args}
       EOF
       ]
@@ -202,6 +210,10 @@ resource "google_cloudbuild_trigger" "stage" {
       name       = "gcr.io/cloud-builders/docker"
       entrypoint = "/bin/bash"
       args = ["-c", <<-EOF
+        if ! [ -e /workspace/release ]; then
+          echo "Release not detected. Skipping step."
+          exit 0
+        fi
         docker image push --all-tags gcr.io/$PROJECT_ID/$REPO_NAME
         EOF
       ]
@@ -215,6 +227,10 @@ resource "google_cloudbuild_trigger" "stage" {
         name       = "gcr.io/cloud-builders/docker"
         entrypoint = "bash"
         args = ["-c", <<-EOF
+          if ! [ -e /workspace/release ]; then
+            echo "Release not detected. Skipping step."
+            exit 0
+          fi
           ${local.unit_test_args}
         EOF
         ]
@@ -430,60 +446,6 @@ resource "google_cloudbuild_trigger" "stage" {
       ]
     }
 
-    step {
-      id         = "send-slack-build"
-      name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
-      entrypoint = "/bin/bash"
-      secret_env = ["SLACK_HOOK"]
-      args = ["-c", <<-EOT
-        export name=$(cat /workspace/name.txt)
-        export version=$(cat /workspace/version.txt)
-        echo $$name
-        echo $$version
-        cat << EOF > payload.json
-          {
-          	"blocks": [
-          		{
-          			"type": "section",
-          			"text": {
-          				"type": "mrkdwn",
-          				"text": ":white_check_mark: Release Built + Tested: $REPO_NAME | Commit: $COMMIT_SHA"
-          			}
-          		},
-          		{
-          			"type": "divider"
-          		},
-          		{
-          			"type": "section",
-          			"fields": [
-          				{
-          					"type": "mrkdwn",
-          					"text": "*User:*\n$(cat /workspace/git_user.txt)"
-          				},
-          				{
-          					"type": "mrkdwn",
-          					"text": "*Email:*\n$(cat /workspace/git_email.txt)"
-          				},
-          				{
-          					"type": "mrkdwn",
-          					"text": "*Message:*\n$(cat /workspace/git_message.txt)"
-          				},
-          				{
-          					"type": "mrkdwn",
-          					"text": "*Git Link:*\n<https://github.com/moove-ai/$REPO_NAME/commit/$COMMIT_SHA|$SHORT_SHA>"
-          				}
-          			]
-          		}
-          	]
-          }
-        EOF
-
-        curl -XPOST $$SLACK_HOOK \
-        -H "Content-type: application/json" \
-        --data @payload.json
-      EOT
-      ]
-    }
   }
 }
 
@@ -598,7 +560,7 @@ resource "google_cloudbuild_trigger" "stage-no-test" {
     }
 
     step {
-      id         = "send-slack"
+      id         = "send-slack-build"
       name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
       entrypoint = "/bin/bash"
       secret_env = ["SLACK_HOOK"]
@@ -614,17 +576,7 @@ resource "google_cloudbuild_trigger" "stage-no-test" {
           			"type": "section",
           			"text": {
           				"type": "mrkdwn",
-          				"text": ":white_check_mark: Release Built: $REPO_NAME | Version: $(cat /workspace/version.txt)"
-          			}
-          		},
-          		{
-          			"type": "divider"
-          		},
-          		{
-          			"type": "section",
-          			"text": {
-          				"type": "mrkdwn",
-          				"text": "*<https://deployments.moove.co.in/applications/argocd/applications?view=tree&resource=|ArgoCD Applications>*"
+          				"text": ":white_check_mark: Release Built + Tested: $REPO_NAME | Commit: $COMMIT_SHA"
           			}
           		},
           		{
