@@ -327,6 +327,8 @@ resource "google_cloudbuild_trigger" "stage" {
           echo "Release not detected. Skipping step."
           exit 0
         fi
+        echo "2 dollar: $$ARGOCD_TOKEN"
+        echo "1 dollar: $ARGOCD_TOKEN"
 
         python /app/main.py --token $$ARGOCD_TOKEN --repo $REPO_NAME --config_file /workspace/k8s-apps/apps/staging.yaml
         EOF
