@@ -118,3 +118,27 @@ resource "google_secret_manager_secret_iam_member" "cicd-slack-hook-iam-member" 
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.deployer.email}"
 }
+
+resource "google_secret_manager_secret" "argocd-token" {
+  project   = "moove-secrets"
+  secret_id = "argocd_token"
+
+  labels = {
+    environment = "mgmt"
+    function    = "argocd"
+    client      = "moove"
+    terraformed = "true"
+    secret-data = "manual-input"
+  }
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_iam_member" "argocd-token-iam-member" {
+  project   = google_secret_manager_secret.argocd-token.project
+  secret_id = google_secret_manager_secret.argocd-token.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.deployer.email}"
+}

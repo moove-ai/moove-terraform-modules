@@ -288,7 +288,7 @@ resource "google_cloudbuild_trigger" "stage" {
 
     step {
       id         = "sync-app"
-      name       = "argoproj/argocd"
+      name       = "gcr.io/${var.project_id}/argo-app-sync:latest"
       entrypoint = "/bin/bash"
       env        = ["KUBECONFIG=/kube_config/config"]
       secret_env = ["DEVOPSBOT_PASSWORD"]
