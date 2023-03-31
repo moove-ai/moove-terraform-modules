@@ -197,15 +197,18 @@ variable "intergration_test_enabled" {
 
 variable "intergration_test_container" {
   type        = string
-  description = "The container running integration tests"
+  default     = ""
+  description = "Optional. The container running integration tests"
 }
 
 variable "intergration_test_entrypoint" {
   type        = string
-  description = "The entrypoint for the integration tests container"
+  default     = ""
+  description = "Optional. The entrypoint for the integration tests container"
 }
 
 variable "intergration_test_args" {
   type        = string
-  description = "The arguments for the integration tests container"
+  default     = ""
+  description = "Optional. The arguments for the integration tests container"
 }
