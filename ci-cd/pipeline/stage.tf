@@ -176,49 +176,49 @@ resource "google_cloudbuild_trigger" "stage" {
       }
     }
 
-    step {
-      id         = "cache"
-      name       = "gcr.io/cloud-builders/docker"
-      entrypoint = "/bin/bash"
-      args = ["-c", <<-EOF
-        docker pull gcr.io/$PROJECT_ID/$REPO_NAME:cache || exit 0
-        EOF
-      ]
-    }
+    #step {
+    #  id         = "cache"
+    #  name       = "gcr.io/cloud-builders/docker"
+    #  entrypoint = "/bin/bash"
+    #  args = ["-c", <<-EOF
+    #    docker pull gcr.io/$PROJECT_ID/$REPO_NAME:cache || exit 0
+    #    EOF
+    #  ]
+    #}
 
-    step {
-      id         = "build-container"
-      name       = "docker"
-      entrypoint = "sh"
-      args = ["-c", <<-EOF
-        ${local.build_args}
-      EOF
-      ]
-    }
+    #step {
+    #  id         = "build-container"
+    #  name       = "docker"
+    #  entrypoint = "sh"
+    #  args = ["-c", <<-EOF
+    #    ${local.build_args}
+    #  EOF
+    #  ]
+    #}
 
-    step {
-      id         = "push"
-      name       = "gcr.io/cloud-builders/docker"
-      entrypoint = "/bin/bash"
-      args = ["-c", <<-EOF
-        docker image push --all-tags gcr.io/$PROJECT_ID/$REPO_NAME
-        EOF
-      ]
-    }
+    #step {
+    #  id         = "push"
+    #  name       = "gcr.io/cloud-builders/docker"
+    #  entrypoint = "/bin/bash"
+    #  args = ["-c", <<-EOF
+    #    docker image push --all-tags gcr.io/$PROJECT_ID/$REPO_NAME
+    #    EOF
+    #  ]
+    #}
 
-    dynamic "step" {
-      for_each = var.unit_test_enabled == true ? [0] : []
-      content {
-        id         = "unit-tests"
-        wait_for   = ["build-container"]
-        name       = "gcr.io/cloud-builders/docker"
-        entrypoint = "bash"
-        args = ["-c", <<-EOF
-          ${local.unit_test_args}
-        EOF
-        ]
-      }
-    }
+    #dynamic "step" {
+    #  for_each = var.unit_test_enabled == true ? [0] : []
+    #  content {
+    #    id         = "unit-tests"
+    #    wait_for   = ["build-container"]
+    #    name       = "gcr.io/cloud-builders/docker"
+    #    entrypoint = "bash"
+    #    args = ["-c", <<-EOF
+    #      ${local.unit_test_args}
+    #    EOF
+    #    ]
+    #  }
+    #}
 
     step {
       id         = "mark-deployments"
