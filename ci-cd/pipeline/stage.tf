@@ -59,10 +59,6 @@ resource "google_cloudbuild_trigger" "stage" {
         version_name = "projects/moove-secrets/secrets/ci-cd_github-token/versions/latest"
       }
       secret_manager {
-        env          = "DEVOPSBOT_PASSWORD"
-        version_name = "projects/moove-secrets/secrets/argocd_devopsbot_password/versions/latest"
-      }
-      secret_manager {
         env          = "SLACK_HOOK"
         version_name = "projects/moove-secrets/secrets/cicd-slack-deploys-hook/versions/latest"
       }
