@@ -31,6 +31,17 @@ resource "google_cloudbuild_trigger" "build-template" {
     }
 
     step {
+      id         = "cache"
+      wait_for   = ["-"]
+      name       = "gcr.io/cloud-builders/docker"
+      entrypoint = "/bin/bash"
+      args = ["-c", <<-EOF
+        docker pull gcr.io/$PROJECT_ID/$REPO_NAME:cache || exit 0
+        EOF
+      ]
+    }
+
+    step {
       id         = "build-container"
       name       = "gcr.io/cloud-builders/docker"
       entrypoint = "bash"
