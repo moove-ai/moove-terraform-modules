@@ -63,8 +63,8 @@ resource "google_cloudbuild_trigger" "stage" {
         version_name = "projects/moove-secrets/secrets/cicd-slack-deploys-hook/versions/latest"
       }
       secret_manager {
-        env          = "ARGOCD_TOKEN"
-        version_name = "projects/moove-secrets/secrets/argocd_token/versions/latest"
+        env          = "DEVOPSBOT_PASSWORD"
+        version_name = "projects/moove-secrets/secrets/argocd_devopsbot_password/versions/latest"
       }
     }
 
@@ -320,7 +320,7 @@ resource "google_cloudbuild_trigger" "stage" {
     step {
       id         = "sync-app"
       name       = "gcr.io/${var.project_id}/argo-app-sync:latest"
-      secret_env = ["ARGOCD_TOKEN"]
+      secret_env = ["DEVOPSBOT_PASSWORD"]
       entrypoint = "bash"
       args = ["-c", <<-EOF
         if ! [ -e /workspace/release ]; then
@@ -328,7 +328,12 @@ resource "google_cloudbuild_trigger" "stage" {
           exit 0
         fi
 
-        python /app/main.py --token $$ARGOCD_TOKEN --repo $REPO_NAME --config_file /workspace/k8s-apps/apps/staging.yaml
+        python /app/main.py \
+          --username devopsbot \
+          --password $$DEVOPSBOT_PASSWORD \
+          --server argocd-server.local:8888 \
+          --repo_name $REPO_NAME \
+          --config_file /workspace/k8s-apps/apps/staging.yaml
         EOF
       ]
     }
