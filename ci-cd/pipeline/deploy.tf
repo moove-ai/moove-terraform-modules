@@ -118,6 +118,7 @@ resource "google_cloudbuild_trigger" "deploy" {
         touch /workspace/version.txt
         touch /workspace/config
         chmod 0777 /workspace/name.txt
+        chmod 0777 /workspace/version.txt
         chmod 0777 /workspace/config
         chmod 0777 /workspace/k8s-apps/apps/production.yaml
         chmod 0777 /workspace/k8s-apps/apps/staging.yaml
