@@ -137,6 +137,13 @@ resource "google_storage_bucket_iam_member" "admin" {
   member   = each.key
 }
 
+resource "google_storage_bucket_iam_member" "admin-legacy" {
+  for_each = toset(var.admin_members)
+  bucket   = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
+  role     = "roles/storage.legacyBucketOwner"
+  member   = each.key
+}
+
 resource "google_storage_bucket_iam_member" "read" {
   for_each = toset(var.read_members)
   bucket   = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
