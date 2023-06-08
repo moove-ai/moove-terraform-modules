@@ -67,7 +67,7 @@ resource "google_secret_manager_secret" "client-sa-key" {
 resource "google_secret_manager_secret_version" "client-sa-key" {
   count       = var.client_sa_key ? 1 : 0
   secret      = google_secret_manager_secret.client-sa-key[0].id
-  secret_data = base64decode(google_service_account_key.client-sa-key.private_key)
+  secret_data = base64decode(google_service_account_key.client-sa-key[0].private_key)
 }
 
 resource "google_secret_manager_secret_version" "client-hmac-key" {
