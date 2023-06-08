@@ -43,6 +43,33 @@ resource "google_secret_manager_secret" "client-hmac-key" {
   }
 }
 
+resource "google_service_account_key" "client-sa-key" {
+  count     = var.client_sa_key ? 1 : 0
+  service_account_id = google_service_account.service-account.key
+}
+
+resource "google_secret_manager_secret" "client-sa-key" {
+  count     = var.client_sa_key ? 1 : 0
+  project   = var.secret_project
+  secret_id = "client-sa-key_${var.client_name}"
+
+  labels = {
+    terraformed = "true"
+    secret-data = "terraform"
+    client      = var.client_name
+  }
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "client-sa-key" {
+  count       = var.client_sa_key ? 1 : 0
+  secret      = google_secret_manager_secret.client-sa-key[0].id
+  secret_data = base64decode(google_service_account_key.client-sa-key.private_key)
+}
+
 resource "google_secret_manager_secret_version" "client-hmac-key" {
   count       = var.client_hmac_key ? 1 : 0
   secret      = google_secret_manager_secret.client-hmac-key[0].id
