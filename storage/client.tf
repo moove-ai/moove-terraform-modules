@@ -45,7 +45,7 @@ resource "google_secret_manager_secret" "client-hmac-key" {
 
 resource "google_service_account_key" "client-sa-key" {
   count     = var.client_sa_key ? 1 : 0
-  service_account_id = google_service_account.service-account.name
+  service_account_id = google_service_account.service-account[0].name
 }
 
 resource "google_secret_manager_secret" "client-sa-key" {
