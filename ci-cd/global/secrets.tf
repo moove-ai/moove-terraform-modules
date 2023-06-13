@@ -94,6 +94,30 @@ resource "google_secret_manager_secret_iam_member" "argocd-alex-password-iam-mem
   member    = "serviceAccount:${google_service_account.deployer.email}"
 }
 
+resource "google_secret_manager_secret" "argocd-ben-password" {
+  project   = "moove-secrets"
+  secret_id = "argocd_ben_password"
+
+  labels = {
+    environment = "mgmt"
+    function    = "argocd"
+    client      = "moove"
+    terraformed = "true"
+    secret-data = "manual-input"
+  }
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_iam_member" "argocd-ben-password-iam-member" {
+  project   = google_secret_manager_secret.argocd-ben-password.project
+  secret_id = google_secret_manager_secret.argocd-ben-password.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.deployer.email}"
+}
+
 resource "google_secret_manager_secret" "cicd-slack-hook" {
   project   = "moove-secrets"
   secret_id = "cicd-slack-deploys-hook"
