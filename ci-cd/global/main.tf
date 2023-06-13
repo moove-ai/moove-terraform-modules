@@ -175,11 +175,11 @@ resource "google_storage_bucket_iam_member" "deployer-image-storage" {
   member = "serviceAccount:${google_service_account.deployer.email}"
 }
 
-#resource "google_storage_bucket_iam_member" "deployer-build-storage" {
-#  bucket = "${module.builds.project_id}_cloudbuild"
-#  role   = "roles/storage.admin"
-#  member = "serviceAccount:${google_service_account.deployer.email}"
-#}
+resource "google_storage_bucket_iam_member" "deployer-build-storage" {
+  bucket = "${module.builds.project_id}_cloudbuild"
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.deployer.email}"
+}
 
 # worker pool
 resource "google_project_iam_member" "deployer-pool-user" {
