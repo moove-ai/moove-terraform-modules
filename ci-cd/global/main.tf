@@ -103,6 +103,16 @@ resource "google_service_account" "deployer" {
   project      = module.builds.project_id
 }
 
+data "google_compute_default_service_account" "builds" {
+  project      = module.builds.project_id
+}
+
+resource "google_service_account_iam_member" "deployer-account-iam" {
+  service_account_id = data.google_compute_default_service_account.builds.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.deployer.email}"
+}
+
 resource "google_project_iam_member" "deployer-iam" {
   depends_on = [module.builds]
 
