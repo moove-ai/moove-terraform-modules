@@ -108,7 +108,7 @@ data "google_compute_default_service_account" "builds" {
 }
 
 resource "google_service_account_iam_member" "deployer-account-iam" {
-  service_account_id = "679892031098-compute@developer.gserviceaccount.com"
+  service_account_id = data.google_compute_default_service_account.builds.name
   role               = "roles/iam.serviceAccountUser"
   member             = "serviceAccount:${google_service_account.deployer.email}"
 }
