@@ -3,6 +3,10 @@ variable "project_id" {
   description = "The project ID road-iq is running in"
 }
 
+variable "region" {
+  description = "The region this is running in"
+}
+
 variable "service_account_id" {
   type        = string
   default     = "k8s-road-iq"
@@ -20,19 +24,21 @@ variable "environment" {
   description = "The name of the environment to deploy road-iq to"
 }
 
-variable "cluster_project_id" {
-  type        = string
-  default     = ""
-  description = "The name of the project the k8s cluster is in"
-}
-
 variable "network_project_id" {
   type        = string
   default     = ""
   description = "The name of the project the k8s network is in"
 }
 
-variable "regions" {
-  type        = list(string)
-  description = "List of regions road-iq is running in"
+variable "vpc_network" {
+  description = "The name of the VPC network"
+}
+
+variable "db_instance_name" {
+  description = "The name of the PSQL database"
+}
+
+variable "db_instance_tier" {
+  description = "The tier of the PSQL database"
+  default = "db-f0-micro"
 }
