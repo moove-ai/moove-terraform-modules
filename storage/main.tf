@@ -9,38 +9,38 @@
 
 locals {
   service_account_project_id = var.service_account_project_id != "" ? var.service_account_project_id : var.project_id
-  bucket_project  = var.bucket_project != "" ? var.bucket_project : var.project_id
+  bucket_project             = var.bucket_project != "" ? var.bucket_project : var.project_id
 }
-
 
 # Application
 resource "google_service_account" "service-account" {
   count        = var.create_service_account ? 1 : 0
   project      = local.service_account_project_id
   account_id   = var.service_account_id
-  display_name = var.name
+  display_name = var.service_account_name
   description  = var.service_account_description
 }
 
 data "google_service_account" "service-account" {
+  count      = var.create_service_account ? 0 : 1
   account_id = var.service_account_id
   project    = local.service_account_project_id
 }
-
 
 data "google_storage_project_service_account" "gcs_account" {
   project = local.bucket_project
 }
 
 resource "google_storage_bucket" "bucket" {
-  count = var.create_bucket ? 1 : 0
+  count    = var.create_bucket ? 1 : 0
   name     = var.name
   project  = local.bucket_project
   location = var.location
   labels = merge({
-    project     = var.project_id
+    project     = local.bucket_project
     terraformed = "true",
     environment = var.environment,
+    client      = var.client_name != "" ? var.client_name : "moove"
   }, var.labels)
 
   dynamic "lifecycle_rule" {
@@ -77,13 +77,14 @@ data "google_storage_bucket" "bucket" {
 }
 
 resource "google_storage_notification" "bucket-notification" {
-  count          = var.notification_enabled ? 1 : 0
-  bucket         = var.name
-  payload_format = "JSON_API_V1"
-  topic          = google_pubsub_topic.topic[0].id
-  event_types    = ["OBJECT_FINALIZE"]
+  count              = var.notification_enabled ? 1 : 0
+  bucket             = var.name
+  payload_format     = "JSON_API_V1"
+  topic              = google_pubsub_topic.topic[0].id
+  event_types        = ["OBJECT_FINALIZE"]
+  object_name_prefix = var.notification_prefix
   depends_on = [
-    google_pubsub_topic_iam_binding.binding,
+    google_pubsub_topic_iam_member.binding,
   ]
 }
 
@@ -98,19 +99,19 @@ resource "google_pubsub_topic" "topic" {
   }, var.labels)
 }
 
-resource "google_pubsub_topic_iam_binding" "binding" {
+resource "google_pubsub_topic_iam_member" "binding" {
   count   = var.topic_enabled ? 1 : 0
   project = google_pubsub_topic.topic[0].project
   topic   = google_pubsub_topic.topic[0].id
   role    = "roles/pubsub.publisher"
-  members = ["serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"]
+  member  = "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
   depends_on = [
     data.google_storage_project_service_account.gcs_account,
   ]
 }
 
 resource "google_pubsub_subscription" "subscription" {
-  count   = var.topic_enabled ? 1 : 0
+  count                = var.topic_enabled && var.subscription_enabled ? 1 : 0
   name                 = var.subscription_name == "" ? var.name : var.subscription_name
   project              = google_pubsub_topic.topic[0].project
   topic                = google_pubsub_topic.topic[0].id
@@ -122,17 +123,24 @@ resource "google_pubsub_subscription" "subscription" {
 }
 
 resource "google_pubsub_subscription_iam_member" "subscriber" {
-  count   = var.topic_enabled ? 1 : 0
+  count        = var.topic_enabled && var.subscription_enabled ? 1 : 0
   subscription = google_pubsub_subscription.subscription[0].name
   project      = google_pubsub_subscription.subscription[0].project
   role         = "roles/pubsub.subscriber"
-  member       = "serviceAccount:${var.create_service_account == true ? google_service_account.service-account[0].email : data.google_service_account.service-account.email}"
+  member       = "serviceAccount:${var.create_service_account == true ? google_service_account.service-account[0].email : data.google_service_account.service-account[0].email}"
 }
 
 resource "google_storage_bucket_iam_member" "admin" {
   for_each = toset(var.admin_members)
   bucket   = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
   role     = "roles/storage.objectAdmin"
+  member   = each.key
+}
+
+resource "google_storage_bucket_iam_member" "admin-legacy" {
+  for_each = toset(var.admin_members)
+  bucket   = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
+  role     = "roles/storage.legacyBucketOwner"
   member   = each.key
 }
 
@@ -151,15 +159,15 @@ resource "google_storage_bucket_iam_member" "read-legacy" {
 }
 
 resource "google_storage_bucket_iam_member" "sa-admin" {
-  count    = var.admin_access ? 1 : 0
-  bucket   = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
+  count  = var.admin_access ? 1 : 0
+  bucket = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
   role   = "roles/storage.objectAdmin"
-  member = "serviceAccount:${var.create_service_account == true ? google_service_account.service-account[0].email : data.google_service_account.service-account.email}"
+  member = "serviceAccount:${var.create_service_account == true ? google_service_account.service-account[0].email : data.google_service_account.service-account[0].email}"
 }
 
 resource "google_storage_bucket_iam_member" "sa-legacy" {
-  count    = var.admin_access ? 1 : 0
-  bucket   = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
+  count  = var.admin_access ? 1 : 0
+  bucket = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
   role   = "roles/storage.legacyBucketOwner"
-  member = "serviceAccount:${var.create_service_account == true ? google_service_account.service-account[0].email : data.google_service_account.service-account.email}"
+  member = "serviceAccount:${var.create_service_account == true ? google_service_account.service-account[0].email : data.google_service_account.service-account[0].email}"
 }

@@ -23,7 +23,7 @@ variable "views" {
   }))
 }
 
-variable email_list {
+variable "email_list" {
   type        = list(string)
   description = "List of emails to share access with"
 }

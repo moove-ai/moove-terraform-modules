@@ -9,7 +9,6 @@
 
 locals {
   namespace             = var.namespace == "" ? var.environment : var.namespace
-  k8s_sa                = var.k8s_sa == "" ? var.app_name : var.k8s_sa
   output_bucket_project = var.output_bucket_project == "" ? var.project_id : var.output_bucket_project
   input_bucket_project  = var.input_bucket_project == "" ? var.project_id : var.input_bucket_project
   cluster_project_id    = var.cluster_project_id == "" ? var.project_id : var.cluster_project_id
@@ -20,7 +19,7 @@ resource "google_service_account" "service-account" {
   project      = var.project_id
   account_id   = var.service_account_id
   display_name = "${title(replace(var.app_name, "-", " "))} (K8s)"
-  description  = "Used for the ${var.app_name} application. Coresponding K8s sa: ${local.k8s_sa} in namespace: ${local.namespace}"
+  description  = "Used for the ${var.app_name} application."
 }
 
 # Input Bucket
@@ -166,16 +165,6 @@ resource "google_storage_bucket" "output-bucket" {
         matches_storage_class = lifecycle_rule.value.condition_matches_storage_class
         num_newer_versions    = lifecycle_rule.value.condition_num_newer_versions
       }
-    }
-  }
-}
-
-resource "kubernetes_namespace" "namespace" {
-  count = var.create_namespace ? 1 : 0
-  metadata {
-    name = local.namespace
-    labels = {
-      monitoring = "enabled"
     }
   }
 }

@@ -14,11 +14,82 @@ variable "app_name" {
   description = "The name of the k8s app. Must match the name in the k8s-deployments repo"
 }
 
+variable "labels" {
+  type        = map(string)
+  description = "Map of additional labels to apply"
+  default     = {}
+}
+
+variable "service_account_id" {
+  type        = string
+  description = "The account ID of the service accoutn"
+}
+
+variable "namespace" {
+  type        = string
+  description = "The namespace to deploy the app to"
+  default     = ""
+}
+
+variable "regions" {
+  type        = list(string)
+  description = "List of regions this app is being deployed to"
+}
+
+variable "cluster_project_id" {
+  type        = string
+  description = "Optional. The project the cluster is running in. Defaults to project_id"
+  default     = ""
+}
+
+variable "k8s_sa_prefix" {
+  type        = string
+  description = "The prefix of the k8s service account name"
+}
+
+
+
+# Input Bucket
 variable "input_bucket" {
   type        = string
   description = "Objects created in this bucket will trigger a pub/sub notification to the configured topic"
 }
 
+variable "create_input_bucket" {
+  type        = bool
+  description = "Creates the input bucket if true"
+  default     = true
+}
+
+variable "input_bucket_location" {
+  type        = string
+  description = "The region the input_bucket is located in"
+  default     = "US"
+}
+
+variable "input_bucket_project" {
+  type        = string
+  description = "Optional. If the bucket is located in a different project, set this value. If create_input_bucket is set, the bucket will be created in this project."
+  default     = ""
+}
+
+variable "notification_enabled" {
+  type        = bool
+  description = "Set to false to disable the bucket notification. Useful for testing."
+  default     = true
+}
+
+variable "input_bucket_client" {
+  type        = string
+  description = "The client with t"
+}
+
+variable "input_bucket_lifecycle_rules" {
+  description = "The lifecycle rules to be applied to the input bucket. If this array is populated then each element in it will be applied as a lifecycle rule to this bucket. The structure of each element is described in detail here: https://www.terraform.io/docs/providers/google/r/storage_bucket.html#lifecycle_rule. See also: https://cloud.google.com/storage/docs/lifecycle#configuration."
+  default     = []
+}
+
+# Output Bucket
 variable "output_bucket" {
   type        = string
   description = "Bucket to hold the output of this app. Required if 'enable_output' is true"
@@ -31,22 +102,10 @@ variable "enable_output" {
   default     = true
 }
 
-variable "create_input_bucket" {
-  type        = bool
-  description = "Creates the input bucket if true"
-  default     = true
-}
-
 variable "create_output_bucket" {
   type        = bool
   description = "Creates the output bucket if true"
   default     = true
-}
-
-variable "input_bucket_location" {
-  type        = string
-  description = "The region the input_bucket is located in"
-  default     = "US"
 }
 
 variable "output_bucket_location" {
@@ -55,11 +114,6 @@ variable "output_bucket_location" {
   default     = "US"
 }
 
-variable "input_bucket_project" {
-  type        = string
-  description = "Optional. If the bucket is located in a different project, set this value. If create_input_bucket is set, the bucket will be created in this project."
-  default     = ""
-}
 
 variable "output_bucket_project" {
   type        = string
@@ -67,18 +121,18 @@ variable "output_bucket_project" {
   default     = ""
 }
 
-variable "labels" {
-  type        = map(string)
-  description = "Map of additional labels to apply"
-  default     = {}
+variable "output_bucket_client" {
+  type        = string
+  description = "The client with t"
+  default     = "moove"
 }
 
-variable "notification_enabled" {
-  type        = bool
-  description = "Set to false to disable the bucket notification. Useful for testing."
-  default     = true
+variable "output_bucket_lifecycle_rules" {
+  description = "The lifecycle rules to be applied to the output bucket. If this array is populated then each element in it will be applied as a lifecycle rule to this bucket. The structure of each element is described in detail here: https://www.terraform.io/docs/providers/google/r/storage_bucket.html#lifecycle_rule. See also: https://cloud.google.com/storage/docs/lifecycle#configuration."
+  default     = []
 }
 
+# Pub/sub
 variable "ack_deadline_seconds" {
   type        = string
   description = "The ack deadline in seconds for the subscription."
@@ -94,52 +148,5 @@ variable "topic_name" {
 variable "subscription_name" {
   type        = string
   description = "Optional. Sets the subscription name if set. If unset, the topic name defaults to the value of input_bucket"
-  default     = ""
-}
-
-variable "service_account_id" {}
-
-variable "namespace" {
-  type        = string
-  description = "The namespace to deploy the app to"
-  default     = ""
-}
-
-variable "k8s_sa" {
-  type        = string
-  description = "The name of the kubernetes service account."
-  default     = ""
-}
-
-variable "input_bucket_client" {
-  type        = string
-  description = "The client with t"
-}
-
-variable "output_bucket_client" {
-  type        = string
-  description = "The client with t"
-  default     = "moove"
-}
-
-variable "input_bucket_lifecycle_rules" {
-  description = "The lifecycle rules to be applied to the input bucket. If this array is populated then each element in it will be applied as a lifecycle rule to this bucket. The structure of each element is described in detail here: https://www.terraform.io/docs/providers/google/r/storage_bucket.html#lifecycle_rule. See also: https://cloud.google.com/storage/docs/lifecycle#configuration."
-  default     = []
-}
-
-variable "output_bucket_lifecycle_rules" {
-  description = "The lifecycle rules to be applied to the output bucket. If this array is populated then each element in it will be applied as a lifecycle rule to this bucket. The structure of each element is described in detail here: https://www.terraform.io/docs/providers/google/r/storage_bucket.html#lifecycle_rule. See also: https://cloud.google.com/storage/docs/lifecycle#configuration."
-  default     = []
-}
-
-variable "create_namespace" {
-  type        = bool
-  description = "Creates the namepsace if set to true"
-  default     = true
-}
-
-variable "cluster_project_id" {
-  type        = string
-  description = "The project ID the cluster is running in, only use if different than project id"
   default     = ""
 }

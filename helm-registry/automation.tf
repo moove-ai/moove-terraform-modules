@@ -1,11 +1,11 @@
 data "google_service_account" "build_service_account" {
-  project    = "moove-systems"
-  account_id = "priviliged-builder"
+  project    = "moove-builds-a747"
+  account_id = "deployer"
 }
 
 resource "google_cloudbuild_trigger" "chart" {
   provider        = google-beta
-  project         = "moove-systems"
+  project         = "moove-builds-a747"
   name            = "deploy-helm-charts"
   description     = "Updates the moove helm chart registry (charts.moove.co.in)"
   service_account = data.google_service_account.build_service_account.id

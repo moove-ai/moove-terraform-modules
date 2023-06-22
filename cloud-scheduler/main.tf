@@ -16,6 +16,6 @@ resource "google_cloud_scheduler_job" "job" {
   }
 
   oauth_token {
-    service_account_email = data.google_compute_default_service_account.default.email 
+    service_account_email = data.google_compute_default_service_account.default.email
   }
 }

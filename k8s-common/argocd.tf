@@ -75,7 +75,7 @@ resource "helm_release" "argo-cd" {
 
 
 locals {
-  argocd_url = "${var.environment}.deployments.moove.co.in"
+  argocd_url          = "${var.environment}.deployments.moove.co.in"
   notification_secret = "argocd-notifications-secret"
   argocd_values       = var.argocd_values != "" ? var.argocd_values : <<-EOT
   configs:

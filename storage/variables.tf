@@ -48,7 +48,7 @@ variable "create_bucket" {
   description = "Set to false to use an existing bucket"
 }
 
-variable bucket_project {
+variable "bucket_project" {
   type        = string
   default     = ""
   description = "Optional. Overrides the project to create or view the bucket in."
@@ -84,6 +84,11 @@ variable "service_account_description" {
   description = "The description for the service account if creating"
 }
 
+variable "service_account_name" {
+  type        = string
+  default     = "service account"
+  description = "The description for the service account if creating"
+}
 
 
 variable "topic_name" {
@@ -104,14 +109,63 @@ variable "ack_deadline_seconds" {
   description = "Optional. Sets the ack deadline for this pub/sub subscription"
 }
 
-variable topic_enabled {
+variable "subscription_enabled" {
+  type        = bool
+  default     = true
+  description = "Enable or disable a pub/sub subscription"
+}
+
+variable "topic_enabled" {
   type        = bool
   default     = true
   description = "Enable or disable a pub/sub topic"
 }
 
-variable admin_access {
+variable "admin_access" {
   type        = string
   default     = true
   description = "Optional. Gives the service account admin access to the bucket created/defined by this module."
+}
+
+variable "notification_prefix" {
+  type        = string
+  default     = ""
+  description = "description"
+}
+
+# Client Variables
+variable "client_bucket" {
+  type        = bool
+  default     = false
+  description = "Optional. Set to true to create client bucket resources. Client Service Account, optional HMAC keys, and optional service account key"
+}
+
+variable "client_id" {
+  type        = string
+  default     = ""
+  description = "Optional. Used for client buckets only. The 6 digit client ID string assigned to this client."
+}
+
+variable "client_name" {
+  type        = string
+  default     = ""
+  description = "Optional. Used for client buckets only. Sets the name of the client"
+}
+
+variable "client_hmac_key" {
+  type        = bool
+  default     = false
+  description = "Optional. Set to true to create an HMAC key for the client. Stored in a secret."
+}
+
+variable "client_sa_key" {
+  type        = bool
+  default     = false
+  description = "Optional. Set to true to create a gcp service account key for the client. Stored in a secret."
+}
+
+variable "secret_project" {
+  type        = string
+  default     = "moove-secrets"
+  description = "The project holding client secrets"
 }

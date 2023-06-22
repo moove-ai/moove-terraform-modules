@@ -57,3 +57,15 @@ output "service_account" {
   sensitive   = false
   description = "The email for the service account created"
 }
+
+output "subscription_project" {
+  value       = google_pubsub_subscription.subscription.project
+  sensitive   = false
+  description = "The value for the k8s deployment"
+}
+
+output "subscription_id" {
+  value       = google_pubsub_subscription.subscription.name
+  sensitive   = false
+  description = "The value for the k8s deployment"
+}

@@ -15,6 +15,11 @@ data "google_secret_manager_secret" "slack-webhook-token" {
   project   = var.secret_project_id
 }
 
+data "google_secret_manager_secret" "argocd-ssh-key" {
+  secret_id = "argocd_ssh-key"
+  project   = var.secret_project_id
+}
+
 data "google_service_account" "terraform" {
   project    = "moove-systems"
   account_id = "terraform"
@@ -55,6 +60,20 @@ resource "google_project_iam_member" "privileged-builder-registry-iam" {
   role    = "roles/artifactregistry.writer"
   member  = "serviceAccount:${google_service_account.privileged-builder.email}"
 }
+
+resource "google_project_iam_member" "privileged-builder-k8s" {
+  project = var.project_id
+  role    = "roles/container.admin"
+  member  = "serviceAccount:${google_service_account.privileged-builder.email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "privileged-builder-devops-ssh-key-iam" {
+  project   = data.google_secret_manager_secret.argocd-ssh-key.project
+  secret_id = data.google_secret_manager_secret.argocd-ssh-key.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.privileged-builder.email}"
+}
+
 
 resource "google_secret_manager_secret_iam_member" "privileged-builder-grafana-iam" {
   project   = data.google_secret_manager_secret.grafana-api-key.project
@@ -136,16 +155,3 @@ resource "google_service_account_iam_member" "p-builder-act-as" {
   role               = "roles/iam.serviceAccountUser"
   member             = "serviceAccount:${google_service_account.privileged-builder.email}"
 }
-#
-#resource "google_service_account_iam_member" "builder-act-as-1" {
-#  service_account_id = google_service_account.builder.name
-#  role               = "roles/iam.serviceAccountUser"
-#  member             = "serviceAccount:${data.google_service_account.terraform.email}"
-#}
-#
-#resource "google_service_account_iam_member" "p-builder-act-as-1" {
-#  service_account_id = google_service_account.privileged-builder.name
-#  role               = "roles/iam.serviceAccountUser"
-#  member             = "serviceAccount:${data.google_service_account.terraform.email}"
-#}
-#

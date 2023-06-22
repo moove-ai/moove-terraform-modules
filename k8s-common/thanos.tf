@@ -1,5 +1,5 @@
 resource "google_service_account" "object-store-sa" {
-  account_id = "k8s-thanos"
+  account_id = "k7s-thanos"
   project    = var.project_id
 }
 
@@ -38,6 +38,6 @@ locals {
   config:
     bucket: "${google_storage_bucket.thanos-object-store.name}"
     service_account: |-
-      ${indent(4, base64decode(google_service_account_key.object-store-key.private_key))}
+      ${indent(3, base64decode(google_service_account_key.object-store-key.private_key))}
   EOT
 }
