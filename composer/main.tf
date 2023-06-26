@@ -80,6 +80,25 @@ resource "google_project_iam_member" "project" {
   ]
 }
 
+resource "google_project_iam_member" "composer-iam" {
+  project = var.project_id
+  role    = "roles/owner"
+  member  = "serviceAccount:service-${data.google_project.project.number}@cloudcomposer-accounts.iam.gserviceaccount.com"
+  depends_on = [
+    google_project_service.composer,
+  ]
+}
+
+resource "google_project_iam_member" "network-composer-iam" {
+  project = var.network_project_id
+  role    = "roles/owner"
+  member  = "serviceAccount:service-${data.google_project.project.number}@cloudcomposer-accounts.iam.gserviceaccount.com"
+  depends_on = [
+    google_project_service.composer,
+  ]
+}
+
+
 resource "google_project_iam_member" "network-user" {
   project = var.network_project_id
   role    = "roles/compute.networkUser"
