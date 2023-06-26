@@ -98,9 +98,18 @@ resource "google_project_iam_member" "compute-network-user" {
   ]
 }
 
-resource "google_project_iam_member" "compute-admin" {
+resource "google_project_iam_member" "network-owner" {
   project = var.network_project_id
-  role    = "roles/compute.admin"
+  role    = "roles/owner"
+  member  = "serviceAccount:${var.create_service_account == false ? data.google_service_account.serviceaccount[0].email : google_service_account.serviceaccount[0].email}"
+  depends_on = [
+    google_project_service.composer,
+  ]
+}
+
+resource "google_project_iam_member" "owner" {
+  project = var.project_id
+  role    = "roles/owner"
   member  = "serviceAccount:${var.create_service_account == false ? data.google_service_account.serviceaccount[0].email : google_service_account.serviceaccount[0].email}"
   depends_on = [
     google_project_service.composer,
