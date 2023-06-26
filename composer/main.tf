@@ -98,6 +98,15 @@ resource "google_project_iam_member" "compute-network-user" {
   ]
 }
 
+resource "google_project_iam_member" "project-network-user" {
+  project = var.project_id
+  role    = "roles/compute.networkUser"
+  member  = "serviceAccount:${var.create_service_account == false ? data.google_service_account.serviceaccount[0].email : google_service_account.serviceaccount[0].email}"
+  depends_on = [
+    google_project_service.composer,
+  ]
+}
+
 resource "google_project_iam_member" "worker" {
   project = var.project_id
   role    = "roles/composer.worker"
