@@ -80,25 +80,6 @@ resource "google_project_iam_member" "project" {
   ]
 }
 
-resource "google_project_iam_member" "composer-iam" {
-  project = var.project_id
-  role    = "roles/owner"
-  member  = "serviceAccount:service-${data.google_project.project.number}@cloudcomposer-accounts.iam.gserviceaccount.com"
-  depends_on = [
-    google_project_service.composer,
-  ]
-}
-
-resource "google_project_iam_member" "network-composer-iam" {
-  project = var.network_project_id
-  role    = "roles/owner"
-  member  = "serviceAccount:service-${data.google_project.project.number}@cloudcomposer-accounts.iam.gserviceaccount.com"
-  depends_on = [
-    google_project_service.composer,
-  ]
-}
-
-
 resource "google_project_iam_member" "network-user" {
   project = var.network_project_id
   role    = "roles/compute.networkUser"
@@ -112,24 +93,6 @@ resource "google_project_iam_member" "compute-network-user" {
   project = var.network_project_id
   role    = "roles/compute.networkUser"
   member  = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
-  depends_on = [
-    google_project_service.composer,
-  ]
-}
-
-resource "google_project_iam_member" "network-owner" {
-  project = var.network_project_id
-  role    = "roles/owner"
-  member  = "serviceAccount:${var.create_service_account == false ? data.google_service_account.serviceaccount[0].email : google_service_account.serviceaccount[0].email}"
-  depends_on = [
-    google_project_service.composer,
-  ]
-}
-
-resource "google_project_iam_member" "owner" {
-  project = var.project_id
-  role    = "roles/owner"
-  member  = "serviceAccount:${var.create_service_account == false ? data.google_service_account.serviceaccount[0].email : google_service_account.serviceaccount[0].email}"
   depends_on = [
     google_project_service.composer,
   ]
