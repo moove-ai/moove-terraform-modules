@@ -1,6 +1,6 @@
 resource "google_cloud_run_v2_service" "service" {
   provider     = google-beta
-  name         = var.service_name
+  name         = "${var.service_name}-${var.service_location}-${var.environment}"
   project      = var.project_id
   location     = var.service_location
   launch_stage = var.launch_stage
