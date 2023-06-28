@@ -3,6 +3,12 @@ variable "project_id" {
   type        = string
 }
 
+variable "build_project" {
+  description = "The project ID to build the container image"
+  type        = string
+  default     = "moove-build"
+}
+
 variable "environment" {
   description = "The environment to deploy to"
   type        = string
