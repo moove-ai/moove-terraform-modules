@@ -40,5 +40,5 @@ variable "db_instance_name" {
 
 variable "db_instance_tier" {
   description = "The tier of the PSQL database"
-  default = "db-f0-micro"
+  default     = "db-f0-micro"
 }

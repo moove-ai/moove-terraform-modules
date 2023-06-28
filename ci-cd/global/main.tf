@@ -104,7 +104,7 @@ resource "google_service_account" "deployer" {
 }
 
 data "google_compute_default_service_account" "builds" {
-  project      = module.builds.project_id
+  project = module.builds.project_id
 }
 
 resource "google_project_iam_member" "deployer-iam" {
