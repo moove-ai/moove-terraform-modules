@@ -1,3 +1,8 @@
+variable "project_id" {
+  description = "The project ID to deploy to"
+  type        = string
+}
+
 variable "service_name" {
   description = "Name of the Cloud Run service"
   type        = string
