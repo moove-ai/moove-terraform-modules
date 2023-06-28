@@ -24,6 +24,21 @@ resource "google_cloud_run_v2_service" "service" {
           container_port = containers.value.port
         }
 
+        liveness_probe {
+          initial_delay_seconds = containers.value.liveness_probe[0].initial_delay_seconds
+          timeout_seconds       = containers.value.liveness_probe[0].timeout_seconds
+          period_seconds        = containers.value.liveness_probe[0].period_seconds
+          failure_threshold     = containers.value.liveness_probe[0].failure_threshold
+
+          dynamic "http_get" {
+            for_each = containers.value.liveness_probe[0].http_get
+            content {
+              path = http_get.value.path
+              port = http_get.value.port
+            }
+          }
+        }
+
         depends_on = containers.value.depends_on
 
         dynamic "volume_mounts" {
