@@ -68,4 +68,7 @@ resource "google_cloud_run_v2_service" "service" {
       launch_stage,
     ]
   }
+  depends_on = [
+    google_storage_bucket_iam_member.cloud-run-reader,
+  ]
 }
