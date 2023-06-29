@@ -42,7 +42,7 @@ variable "containers" {
     name       = string
     image      = string
     port       = number
-    depends_on = list(string)
+    depends_on = optiona(list(string))
     volume_mounts = list(object({
       name       = string
       mount_path = string
