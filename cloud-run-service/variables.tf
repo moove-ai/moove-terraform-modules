@@ -3,6 +3,12 @@ variable "project_id" {
   type        = string
 }
 
+variable "labels" {
+  description = "Map of labels to merge onto this service"
+  type        = map(string)
+  default     = {}
+}
+
 variable "build_project" {
   description = "The project ID to build the container image"
   type        = string
