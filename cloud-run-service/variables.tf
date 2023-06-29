@@ -49,10 +49,10 @@ variable "containers" {
     image      = string
     port       = number
     depends_on = optional(list(string))
-    volume_mounts = list(object({
+    volume_mounts = optional(list(object({
       name       = string
       mount_path = string
-    }))
+    })))
     liveness_probe = optional(list(object({
       initial_delay_seconds = optional(number)
       timeout_seconds       = optional(number)
@@ -75,7 +75,6 @@ variable "containers" {
   }))
   default = []
 }
-
 
 variable "volumes" {
   description = "List of volume configurations"
