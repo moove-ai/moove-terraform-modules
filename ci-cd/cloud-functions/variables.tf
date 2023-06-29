@@ -4,11 +4,11 @@ variable "project_id" {
   description = "description"
 }
 
-variable "cloudbuild_file" {
-  type        = string
-  default     = ""
-  description = "Overrides the name default (cloudbuild.yaml) build file"
-}
+#variable "cloudbuild_file" {
+#  type        = string
+#  default     = ""
+#  description = "Overrides the name default (cloudbuild.yaml) build file"
+#}
 
 variable "github_repo" {
   type        = string
@@ -45,19 +45,14 @@ variable "build_ignored_files" {
   description = "List of files which will NOT trigger a build"
 }
 
+variable "environment" {
+  type        = string
+  description = "The environment this app is deploying to"
+}
+
 variable "deploy_region" {
   type        = string
-  description = "The region for the Cloud Deploy pipeline"
-}
-
-variable "deploy_name" {
-  type        = string
-  description = "The name of the Cloud Deploy pipeline"
-}
-
-variable "deploy_description" {
-  type        = string
-  description = "The description of the Cloud Deploy pipeline"
+  description = "The region for the Cloud Function"
 }
 
 variable "deployer_account_id" {

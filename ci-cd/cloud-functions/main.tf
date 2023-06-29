@@ -25,27 +25,6 @@ resource "google_cloudbuild_trigger" "build" {
   }
 }
 
-resource "google_clouddeploy_delivery_pipeline" "deploy" {
-  location    = var.deploy_region
-  name        = var.deploy_name
-  description = var.deploy_description
-  project     = var.project_id
-
-  serial_pipeline {
-    stages {
-      profiles  = ["staging"]
-      target_id = "staging"
-    }
-
-    stages {
-      profiles  = ["production"]
-      target_id = "production"
-    }
-  }
-  provider = google-beta
-}
-
-
 data "google_service_account" "deployer" {
   project    = var.deployer_project_id
   account_id = var.deployer_account_id

@@ -169,3 +169,18 @@ variable "secret_project" {
   default     = "moove-secrets"
   description = "The project holding client secrets"
 }
+
+variable "cloud_function_enabled" {
+  type        = bool
+  description = "Set to true to create cloud function resources"
+}
+
+variable "storage_transfer_enabled" {
+  type        = bool
+  description = "Set to true to create STS resources"
+}
+
+variable "storage_transfer_project" {
+  type        = string
+  description = "The project the STS is running in"
+}
