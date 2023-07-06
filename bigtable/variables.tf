@@ -54,3 +54,30 @@ variable "deletion_protection" {
   description = "False if terraform should be allowed to destroy an instance"
   default = true
 }
+
+variable "table_name" {
+  type        = string
+  description = "Name of a table in bigtable"
+}
+
+variable "column_family" {
+  type        = string
+  description = "Name of a column family"
+}
+
+variable "gc_rules" {
+  type        = string
+  default = <<EOF
+  {
+    "mode": "intersection",
+    "rules": [
+      {
+        "max_age": "32d"
+      },
+      {
+        "max_version": 1
+      }
+    ]
+  }
+  EOF
+}

@@ -7,7 +7,7 @@
  * Written by Ben Hoskins for moove.ai
  */
 
-resource "google_bigtable_instance" "production-instance" {
+resource "google_bigtable_instance" "instance" {
   name = var.instance_name
   project = var.project_id
   deletion_protection = var.deletion_protection
@@ -23,3 +23,18 @@ resource "google_bigtable_instance" "production-instance" {
     }
   }
 }
+
+resource "google_bigtable_table" "table" {
+  name = var.table_name
+  project = var.project_id
+  instance_name = var.instance_name
+  deletion_protection = var.deletion_protection
+}
+
+resource "google_bigtable_gc_policy" "policy" {
+  instance_name = google_bigtable_instance.instance.name
+  table         = google_bigtable_table.table.name
+  column_family = var.column_family
+  gc_rules = var.gc_rules
+}
+
