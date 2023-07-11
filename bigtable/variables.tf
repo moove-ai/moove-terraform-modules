@@ -13,6 +13,11 @@ variable "cluster_id" {
   description = "Id of the bigtable cluster to create"
 }
 
+variable "clusters" {
+  description = "Clusters to add to a Bigtable instance. Structure is described here: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigtable_instance#nested_cluster"
+  default = []
+}
+
 variable "storage_type" {
   type        = string
   description = "Zone to create the bigtable cluster in"
@@ -81,3 +86,33 @@ variable "gc_rules" {
   }
   EOF
 }
+
+variable "app_profile_id" {
+  type        = string
+  description = "ID of and app profile"
+}
+
+variable "app_profile_description" {
+  type        = string
+  description = "Description of an app profile"
+  default = null
+}
+
+variable "multi_cluster_routing_use_any" {
+  type        = string
+  description = "Send requests to nearest cluster"
+  default = false
+}
+
+variable "allow_transactional_writes" {
+  type        = string
+  description = "Allow CheckAndMutateRow and ReadModifyWriteRow requests"
+  default = false
+}
+
+variable "app_profile_ignore_warnings" {
+  type        = string
+  description = "Ignore safetly checks when deleting/updating app profile"
+  default = false
+}
+
