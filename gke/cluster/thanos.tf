@@ -21,11 +21,10 @@ resource "google_secret_manager_secret" "thanos-object-store-config" {
   }
 
   labels = {
-    environment = "mgmt"
+    environment = var.environment
     function    = "monitoring"
     client      = "moove"
     terraformed = "true"
-    secret-data = "manual-input"
   }
 }
 

@@ -31,6 +31,13 @@ resource "google_project_iam_member" "deployer-gcs-admin" {
   member   = "serviceAccount:${google_service_account.deployer.email}"
 }
 
+resource "google_project_iam_member" "deployer-container-admin" {
+  for_each = toset(var.k8s_projects)
+  project  = each.key
+  role     = "roles/container.admin"
+  member   = "serviceAccount:${google_service_account.deployer.email}"
+}
+
 resource "google_project_iam_custom_role" "deployer" {
   project     = module.builds.project_id
   role_id     = "deployer"

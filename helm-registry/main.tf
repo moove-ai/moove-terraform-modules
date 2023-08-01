@@ -13,7 +13,7 @@ resource "google_storage_bucket" "helm-registry-public" {
   name                        = "moove-helm-charts"
   location                    = "US"
   uniform_bucket_level_access = false
-  force_destroy               = true
+  force_destroy               = false
   public_access_prevention    = "inherited"
 }
 

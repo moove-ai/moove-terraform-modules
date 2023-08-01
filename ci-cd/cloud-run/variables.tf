@@ -77,4 +77,34 @@ variable "location" {
   description = "The location of the Cloud Build trigger"
   default     = "global"
 }
-  
+
+variable "pipeline_targets" {
+  type = map(list(object({
+    name            = string
+    project_id      = string
+    description     = string
+    service_account = string
+    deploy_project  = string
+    deploy_region   = string
+  })))
+  default = {}
+}
+
+variable "substitutions" {
+  description = "Substitutions for the Cloud Build trigger."
+  type        = map(string)
+  default     = {}
+}
+
+variable "auto_build" {
+  type        = bool
+  default     = true
+  description = "Set to true to enable automatic builds. Set to false to enable manual builds."
+}
+
+variable "build_tags" {
+  type        = list(string)
+  default     = []
+  description = "List of tags to apply to the build"
+}
+ 

@@ -1,22 +1,20 @@
-variable "project_id" {
-  description = "The project ID to deploy to"
-  type        = string
-}
-
 variable "build_project" {
   description = "The project ID to build the container image"
   type        = string
   default     = "moove-build"
 }
 
-variable "environment" {
-  description = "The environment to deploy to"
-  type        = string
+variable "environments" {
+  type = map(object({
+    project_id         = string
+    network_project_id = string
+  }))
 }
 
 variable "service_account_id" {
-  description = "The service account ID to create"
+  description = "Optional. The service account ID"
   type        = string
+  default     = ""
 }
 
 variable "service_account_display_name" {
@@ -29,23 +27,6 @@ variable "service_account_description" {
   description = "The service account description"
   type        = string
   default     = ""
-}
-
-variable "create_service_account" {
-  description = "Whether to create the service account"
-  type        = bool
-  default     = true
-}
-
-variable "service_account_project_id" {
-  description = "The project ID the service account is in"
-  type        = string
-  default     = ""
-}
-
-variable "network_project_id" {
-  type        = string
-  description = "The project ID the network is in"
 }
 
 variable "application_name" {
@@ -115,4 +96,46 @@ variable "pubsub_ack_deadline_seconds" {
   type        = number
   description = "The ack deadline seconds for the pubsub subscription"
   default     = 20
+}
+
+variable "regions" {
+  type        = list(string)
+  description = "The list of regions the cloud run service is deplpoyed tthe cloud run service is deplpoyed to"
+  default     = []
+}
+
+variable "dns_project" {
+  type        = string
+  description = "Optional. The project holding the DNS Managed Zone"
+  default     = "moove-systems"
+}
+
+variable "dns_zone" {
+  type        = string
+  description = "Optional. The DNS Managed Zone"
+  default     = "moove-ai"
+}
+
+variable "cloud_run_project" {
+  type        = string
+  description = "The project ID where the cloud run service is deployed"
+  default     = ""
+}
+
+variable "cloud_run_service_name" {
+  type        = string
+  description = "Optional. The name of the cloud run service"
+  default     = ""
+}
+
+variable "dns_name" {
+  type        = string
+  description = "Optional if createing external load balancer resources. The FQDN of the cloud run service"
+  default     = ""
+}
+
+variable "create_external_load_balancer" {
+  type        = bool
+  description = "Set to true to create external load balancer resources"
+  default     = false
 }

@@ -21,6 +21,12 @@ variable "service_account_project_id" {
   default     = ""
 }
 
+variable "service_account_id" {
+  type        = string
+  description = "The project the service account is located in"
+  default     = ""
+}
+
 variable "service_account_display_name" {
   type        = string
   description = "The project the service account is located in"
@@ -33,3 +39,9 @@ variable "service_account_description" {
   default     = ""
 }
 
+variable "buckets" {
+  type        = list(string)
+  description = "The name of the bucket to be created"
+  default     = ["moove-aws-import"]
+}
+  

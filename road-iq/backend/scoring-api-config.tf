@@ -1,10 +1,10 @@
 data "google_secret_manager_secret_version" "clickhouse-user" {
-  project = var.project_id
+  project = var.k8s_cluster_project_id == "" ? var.project_id : var.k8s_cluster_project_id
   secret  = "clickhouse_user"
 }
 
 data "google_secret_manager_secret_version" "clickhouse-password" {
-  project = var.project_id
+  project = var.k8s_cluster_project_id == "" ? var.project_id : var.k8s_cluster_project_id
   secret  = "clickhouse_password"
 }
 
@@ -14,16 +14,22 @@ data "google_secret_manager_secret_version" "postgres-postgres" {
 }
 
 data "google_secret_manager_secret_version" "postgres-bookmarks" {
-  project = var.project_id
+  project = var.k8s_cluster_project_id == "" ? var.project_id : var.k8s_cluster_project_id
   secret  = "postgres_bookmarks"
 }
 
 resource "google_secret_manager_secret" "scoring-api-config" {
-  project   = var.project_id
+  project   = var.k8s_cluster_project_id == "" ? var.project_id : var.k8s_cluster_project_id
   secret_id = "scoring-api-config"
 
   replication {
     automatic = true
+  }
+
+  labels = {
+    terraformed = "true"
+    environment = var.environment
+    app         = "scoring-api"
   }
 }
 

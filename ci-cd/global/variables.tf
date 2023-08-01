@@ -42,3 +42,15 @@ variable "deploy_region" {
   description = "The region the cloud deploy pipelines will be created in"
   default     = "us-central1"
 }
+
+variable "pipeline_targets" {
+  type = map(list(object({
+    name            = string
+    project_id      = string
+    description     = string
+    service_account = string
+    deploy_project  = string
+    deploy_region   = string
+  })))
+  default = {}
+}

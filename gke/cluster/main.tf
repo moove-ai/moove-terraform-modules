@@ -38,5 +38,4 @@ resource "google_bigquery_dataset" "resource-monitor" {
     role   = "READER"
     domain = "moove.ai"
   }
-
 }

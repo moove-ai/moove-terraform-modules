@@ -1,12 +1,15 @@
-output "service_account_email" {
-  value = var.create_service_account ? google_service_account.runner[0].email : data.google_service_account.runner[0].email
-
-}
-
-output "service_account_id" {
-  value = var.create_service_account ? google_service_account.runner[0].id : data.google_service_account.runner[0].id
-}
+#output "service_account_emails" {
+#  value = values(google_service_account.runner)[*].email
+#}
 
 output "service_account_name" {
-  value = var.create_service_account ? google_service_account.runner[0].name : data.google_service_account.runner[0].name
+  value = var.service_account_id != "" ? var.service_account_id : var.application_name
+}
+
+output "service_account_emails" {
+  value = { for env, sa in google_service_account.runner : env => sa.email }
+}
+
+output "projects" {
+  value = { for env, config in var.environments : config.project_id => env }
 }

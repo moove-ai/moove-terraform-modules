@@ -1,11 +1,11 @@
 data "google_service_account" "build_service_account" {
-  project    = "moove-builds-a747"
+  project    = var.project_id
   account_id = "deployer"
 }
 
 resource "google_cloudbuild_trigger" "chart" {
   provider        = google-beta
-  project         = "moove-builds-a747"
+  project         = var.project_id
   name            = "deploy-helm-charts"
   description     = "Updates the moove helm chart registry (charts.moove.co.in)"
   service_account = data.google_service_account.build_service_account.id
@@ -27,7 +27,7 @@ resource "google_cloudbuild_trigger" "chart" {
   }
 
   build {
-    logs_bucket = "gs://moove-mgmt-build-logs"
+    logs_bucket = "gs://moove-build-logs"
     timeout     = "600s"
 
     options {
