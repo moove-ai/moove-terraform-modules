@@ -54,3 +54,15 @@ variable "pipeline_targets" {
   })))
   default = {}
 }
+
+variable "secret_project_id" {
+  type        = string
+  default     = "moove-secrets"
+  description = "The project holding cicd secrets"
+}
+
+variable "environment" {
+  type        = string
+  description = "The environment ci/cd pipelines are running in"
+  default     = "mgmt"
+}

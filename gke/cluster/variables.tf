@@ -23,3 +23,9 @@ variable "create_resource_monitor" {
   description = "Set to true to create a BQ database to monitor GKE spend"
   default     = false
 }
+
+variable "thanos_service_account_name" {
+  type        = string
+  description = "The name of the thanos service account"
+  default     = "k8s-thanos"
+}
