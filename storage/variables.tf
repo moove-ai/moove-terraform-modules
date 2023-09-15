@@ -115,12 +115,6 @@ variable "subscription_enabled" {
   description = "Enable or disable a pub/sub subscription"
 }
 
-variable "topic_enabled" {
-  type        = bool
-  default     = true
-  description = "Enable or disable a pub/sub topic"
-}
-
 variable "admin_access" {
   type        = string
   default     = true
@@ -173,14 +167,17 @@ variable "secret_project" {
 variable "cloud_function_enabled" {
   type        = bool
   description = "Set to true to create cloud function resources"
+  default = false
 }
 
 variable "storage_transfer_enabled" {
   type        = bool
   description = "Set to true to create STS resources"
+  default = false
 }
 
 variable "storage_transfer_project" {
   type        = string
   description = "The project the STS is running in"
+  default = ""
 }

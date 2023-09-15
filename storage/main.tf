@@ -10,6 +10,7 @@
 locals {
   service_account_project_id = var.service_account_project_id != "" ? var.service_account_project_id : var.project_id
   bucket_project             = var.bucket_project != "" ? var.bucket_project : var.project_id
+  storage_transfer_project   = var.storage_transfer_project != "" ? var.storage_transfer_project : var.project_id
 }
 
 # Application
@@ -90,7 +91,7 @@ resource "google_storage_notification" "bucket-notification" {
 
 # Pub/Sub 
 resource "google_pubsub_topic" "topic" {
-  count   = var.topic_enabled ? 1 : 0
+  count              = var.notification_enabled ? 1 : 0
   project = var.project_id
   name    = var.topic_name == "" ? var.name : var.topic_name
   labels = merge({
@@ -184,7 +185,7 @@ resource "google_project_iam_binding" "sa_role_binding" {
 
 data "google_project" "storage_transfer_project" {
   count      = var.storage_transfer_enabled ? 1 : 0
-  project_id = var.storage_transfer_project
+  project_id = local.storage_transfer_project
 }
 
 resource "google_storage_bucket_iam_member" "sts-legacy" {
