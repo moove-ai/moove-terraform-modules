@@ -32,22 +32,7 @@ resource "google_secret_manager_secret" "grafana-api-key" {
     application = "cloudfunctions"
     environment = var.environment
     terraformed = "true"
-  }
-
-  replication {
-    automatic = true
-  }
-}
-
-resource "google_secret_manager_secret" "slack-webhook-token" {
-  project   = var.secret_project_id
-  secret_id = "ci-cd_slack-webhook-token-cf-build-notification"
-
-  labels = {
-    function    = "cloudbuild"
-    application = "cloudfunctions"
-    environment = var.environment
-    terraformed = "true"
+    secret-data = "manual-input"
   }
 
   replication {
@@ -64,6 +49,7 @@ resource "google_secret_manager_secret" "github-token" {
     application = "cloudfunctions"
     environment = var.environment
     terraformed = "true"
+    secret-data = "manual-input"
   }
 
   replication {

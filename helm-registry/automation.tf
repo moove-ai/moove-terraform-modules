@@ -31,7 +31,6 @@ resource "google_cloudbuild_trigger" "chart" {
     timeout     = "600s"
 
     options {
-      machine_type = "UNSPECIFIED"
       volumes {
         name = "uploads"
         path = "/uploads"
