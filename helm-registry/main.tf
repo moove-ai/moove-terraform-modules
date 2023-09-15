@@ -17,7 +17,6 @@ resource "google_storage_bucket" "helm-registry-public" {
   public_access_prevention    = "inherited"
 }
 
-
 resource "google_storage_bucket_access_control" "public_rule" {
   bucket = google_storage_bucket.helm-registry-public.name
   role   = "READER"

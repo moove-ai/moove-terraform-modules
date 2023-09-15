@@ -33,3 +33,22 @@ variable "build_project_id" {
   description = "The project ID builds are stored in"
   default     = "moove-build"
 }
+
+variable "create_service_account" {
+  type        = bool
+  default     = false
+  description = "value to determine if the thanos account should be created"
+}
+
+variable "service_account_project_id" {
+  type        = string
+  description = "Optional. The project the thanos service account is located in."
+  default     = ""
+}
+
+variable "service_account_name" {
+  type        = string
+  description = "The name of the thanos service account"
+  default     = "k8s-thanos"
+
+}

@@ -1,5 +1,5 @@
 resource "google_secret_manager_secret" "grafana-github_client_secret" {
-  project   = "moove-systems"
+  project   = var.secret_project_id
   secret_id = "grafana-github_client_secret"
 
   labels = {
