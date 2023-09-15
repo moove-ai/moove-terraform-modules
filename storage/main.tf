@@ -171,3 +171,32 @@ resource "google_storage_bucket_iam_member" "sa-legacy" {
   role   = "roles/storage.legacyBucketOwner"
   member = "serviceAccount:${var.create_service_account == true ? google_service_account.service-account[0].email : data.google_service_account.service-account[0].email}"
 }
+
+resource "google_project_iam_binding" "sa_role_binding" {
+  count   = var.cloud_function_enabled ? 1 : 0
+  project = var.project_id
+  role    = "roles/iam.serviceAccountUser"
+
+  members = [
+    "serviceAccount:${var.create_service_account == true ? google_service_account.service-account[0].email : data.google_service_account.service-account[0].email}",
+  ]
+}
+
+data "google_project" "storage_transfer_project" {
+  count      = var.storage_transfer_enabled ? 1 : 0
+  project_id = var.storage_transfer_project
+}
+
+resource "google_storage_bucket_iam_member" "sts-legacy" {
+  count  = var.storage_transfer_enabled ? 1 : 0
+  bucket = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
+  role   = "roles/storage.legacyBucketOwner"
+  member = "serviceAccount:project-${data.google_project.storage_transfer_project[0].number}@storage-transfer-service.iam.gserviceaccount.com"
+}
+
+resource "google_storage_bucket_iam_member" "sts-admin" {
+  count  = var.storage_transfer_enabled ? 1 : 0
+  bucket = var.create_bucket == true ? google_storage_bucket.bucket[0].name : data.google_storage_bucket.bucket[0].name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:project-${data.google_project.storage_transfer_project[0].number}@storage-transfer-service.iam.gserviceaccount.com"
+}

@@ -22,3 +22,35 @@ variable "k8s_projects" {
   type        = list(string)
   description = "List of projects where k8s clusters are located"
 }
+
+variable "run_projects" {
+  type        = list(string)
+  description = "List of projects where k8s clusters are located"
+}
+
+variable "regions" {
+  type        = list(string)
+  description = "List of regions to deploy the artificate registry repositories"
+  default = [
+    "us-central1",
+    "us-west1",
+  ]
+}
+
+variable "deploy_region" {
+  type        = string
+  description = "The region the cloud deploy pipelines will be created in"
+  default     = "us-central1"
+}
+
+variable "pipeline_targets" {
+  type = map(list(object({
+    name            = string
+    project_id      = string
+    description     = string
+    service_account = string
+    deploy_project  = string
+    deploy_region   = string
+  })))
+  default = {}
+}

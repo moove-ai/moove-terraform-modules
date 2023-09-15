@@ -8,6 +8,11 @@
  * Written by Alex Merenda for moove.ai
  */
 
+esource "google_project_service" "memorystore" {
+  project = var.project_id
+  service = "redis.googleapis.com"
+}
+
 resource "google_service_account" "sa" {
   project      = var.project_id
   account_id   = var.service_account_id

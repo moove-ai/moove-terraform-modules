@@ -27,3 +27,9 @@ variable "keda_monitor_projects" {
   type        = list(string)
   description = "List of projects to monitor via keda"
 }
+
+variable "build_project_id" {
+  type        = string
+  description = "The project ID builds are stored in"
+  default     = "moove-build"
+}

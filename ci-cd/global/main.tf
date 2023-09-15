@@ -8,7 +8,7 @@ module "builds" {
   org_id                  = var.org_id
   billing_account         = var.billing_account
   folder_id               = var.folder_id
-  default_service_account = "delete"
+  default_service_account = "keep"
   auto_create_network     = false
   activate_apis           = var.apis
   svpc_host_project_id    = "moove-systems"
@@ -104,7 +104,7 @@ resource "google_service_account" "deployer" {
 }
 
 data "google_compute_default_service_account" "builds" {
-  project      = module.builds.project_id
+  project = module.builds.project_id
 }
 
 resource "google_project_iam_member" "deployer-iam" {
@@ -216,4 +216,20 @@ resource "google_project_iam_member" "builder-compute-user" {
   project = module.builds.project_id
   role    = "roles/compute.networkUser"
   member  = "serviceAccount:${google_service_account.builder.email}"
+}
+
+resource "google_project_iam_member" "deployer-cloud-run" {
+  for_each   = toset(var.run_projects)
+  depends_on = [module.builds]
+  project    = each.key
+  role       = "roles/clouddeploy.jobRunner"
+  member     = "serviceAccount:${google_service_account.deployer.email}"
+}
+
+resource "google_project_iam_member" "deployer-cloud-run-dev" {
+  for_each   = toset(var.run_projects)
+  depends_on = [module.builds]
+  project    = each.key
+  role       = "roles/run.developer"
+  member     = "serviceAccount:${google_service_account.deployer.email}"
 }

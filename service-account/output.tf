@@ -10,8 +10,8 @@ output "email" {
   description = "The account ID of the service accoutn"
 }
 
-output "project_id" {
-  value       = google_service_account.service-account.account_id
+output "id" {
+  value       = google_service_account.service-account.id
   sensitive   = false
-  description = "The project id of the service accoutn"
+  description = "The account ID of the service accoutn"
 }

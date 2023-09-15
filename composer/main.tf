@@ -80,6 +80,42 @@ resource "google_project_iam_member" "project" {
   ]
 }
 
+resource "google_project_iam_member" "network-user" {
+  project = var.network_project_id
+  role    = "roles/compute.networkUser"
+  member  = "serviceAccount:${var.create_service_account == false ? data.google_service_account.serviceaccount[0].email : google_service_account.serviceaccount[0].email}"
+  depends_on = [
+    google_project_service.composer,
+  ]
+}
+
+resource "google_project_iam_member" "compute-network-user" {
+  project = var.network_project_id
+  role    = "roles/compute.networkUser"
+  member  = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+  depends_on = [
+    google_project_service.composer,
+  ]
+}
+
+resource "google_project_iam_member" "service-network-user" {
+  project = var.network_project_id
+  role    = "roles/compute.networkUser"
+  member  = "serviceAccount:service-${data.google_project.project.number}@container-engine-robot.iam.gserviceaccount.com"
+  depends_on = [
+    google_project_service.composer,
+  ]
+}
+
+resource "google_project_iam_member" "service-host-service-user" {
+  project = var.network_project_id
+  role    = "roles/container.hostServiceAgentUser"
+  member  = "serviceAccount:service-${data.google_project.project.number}@container-engine-robot.iam.gserviceaccount.com"
+  depends_on = [
+    google_project_service.composer,
+  ]
+}
+
 resource "google_project_iam_member" "worker" {
   project = var.project_id
   role    = "roles/composer.worker"
