@@ -10,6 +10,7 @@
 locals {
   service_account_project_id = var.service_account_project_id != "" ? var.service_account_project_id : var.project_id
   bucket_project             = var.bucket_project != "" ? var.bucket_project : var.project_id
+  storage_transfer_project   = var.storage_transfer_project != "" ? var.storage_transfer_project : var.project_id
 }
 
 # Application
@@ -90,7 +91,7 @@ resource "google_storage_notification" "bucket-notification" {
 
 # Pub/Sub 
 resource "google_pubsub_topic" "topic" {
-  count   = var.topic_enabled ? 1 : 0
+  count   = var.notification_enabled ? 1 : 0
   project = var.project_id
   name    = var.topic_name == "" ? var.name : var.topic_name
   labels = merge({
@@ -100,7 +101,7 @@ resource "google_pubsub_topic" "topic" {
 }
 
 resource "google_pubsub_topic_iam_member" "binding" {
-  count   = var.topic_enabled ? 1 : 0
+  count   = var.notification_enabled ? 1 : 0
   project = google_pubsub_topic.topic[0].project
   topic   = google_pubsub_topic.topic[0].id
   role    = "roles/pubsub.publisher"
@@ -111,7 +112,7 @@ resource "google_pubsub_topic_iam_member" "binding" {
 }
 
 resource "google_pubsub_subscription" "subscription" {
-  count                = var.topic_enabled && var.subscription_enabled ? 1 : 0
+  count                = var.subscription_enabled ? 1 : 0
   name                 = var.subscription_name == "" ? var.name : var.subscription_name
   project              = google_pubsub_topic.topic[0].project
   topic                = google_pubsub_topic.topic[0].id
@@ -123,7 +124,7 @@ resource "google_pubsub_subscription" "subscription" {
 }
 
 resource "google_pubsub_subscription_iam_member" "subscriber" {
-  count        = var.topic_enabled && var.subscription_enabled ? 1 : 0
+  count        = var.subscription_enabled ? 1 : 0
   subscription = google_pubsub_subscription.subscription[0].name
   project      = google_pubsub_subscription.subscription[0].project
   role         = "roles/pubsub.subscriber"

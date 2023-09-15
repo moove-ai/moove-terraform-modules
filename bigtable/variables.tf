@@ -15,49 +15,49 @@ variable "cluster_id" {
 
 variable "clusters" {
   description = "Clusters to add to a Bigtable instance. Structure is described here: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigtable_instance#nested_cluster"
-  default = []
+  default     = []
 }
 
 variable "storage_type" {
   type        = string
   description = "Zone to create the bigtable cluster in"
-  default = "SDD"
+  default     = "SDD"
 }
 
 variable "zone" {
   type        = string
   description = "Zone to create the bigtable cluster in"
-  default = "us-central1"
+  default     = "us-central1"
 }
 
 variable "min_nodes" {
   type        = string
   description = "Min nodes to allocate to a cluster"
-  default = 2
+  default     = 2
 }
 
 variable "max_nodes" {
   type        = string
   description = "Max nodes to allocate to a cluster"
-  default = 16
+  default     = 16
 }
 
 variable "cpu_target" {
   type        = string
   description = "Target CPU usage % for autoscaling"
-  default = 60
+  default     = 60
 }
 
 variable "storage_target" {
   type        = string
   description = "Target storage usage GB for autoscaling"
-  default = 2560
+  default     = 2560
 }
 
 variable "deletion_protection" {
   type        = string
   description = "False if terraform should be allowed to destroy an instance"
-  default = true
+  default     = true
 }
 
 variable "table_name" {
@@ -71,7 +71,7 @@ variable "column_family" {
 }
 
 variable "gc_rules" {
-  type        = string
+  type    = string
   default = <<EOF
   {
     "mode": "intersection",
@@ -95,24 +95,24 @@ variable "app_profile_id" {
 variable "app_profile_description" {
   type        = string
   description = "Description of an app profile"
-  default = null
+  default     = null
 }
 
 variable "multi_cluster_routing_use_any" {
   type        = string
   description = "Send requests to nearest cluster"
-  default = false
+  default     = false
 }
 
 variable "allow_transactional_writes" {
   type        = string
   description = "Allow CheckAndMutateRow and ReadModifyWriteRow requests"
-  default = false
+  default     = false
 }
 
 variable "app_profile_ignore_warnings" {
   type        = string
   description = "Ignore safetly checks when deleting/updating app profile"
-  default = false
+  default     = false
 }
 

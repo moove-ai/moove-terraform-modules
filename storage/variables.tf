@@ -173,14 +173,17 @@ variable "secret_project" {
 variable "cloud_function_enabled" {
   type        = bool
   description = "Set to true to create cloud function resources"
+  default     = false
 }
 
 variable "storage_transfer_enabled" {
   type        = bool
   description = "Set to true to create STS resources"
+  default     = false
 }
 
 variable "storage_transfer_project" {
   type        = string
   description = "The project the STS is running in"
+  default     = ""
 }
