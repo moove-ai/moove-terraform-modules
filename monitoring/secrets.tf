@@ -20,20 +20,3 @@ resource "google_storage_bucket_iam_member" "thanos-object-store-iam" {
   member = "serviceAccount:${google_service_account.k8s-thanos.email}"
   role   = "roles/storage.objectAdmin"
 }
-
-resource "google_secret_manager_secret" "pagerduty-service-key" {
-  project   = var.secret_project_id
-  secret_id = "monitoring_pagerduty-service-key"
-
-  labels = {
-    function     = "monitoring"
-    component    = "pagerduty"
-    intergration = "google-cloud"
-    environment  = var.environment
-    terraformed  = "true"
-  }
-
-  replication {
-    automatic = true
-  }
-}
