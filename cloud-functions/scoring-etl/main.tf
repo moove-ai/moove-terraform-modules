@@ -32,7 +32,7 @@ resource "google_project_iam_member" "scoring-iam" {
   member   = "serviceAccount:${data.google_service_account.scoring[each.value.env_key].email}"
 }
 
-resource "google_service_account_iam_binding" "specific_sa_user_binding" {
+resource "google_service_account_iam_binding" "deployer-act-as" {
   for_each           = var.environments
   service_account_id = data.google_service_account.scoring[each.key].id
   role               = "roles/iam.serviceAccountUser"
@@ -41,7 +41,6 @@ resource "google_service_account_iam_binding" "specific_sa_user_binding" {
     "serviceAccount:${data.google_service_account.deployer.email}}"
   ]
 }
-
 
 #resource "google_project_iam_binding" "service_account_user_binding" {
 #  for_each = var.environments
