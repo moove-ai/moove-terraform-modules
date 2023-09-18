@@ -32,6 +32,13 @@ resource "google_project_iam_member" "scoring-iam" {
   member   = "serviceAccount:${data.google_service_account.scoring[each.value.env_key].email}"
 }
 
+resource "google_service_account_iam_member" "deployer-act-as" {
+  for_each           = var.environments
+  service_account_id = data.google_service_account.scoring[each.key].name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${data.google_service_account.deployer.email}}"
+}
+
 resource "google_cloudbuild_trigger" "deploy" {
   for_each        = var.environments
   name            = "deploy-${var.function_name}-${each.key}-${each.value.region}"
