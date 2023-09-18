@@ -53,10 +53,11 @@ resource "google_cloudbuild_trigger" "deploy" {
   filename = local.build_file
 
   substitutions = {
-    _FUNCTION_NAME        = var.function_name
-    _FUNCTION_REGION      = each.value.region
-    _FUNCTION_ENVIRONMENT = each.key
-    _FUNCTION_PROJECT_ID  = each.value.project_id
+    _FUNCTION_NAME            = var.function_name
+    _FUNCTION_REGION          = each.value.region
+    _FUNCTION_ENVIRONMENT     = each.key
+    _FUNCTION_PROJECT_ID      = each.value.project_id
+    _FUNCTION_SERVICE_ACCOUNT = data.google_service_account.scoring[each.key].email
   }
 
   github {
