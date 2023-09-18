@@ -39,30 +39,6 @@ resource "google_service_account_iam_member" "deployer-act-as" {
   member             = "serviceAccount:${data.google_service_account.deployer.email}"
 }
 
-#resource "google_project_iam_binding" "service_account_user_binding" {
-#  for_each = var.environments
-#  project  = each.value.project_id
-#  role     = "roles/iam.serviceAccountUser"
-#
-#  members = [
-#    "serviceAccount:${data.google_service_account.deployer.email}"
-#  ]
-#}
-#
-#resource "google_service_account_iam_member" "deployer-act-as" {
-#  for_each           = var.environments
-#  service_account_id = data.google_service_account.scoring[each.key].name
-#  role               = "roles/iam.serviceAccountUser"
-#  member             = "serviceAccount:${data.google_service_account.deployer.email}"
-#}
-#
-#resource "google_service_account_iam_member" "cf-default-act-as" {
-#  for_each           = var.environments
-#  service_account_id = data.google_service_account.scoring[each.key].name
-#  role               = "roles/iam.serviceAccountUser"
-#  member             = "serviceAccount:${each.value.project_id}@appspot.gserviceaccount.com"
-#}
-
 resource "google_cloudbuild_trigger" "deploy" {
   for_each        = var.environments
   name            = "deploy-${var.function_name}-${each.key}-${each.value.region}"
@@ -71,7 +47,7 @@ resource "google_cloudbuild_trigger" "deploy" {
   service_account = data.google_service_account.deployer.id
   included_files  = local.build_included_files
   ignored_files   = var.build_ignored_files
-  tags            = concat(var.build_tags, local.build_tags, [each.key], [each.value.region])
+  tags            = concat(var.build_tags, local.build_tags, [each.key, each.value.region])
   description     = "Deploy the ${var.function_name} function to ${each.key} ${each.value.region}"
 
   filename = local.build_file
