@@ -36,7 +36,7 @@ resource "google_service_account_iam_member" "deployer-act-as" {
   for_each           = var.environments
   service_account_id = data.google_service_account.scoring[each.key].name
   role               = "roles/iam.serviceAccountUser"
-  member             = "serviceAccount:${data.google_service_account.deployer.email}}"
+  member             = "serviceAccount:${data.google_service_account.deployer.email}"
 }
 
 resource "google_cloudbuild_trigger" "deploy" {
