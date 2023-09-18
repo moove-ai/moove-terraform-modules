@@ -2,7 +2,7 @@ locals {
   build_included_files = var.build_included_files != [] ? var.build_included_files : ["${var.function_name}/**"]
   build_file           = var.build_file != "" ? var.build_file : "${var.function_name}/cloudbuild.yaml"
   build_tags           = [var.github_repo, "deplpy", "scoring-etl-jobs", "cloud-function"]
-  roles_list           = concat(["roles/cloudfunctions.invoker", "roles/iam.serviceAccountUser"], var.function_additional_roles)
+  roles_list           = concat(["roles/cloudfunctions.invoker"], var.function_additional_roles)
   env_role_combinations = flatten([
     for env_key, env_value in var.environments : [
       for role in local.roles_list : {
