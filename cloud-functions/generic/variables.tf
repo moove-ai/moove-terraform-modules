@@ -4,6 +4,7 @@ variable "environments" {
     region                  = string
     build_branch_pattern    = string
     cloud_function_function = string
+    function_env_vars       = map(string)
   }))
 }
 
@@ -27,6 +28,12 @@ variable "function_name" {
 variable "service_account_id" {
   type        = string
   description = "The service account ID that will be running the function"
+}
+
+variable "function_env_vars" {
+  type        = map(string)
+  description = "Evniroment variables to be passed to the function"
+  default     = {}
 }
 
 ### Build Varialbes ###

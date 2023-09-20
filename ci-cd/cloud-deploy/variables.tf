@@ -107,4 +107,15 @@ variable "build_tags" {
   default     = []
   description = "List of tags to apply to the build"
 }
- 
+
+variable "build_additional_substitutions" {
+  type        = map(string)
+  description = "Additional substitiions to pass to the cloudbuild file located in the git repo"
+  default     = {}
+}
+
+variable "disable_trigger" {
+  type        = bool
+  description = "Set to true to disable the build trigger"
+  default     = false
+}
