@@ -14,6 +14,13 @@ module "builds" {
   svpc_host_project_id    = "moove-systems"
 }
 
+resource "google_project_service" "resource-manager" {
+  depends_on = [module.builds]
+
+  project = module.builds.project_id
+  service = "cloudresourcemanager.googleapis.com"
+}
+
 # Logging
 resource "google_storage_bucket" "logs" {
   depends_on = [module.builds]

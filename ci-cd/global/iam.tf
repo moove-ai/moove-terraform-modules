@@ -57,3 +57,10 @@ resource "google_project_iam_member" "service_account_user" {
   role    = "roles/iam.serviceAccountUser"
   member  = "serviceAccount:${google_service_account.deployer.email}"
 }
+
+resource "google_project_iam_member" "function_deployer" {
+  for_each = toset(var.cloud_function_projects)
+  project  = each.key
+  role     = "roles/cloudfunctions.developer"
+  member   = "serviceAccount:${google_service_account.deployer.email}"
+}

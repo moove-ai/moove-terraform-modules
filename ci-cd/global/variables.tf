@@ -66,3 +66,8 @@ variable "environment" {
   description = "The environment ci/cd pipelines are running in"
   default     = "mgmt"
 }
+
+variable "cloud_function_projects" {
+  type        = list(string)
+  description = "List of projects where cloud functions are being deployed"
+}
