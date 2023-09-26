@@ -36,3 +36,10 @@ resource "google_service_account_iam_member" "service_account_user-function" {
   role               = "roles/iam.serviceAccountUser"
   member             = "serviceAccount:${data.google_service_account.build_sa.email}"
 }
+
+resource "google_service_account_iam_member" "service_account_deployer-function" {
+  for_each           = var.environments
+  service_account_id = data.google_service_account.build_sa.id
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${data.google_service_account.function_sa[each.key].email}"
+}
