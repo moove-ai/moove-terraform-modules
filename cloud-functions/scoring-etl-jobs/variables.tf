@@ -22,3 +22,8 @@ variable "project_roles" {
   description = "The roles to grant to the service account on the project"
   default     = []
 }
+
+variable "dataset_roles" {
+  description = "Map of environments to projects, datasets, and roles"
+  type        = map(any)
+}
