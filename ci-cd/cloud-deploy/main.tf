@@ -80,15 +80,3 @@ resource "google_clouddeploy_target" "target" {
   }
   provider = google-beta
 }
-
-data "google_service_account" "deployer" {
-  project    = var.deployer_project_id
-  account_id = var.deployer_account_id
-}
-
-resource "google_project_iam_member" "deployer-storage" {
-  project = var.project_id
-  role    = "roles/storage.objectAdmin"
-  member  = "serviceAccount:${data.google_service_account.deployer.email}"
-}
- 
