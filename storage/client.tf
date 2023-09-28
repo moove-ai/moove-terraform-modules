@@ -10,7 +10,7 @@ resource "google_secret_manager_secret" "client-id" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
