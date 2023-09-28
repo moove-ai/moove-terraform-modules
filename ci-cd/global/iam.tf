@@ -66,7 +66,7 @@ resource "google_project_iam_member" "function_deployer" {
 }
 
 resource "google_project_iam_member" "deployer-object-admin" {
-  project = module.builds.project_id
-  role    = "roles/storage.objectAdmin"
-  member  = "serviceAccount:${google_service_account.deployer.email}"
+  project  = module.builds.project_id
+  role     = "roles/storage.objectAdmin"
+  member   = "serviceAccount:${google_service_account.deployer.email}"
 }
