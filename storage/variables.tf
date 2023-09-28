@@ -90,7 +90,6 @@ variable "service_account_name" {
   description = "The description for the service account if creating"
 }
 
-
 variable "topic_name" {
   type        = string
   default     = ""
@@ -113,12 +112,6 @@ variable "subscription_enabled" {
   type        = bool
   default     = false
   description = "Enable or disable a pub/sub subscription"
-}
-
-variable "topic_enabled" {
-  type        = bool
-  default     = false
-  description = "Enable or disable a pub/sub topic"
 }
 
 variable "admin_access" {
