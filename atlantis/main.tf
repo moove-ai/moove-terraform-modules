@@ -6,74 +6,25 @@
  * [Atlantis](https://www.runatlantis.io/)
  * 
  * Written by Alex Merenda for moove.ai
+ * 
+ * ## Instructions:
+ * ## DO STEP 1 BEFORe APPLY
+ * 
+ * 1. Create a secret called `atlantis_github-token` in the `moove-secrts` project with a GitHub personal access token from the `moove-devopsbot` account. 
+ *    Ensure the token has the following scopes:
+ *    - `repo` (for private repos) or `public_repo` (for public repos)
+ *    - `read:org` (optional, for certain Atlantis configurations)
+ *    - `write:discussion` (optional, for team discussions)
+ *    - `admin:repo_hook` (for webhook creation)
+ *  2. Modify the `moove-terraform` webhook to use the value stored in the secret `atlantis_github-secret` in the `moove-secrets` project.
+ * 
  */
-
 
 resource "google_service_account" "atlantis" {
   project      = var.project_id
   account_id   = var.service_account_name
   display_name = "Atlantis"
   description  = "Service account that runs Atlantis"
-}
-
-#data "google_service_account" "terraform" {
-#  project    = "moove-systems"
-#  account_id = "terraform"
-#}
-
-## Secrets
-resource "google_secret_manager_secret" "atlantis_git-config-secret" {
-  project   = var.secret_project_id
-  secret_id = "atlantis_git-config-secret"
-
-  labels = {
-    environment = var.environment
-    function    = "atlantis"
-    client      = "moove"
-    terraformed = "true"
-    secret-data = "manual-input"
-  }
-
-  replication {
-    automatic = true
-  }
-}
-
-resource "google_secret_manager_secret_version" "atlantis_git-config-secret-version" {
-  secret = google_secret_manager_secret.atlantis_git-config-secret.secret_id
-
-  secret_data = "REPLACE MANUALLY WITH GIT CONFIG DATA"
-
-  lifecycle {
-    ignore_changes = [secret_data]
-  }
-}
-
-resource "google_secret_manager_secret" "atlantis_github-token" {
-  project   = var.secret_project_id
-  secret_id = "atlantis_github-token"
-
-  labels = {
-    environment = var.environment
-    function    = "atlantis"
-    client      = "moove"
-    terraformed = "true"
-    secret-data = "manual-input"
-  }
-
-  replication {
-    automatic = true
-  }
-}
-
-resource "google_secret_manager_secret_version" "atlantis_github-token-version" {
-  secret = google_secret_manager_secret.atlantis_github-token.secret_id
-
-  secret_data = "REPLACE MANUALLY WITH A GITHUB TOKEN FOR THE ATLANTIS GITHUB USER"
-
-  lifecycle {
-    ignore_changes = [secret_data]
-  }
 }
 
 resource "google_secret_manager_secret" "atlantis_github-secret" {
@@ -89,18 +40,23 @@ resource "google_secret_manager_secret" "atlantis_github-secret" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
+resource "random_string" "git" {
+  length  = 32
+  special = false
+  upper   = true
+  lower   = true
+  numeric = true
+}
+
 resource "google_secret_manager_secret_version" "atlantis_github-secret-version" {
-  secret = google_secret_manager_secret.atlantis_github-secret.secret_id
-
-  secret_data = "REPLACE MANUALLY WITH A GITHUB SECRET TO AUTHENTICATE THE GITHUB WEBHOOK"
-
-  lifecycle {
-    ignore_changes = [secret_data]
-  }
+  enabled         = true
+  deletion_policy = "DISABLE"
+  secret          = google_secret_manager_secret.atlantis_github-secret.id
+  secret_data     = random_string.git.result
 }
 
 
@@ -117,7 +73,7 @@ resource "google_secret_manager_secret" "atlantis_gcp-sa-key" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -126,27 +82,27 @@ resource "google_service_account_key" "atlantis-key" {
   public_key_type    = "TYPE_X509_PEM_FILE"
 }
 
-#resource "google_service_account_key" "terraform" {
-#  service_account_id = data.google_service_account.terraform.name
-#  public_key_type    = "TYPE_X509_PEM_FILE"
-#}
-
-#resource "google_secret_manager_secret_version" "atlantis_gcp-sa-key-data" {
-#  secret      = google_secret_manager_secret.atlantis_gcp-sa-key.id
-#  secret_data = base64decode(google_service_account_key.terraform.private_key)
-#}
-
-## Secrets IAM
-resource "google_secret_manager_secret_iam_member" "atlantis_git-config-secret-iam" {
-  project   = google_secret_manager_secret.atlantis_git-config-secret.project
-  secret_id = google_secret_manager_secret.atlantis_git-config-secret.secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.atlantis.email}"
+resource "google_secret_manager_secret_version" "atlantis_key" {
+  enabled         = true
+  secret          = google_secret_manager_secret.atlantis_gcp-sa-key.id
+  secret_data     = base64decode(google_service_account_key.atlantis-key.private_key)
+  deletion_policy = "DISABLE"
 }
 
+data "google_secret_manager_secret" "atlantis_github-token" {
+  project   = "moove-secrets"
+  secret_id = "atlantis_github-token"
+}
+
+data "google_secret_manager_secret_version" "atlantis_github-token-version" {
+  project = data.google_secret_manager_secret.atlantis_github-token.project
+  secret  = data.google_secret_manager_secret.atlantis_github-token.secret_id
+}
+
+## Secrets IAM
 resource "google_secret_manager_secret_iam_member" "atlantis_github-token-iam" {
-  project   = google_secret_manager_secret.atlantis_github-token.project
-  secret_id = google_secret_manager_secret.atlantis_github-token.secret_id
+  project   = data.google_secret_manager_secret.atlantis_github-token.project
+  secret_id = data.google_secret_manager_secret.atlantis_github-token.secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.atlantis.email}"
 }
