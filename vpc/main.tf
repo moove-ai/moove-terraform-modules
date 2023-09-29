@@ -51,7 +51,8 @@ module "router" {
   region   = each.key
 
   nats = [{
-    name = "${var.environment}-${each.key}-nat"
+    name             = "${var.environment}-${each.key}-nat"
+    min_ports_per_vm = var.nat_min_ports_per_vm
   }]
 }
 
