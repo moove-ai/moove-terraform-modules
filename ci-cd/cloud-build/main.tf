@@ -17,4 +17,6 @@ resource "google_cloudbuild_trigger" "build" {
       branch = var.build_branch_pattern
     }
   }
+
+  substitutions = var.substitutions
 }
