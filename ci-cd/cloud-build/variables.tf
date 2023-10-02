@@ -47,3 +47,9 @@ variable "build_branch_pattern" {
   description = "Branch pattern to trigger the build on GitHub pushes."
   type        = string
 }
+
+variable "substitutions" {
+  type = map(string)
+  description = "values to substitute into the build config file"
+  default = {}
+}
