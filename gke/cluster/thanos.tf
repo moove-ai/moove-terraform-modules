@@ -17,7 +17,7 @@ resource "google_secret_manager_secret" "thanos-object-store-config" {
   project   = var.project_id
   secret_id = "thanos-${var.region}-object-store-config"
   replication {
-    automatic = true
+    auto {}
   }
 
   labels = {
