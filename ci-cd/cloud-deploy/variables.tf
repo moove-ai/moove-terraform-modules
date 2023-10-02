@@ -90,12 +90,6 @@ variable "pipeline_targets" {
   default = {}
 }
 
-variable "substitutions" {
-  description = "Substitutions for the Cloud Build trigger."
-  type        = map(string)
-  default     = {}
-}
-
 variable "auto_build" {
   type        = bool
   default     = true
