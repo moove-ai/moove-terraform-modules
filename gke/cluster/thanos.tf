@@ -1,3 +1,4 @@
+# This resource keeps forcing a change for some reason
 data "google_service_account" "k8s-thanos" {
   project    = var.project_id
   account_id = var.thanos_service_account_name
@@ -5,6 +6,9 @@ data "google_service_account" "k8s-thanos" {
 
 resource "google_service_account_key" "k8s-thanos" {
   service_account_id = data.google_service_account.k8s-thanos.name
+  lifecycle {
+    ignore_changes = ["service_account_id"] # Without this the service account key is contstantly being updated
+  }
 }
 
 resource "google_storage_bucket" "thanos-object-store" {
@@ -37,6 +41,9 @@ resource "google_storage_bucket_iam_member" "thanos-object-store-iam" {
   bucket = google_storage_bucket.thanos-object-store.name
   member = "serviceAccount:${data.google_service_account.k8s-thanos.email}"
   role   = "roles/storage.objectAdmin"
+  lifecycle {
+    ignore_changes = [member] # this resource will be constantly recreated unless this lifecycle rule is in place.
+  }
 }
 
 locals {
