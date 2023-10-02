@@ -49,7 +49,7 @@ variable "build_branch_pattern" {
 }
 
 variable "substitutions" {
-  type = map(string)
+  type        = map(string)
   description = "values to substitute into the build config file"
-  default = {}
+  default     = {}
 }
