@@ -18,7 +18,7 @@ data "google_service_account" "function" {
 
 resource "google_cloudbuild_trigger" "deploy" {
   for_each        = var.environments
-  name            = "deploy-cf-${var.function_name}-${each.key}"
+  name            = "deploy-cf-${replace(var.function_name, "_", "-")}-${each.key}"
   location        = var.build_location
   project         = var.build_project_id
   service_account = data.google_service_account.deployer.id
