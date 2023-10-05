@@ -9,17 +9,9 @@ data "google_service_account" "build_sa" {
   project    = var.build_service_account_project
 }
 
-resource "google_service_account_iam_member" "service_account_deployer-function" {
+resource "google_service_account_iam_member" "service_account_user-function" {
   for_each           = var.environments
   service_account_id = data.google_service_account.function_sa[each.key].id
   role               = "roles/iam.serviceAccountUser"
   member             = "serviceAccount:${data.google_service_account.build_sa.email}"
 }
-
-resource "google_service_account_iam_member" "service_account_user-function" {
-  for_each           = var.environments
-  service_account_id = data.google_service_account.build_sa.id
-  role               = "roles/iam.serviceAccountUser"
-  member             = "serviceAccount:${data.google_service_account.function_sa[each.key].email}"
-}
-
