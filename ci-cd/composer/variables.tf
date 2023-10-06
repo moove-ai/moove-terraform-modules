@@ -6,7 +6,7 @@ variable "build_name" {
 variable "build_project_id" {
   type        = string
   description = "The Google Cloud project ID"
-  default = "moove-build"
+  default     = "moove-build"
 }
 
 variable "build_included_files" {
