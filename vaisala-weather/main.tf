@@ -42,6 +42,14 @@ resource "google_cloudfunctions_function_iam_member" "vaisala_coordinator_partit
   member         = "serviceAccount:${var.composer_serviceaccount}"
 }
 
+resource "google_cloudfunctions_function_iam_member" "vaisala-normalization" {
+  project        = "moove-data-pipelines"
+  region         = var.region
+  cloud_function = "vaisala_normalization"
+  role           = "roles/cloudfunctions.invoker"
+  member         = "serviceAccount:${var.composer_serviceaccount}"
+}
+
 resource "google_project_iam_member" "viewer" {
   for_each = toset(var.project_list)
 
