@@ -42,7 +42,7 @@ resource "google_cloudfunctions_function_iam_member" "vaisala_coordinator_partit
   member         = "serviceAccount:${var.composer_serviceaccount}"
 }
 
-resource "google_cloudfunctions_function_iam_member" "vaisala-normalization" {
+resource "google_cloudfunctions_function_iam_member" "vaisala-normalization-data-pipelines" {
   project        = "moove-data-pipelines"
   region         = var.region
   cloud_function = "vaisala_normalization"
@@ -117,4 +117,3 @@ resource "google_secret_manager_secret_iam_member" "vaisala_api_key-appspot-view
   role      = "roles/secretmanager.viewer"
   member    = "serviceAccount:${data.google_service_account.appspot[each.value].email}"
 }
-
