@@ -109,4 +109,3 @@ resource "google_secret_manager_secret_iam_member" "vaisala_api_key-appspot-view
   role      = "roles/secretmanager.viewer"
   member    = "serviceAccount:${data.google_service_account.appspot[each.value].email}"
 }
-
