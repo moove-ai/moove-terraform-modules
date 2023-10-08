@@ -35,5 +35,3 @@ resource "google_cloudbuild_trigger" "test-trigger" {
       ]
   }
 }
-
-gg
