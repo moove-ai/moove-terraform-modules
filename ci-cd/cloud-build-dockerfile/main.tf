@@ -17,21 +17,21 @@ resource "google_cloudbuild_trigger" "test-trigger" {
   }
   substitutions = {
     _IMAGE_NAME = var.image_name
-    _IMAGE_TAG = var.image_tag
+    _IMAGE_TAG  = var.image_tag
   }
 
   build {
     step {
       name = "gcr.io/cloud-builders/docker"
       args = [
-        "build", 
-        "-t", "us-docker.pkg.dev/$PROJECT_ID/docker-us/${_IMAGE_NAME}:${_IMAGE_TAG}", 
-        "-t", "us-docker.pkg.dev/$PROJECT_ID/docker-us/${_IMAGE_NAME}:${SHORT_SHA}", 
-        "."]
+        "build",
+        "-t", "us-docker.pkg.dev/$PROJECT_ID/docker-us/${_IMAGE_NAME}:${_IMAGE_TAG}",
+        "-t", "us-docker.pkg.dev/$PROJECT_ID/docker-us/${_IMAGE_NAME}:${SHORT_SHA}",
+      "."]
     }
     images = [
       "us-docker.pkg.dev/$PROJECT_ID/docker-us/${_IMAGE_NAME}:${_IMAGE_TAG}",
-      "us-docker.pkg.dev/$PROJECT_ID/docker-us/${_IMAGE_NAME}:${SHORT_SHA}", 
-      ]
+      "us-docker.pkg.dev/$PROJECT_ID/docker-us/${_IMAGE_NAME}:${SHORT_SHA}",
+    ]
   }
 }
