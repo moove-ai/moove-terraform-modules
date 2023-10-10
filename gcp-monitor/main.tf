@@ -18,7 +18,13 @@ data "google_project" "project" {
 }
 
 locals {
-  projects_map = { for project in data.google_projects.projects.projects[*] : "${project.project_id}" => project.project_id if !contains(values(project), var.metrics_scope) }
+  projects_map = {
+    for project in data.google_projects.projects.projects[*] :
+    project.project_id => project.project_id
+    if !contains(values(project), var.metrics_scope) &&
+    !contains(var.ignored_projects, project.project_id) &&
+    project.lifecycle_state == "ACTIVE"
+  }
 }
 
 resource "google_monitoring_monitored_project" "project" {
