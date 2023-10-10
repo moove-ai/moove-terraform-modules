@@ -14,7 +14,7 @@ variable "secret_project_id" {
   default     = "moove-secrets"
 }
 
-variable "folder_id" {
-  type        = string
-  description = "The folder ID to monitor. Will get all projets in this folder. This module will need to be run again when a new project is added"
+variable "monitored_projects" {
+  description = "List of project IDs to monitor"
+  type        = list(string)
 }

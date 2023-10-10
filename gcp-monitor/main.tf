@@ -7,18 +7,8 @@
  * 
  * Written by Alex Merenda for moove.ai
  */
-data "google_projects" "projects" {
-  filter = "parent.id:${var.folder_id}"
-}
-
-
-data "google_project" "project" {
-  count      = length(data.google_projects.projects.projects[*].project_id)
-  project_id = data.google_projects.projects.projects[count.index].project_id
-}
-
 locals {
-  projects_map = { for project in data.google_projects.projects.projects[*] : "${project.project_id}" => project.project_id if !contains(values(project), var.metrics_scope) }
+  projects_map = { for id in var.monitored_projects : id => id }
 }
 
 resource "google_monitoring_monitored_project" "project" {
@@ -65,7 +55,6 @@ resource "google_service_account_key" "monitor-key" {
   public_key_type    = "TYPE_X509_PEM_FILE"
 }
 
-
 resource "google_secret_manager_secret" "monitor-sa" {
   project   = var.secret_project_id
   secret_id = "${var.environment}_monitor-grafana-datasource"
@@ -79,7 +68,7 @@ resource "google_secret_manager_secret" "monitor-sa" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
