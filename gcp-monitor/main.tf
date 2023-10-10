@@ -79,7 +79,7 @@ resource "google_secret_manager_secret" "monitor-sa" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
