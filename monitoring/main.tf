@@ -1,3 +1,31 @@
+locals {
+  object_store_config = <<-EOT
+  type: GCS
+  config:
+    bucket: "${google_storage_bucket.thanos-prometheus-object-store.name}"
+    service_account: |-
+      ${indent(4, base64decode(google_service_account_key.k8s-thanos.private_key))}
+  EOT
+  data       = jsondecode(base64decode(google_service_account_key.bigquery-systems.private_key))
+  key        = local.data.private_key
+  datasource = <<-EOT
+  apiVersion: 1
+  datasources:
+    - name: BigQuery-Systems
+      uid: bq_systems
+      type: grafana-bigquery-datasource
+      access: proxy
+      jsonData:
+        tokenUri: https://oauth2.googleapis.com/token
+        clientEmail: ${google_service_account.bigquery-systems.email}
+        authenticationType: jwt
+        defaultProject: moove-systems
+      secureJsonData:
+        privateKey: |
+          ${indent(8, local.key)}
+  EOT
+}
+
 resource "google_service_account" "k8s-grafana" {
   account_id   = "k8s-grafana"
   display_name = "Grfana"
@@ -73,12 +101,49 @@ resource "google_secret_manager_secret_version" "thanos-object-store-config" {
   secret_data = local.object_store_config
 }
 
-locals {
-  object_store_config = <<-EOT
-  type: GCS
-  config:
-    bucket: "${google_storage_bucket.thanos-prometheus-object-store.name}"
-    service_account: |-
-      ${indent(4, base64decode(google_service_account_key.k8s-thanos.private_key))}
-  EOT
+resource "google_service_account" "bigquery-systems" {
+  project = "moove-systems"
+  account_id = "bigquery-systems"
+  display_name = "BigQuery Systems Monitor"
+  description = "Service account used to monitor BigQuery Billing exported to the `moove-systems` project"
+}
+
+resource "google_service_account_key" "bigquery-systems" {
+  service_account_id = google_service_account.bigquery-systems.name
+}
+
+resource "google_project_iam_member" "bq-viewer" {
+  project = "moove-systems"
+  role    = "roles/bigquery.dataViewer"
+  member  = google_service_account.bigquery-systems.member
+}
+
+resource "google_project_iam_member" "bq-user" {
+  project = "moove-systems"
+  role    = "roles/bigquery.jobUser"
+  member  = google_service_account.bigquery-systems.member
+}
+
+
+resource "google_secret_manager_secret" "bigquery-systems-service-account" {
+  project   = "moove-secrets"
+  secret_id = "systems_grafana-bigquery-billing-datasource"
+
+  labels = {
+    environment = "mgmt"
+    function    = "monitoring"
+    client      = "moove"
+    terraformed = "true"
+    secret-data = "terraform"
+  }
+
+  replication {
+    auto {
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "bivquery-sa-key" {
+  secret      = google_secret_manager_secret.bigquery-systems-service-account.id
+  secret_data = local.datasource
 }
