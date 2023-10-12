@@ -4,12 +4,6 @@ variable "project_id" {
   description = "description"
 }
 
-variable "cloudbuild_file" {
-  type        = string
-  default     = ""
-  description = "Overrides the name default (cloudbuild.yaml) build file"
-}
-
 variable "github_repo" {
   type        = string
   description = "The github repo which holds the code to build"
@@ -29,8 +23,14 @@ variable "build_name" {
 
 variable "build_file" {
   type        = string
-  default     = ""
+  default     = "cloudbuild.yaml"
   description = "Optional. Overrides the default `build.yaml` file location"
+}
+
+variable "build_description" {
+  type        = string
+  default     = ""
+  description = "Optional. Sets the description of the build"
 }
 
 variable "build_included_files" {
@@ -113,3 +113,16 @@ variable "disable_trigger" {
   description = "Set to true to disable the build trigger"
   default     = false
 }
+
+variable "build_service_account" {
+  type        = string
+  description = "The service account that runs builds"
+  default     = "deployer"
+}
+
+variable "build_service_project" {
+  type        = string
+  description = "The project the service account that runs builds belongs to"
+  default     = "moove-build"
+}
+  
