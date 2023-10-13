@@ -18,3 +18,9 @@ variable "monitored_projects" {
   description = "List of project IDs to monitor"
   type        = list(string)
 }
+
+variable "k8s_cluster_project" {
+  type        = string
+  description = "Optional. Gives k8s cluster project permissions to monitor the monitored projects"
+  default     = ""
+}
