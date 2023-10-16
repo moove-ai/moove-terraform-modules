@@ -7,47 +7,60 @@ locals {
   EOT
 }
 
-data "google_service_account" "sa" {
-  for_each   = var.environments
-  project    = each.value.project_id
-  account_id = each.value.service_account_name
+resource "google_service_account" "sa_create" {
+  count        = var.create_service_account ? 1 : 0
+  account_id   = var.service_account_name
+  display_name = "Service account for GCS proxy"
+  project      = var.project_id
 }
 
+data "google_service_account" "sa_data" {
+  count      = var.create_service_account ? 0 : 1
+  project    = var.project_id
+  account_id = var.service_account_name
+}
+
+locals {
+  sa_member = var.create_service_account ? google_service_account.sa_create[0].member : data.google_service_account.sa_data[0].member
+}
 
 resource "google_storage_bucket" "bucket" {
-  for_each = { for env, config in var.environments : env => config if config.create_bucket }
-  name     = each.value.bucket_name
-  location = each.value.bucket_location
-  project  = each.value.project_id
+  count         = var.create_bucket ? 1 : 0
+  name          = var.bucket_name
+  location      = var.bucket_location
+  project       = var.project_id
+  force_destroy = var.bucket_force_destroy
 }
 
 resource "google_storage_bucket_iam_member" "bucket_iam_member" {
-  for_each   = var.environments
-  bucket     = each.value.bucket_name
-  role       = "roles/storage.objectAdmin"
-  member     = "serviceAccount:${data.google_service_account.sa[each.key].email}"
-  depends_on = [google_storage_bucket.bucket]
+  bucket = var.bucket_name
+  role   = "roles/storage.objectAdmin"
+  member = local.sa_member
 }
 
 resource "google_secret_manager_secret" "auth" {
-  for_each  = var.environments
-  project   = each.value.project_id
+  project   = var.project_id
   secret_id = var.auth_secret_id
 
   labels = {
     function    = "gcs-proxy"
-    environment = each.key
-    bucket      = each.value.bucket_name
+    environment = "default" # Assuming a default environment label, adjust as needed
+    bucket      = var.bucket_name
     terraformed = "true"
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
 resource "google_secret_manager_secret_version" "auth-example" {
-  for_each    = var.environments
-  secret      = google_secret_manager_secret.auth[each.key].id
+  secret      = google_secret_manager_secret.auth.id
   secret_data = local.auth_example
+}
+
+resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
+  secret_id = google_secret_manager_secret.auth.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = local.sa_member
 }
