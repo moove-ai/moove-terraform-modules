@@ -82,3 +82,10 @@ resource "random_string" "suffix" {
   special = false
   upper   = false
 }
+
+resource "google_service_account_iam_member" "workload-identity" {
+  count              = var.k8s_cluster_project != "" ? 1 : 0
+  member             = "serviceAccount:${var.k8s_cluster_project}.svc.id.goog[monitoring/stackdriver-exporter-${var.environment}]"
+  role               = "roles/iam.workloadIdentityUser"
+  service_account_id = google_service_account.monitor.name
+}
