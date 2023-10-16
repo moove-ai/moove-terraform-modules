@@ -94,7 +94,7 @@ resource "google_storage_bucket" "dekart" {
   count         = var.create_bucket ? 1 : 0
   project       = var.project_id
   name          = "moove-dekart-${var.environment}"
-  location      = var.region
+  location      = var.bucket_location
   force_destroy = true
 }
 

@@ -95,6 +95,12 @@ variable "bucket_name" {
   default     = ""
 }
 
+variable "bucket_location" {
+  type        = string
+  description = "The name of the existing bucket to use for dekart"
+  default     = "US"
+}
+
 variable "create_database" {
   type        = bool
   description = "Determines if the psql database should be created"
