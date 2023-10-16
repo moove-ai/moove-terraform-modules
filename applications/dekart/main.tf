@@ -95,7 +95,7 @@ resource "google_storage_bucket" "dekart" {
   project       = var.project_id
   name          = "moove-dekart-${var.environment}"
   location      = var.bucket_location
-  force_destroy = true
+  force_destroy = var.bucket_force_destroy
 }
 
 data "google_storage_bucket" "dekart" {

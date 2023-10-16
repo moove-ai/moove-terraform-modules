@@ -106,3 +106,9 @@ variable "create_database" {
   description = "Determines if the psql database should be created"
   default     = true
 }
+
+variable "bucket_force_destroy" {
+  type        = bool
+  description = "The name of the existing bucket to use for dekart"
+  default     = false
+}
