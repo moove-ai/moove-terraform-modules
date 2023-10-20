@@ -14,13 +14,13 @@ variable "secret_project_id" {
   default     = "moove-secrets"
 }
 
-variable "folder_id" {
-  type        = string
-  description = "The folder ID to monitor. Will get all projets in this folder. This module will need to be run again when a new project is added"
+variable "monitored_projects" {
+  description = "List of project IDs to monitor"
+  type        = list(string)
 }
 
-variable "ignored_projects" {
-  type        = list(string)
-  description = "List of projects to ignore when attaching monitoring scopes"
-  default     = []
+variable "k8s_cluster_project" {
+  type        = string
+  description = "Optional. Gives k8s cluster project permissions to monitor the monitored projects"
+  default     = ""
 }

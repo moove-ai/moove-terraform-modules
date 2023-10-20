@@ -1,3 +1,7 @@
+locals {
+}
+
+
 resource "google_secret_manager_secret" "grafana-github_client_secret" {
   project   = var.secret_project_id
   secret_id = "grafana-github_client_secret"
@@ -11,7 +15,8 @@ resource "google_secret_manager_secret" "grafana-github_client_secret" {
   }
 
   replication {
-    automatic = true
+    auto {
+    }
   }
 }
 
@@ -34,6 +39,7 @@ resource "google_secret_manager_secret" "pagerduty-service-key" {
   }
 
   replication {
-    automatic = true
+    auto {
+    }
   }
 }

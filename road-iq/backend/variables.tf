@@ -113,4 +113,8 @@ variable "weather_bucket" {
   description = "The name of the weather bucket"
   default     = "weather-image-cache-road-iq-stage"
 }
-  
+
+variable "bigquery_read_projects" {
+  type        = list(string)
+  description = "List of projects to assign bigquery dataviewer roles to"
+}
