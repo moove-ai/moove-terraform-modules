@@ -6,9 +6,9 @@ locals {
     service_account: |-
       ${indent(4, base64decode(google_service_account_key.k8s-thanos.private_key))}
   EOT
-  data       = jsondecode(base64decode(google_service_account_key.bigquery-systems.private_key))
-  key        = local.data.private_key
-  datasource = <<-EOT
+  data                = jsondecode(base64decode(google_service_account_key.bigquery-systems.private_key))
+  key                 = local.data.private_key
+  datasource          = <<-EOT
   apiVersion: 1
   datasources:
     - name: BigQuery-Systems
@@ -101,10 +101,10 @@ resource "google_secret_manager_secret_version" "thanos-object-store-config" {
 }
 
 resource "google_service_account" "bigquery-systems" {
-  project = "moove-systems"
-  account_id = "bigquery-systems"
+  project      = "moove-systems"
+  account_id   = "bigquery-systems"
   display_name = "BigQuery Systems Monitor"
-  description = "Service account used to monitor BigQuery Billing exported to the `moove-systems` project"
+  description  = "Service account used to monitor BigQuery Billing exported to the `moove-systems` project"
 }
 
 resource "google_service_account_key" "bigquery-systems" {

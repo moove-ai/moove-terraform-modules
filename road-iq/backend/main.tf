@@ -37,6 +37,27 @@ resource "google_sql_database_instance" "psql" {
   }
 }
 
+resource "google_project_iam_member" "bq-user" {
+  project = var.project_id
+  role    = "roles/bigquery.jobUser"
+  member  = var.create_service_account ? google_service_account.sa[0].member : data.google_service_account.sa[0].member
+}
+
+
+resource "google_project_iam_member" "data-viewer" {
+  for_each = toset(var.bigquery_read_projects)
+  project  = each.key
+  role     = "roles/bigquery.dataViewer"
+  member   = var.create_service_account ? google_service_account.sa[0].member : data.google_service_account.sa[0].member
+}
+
+resource "google_project_iam_member" "job-user" {
+  for_each = toset(var.bigquery_read_projects)
+  project  = each.key
+  role     = "roles/bigquery.jobUser"
+  member   = var.create_service_account ? google_service_account.sa[0].member : data.google_service_account.sa[0].member
+}
+
 resource "google_storage_bucket_iam_member" "weather-bucket" {
   bucket = var.weather_bucket
   role   = "roles/storage.objectViewer"
