@@ -1,61 +1,55 @@
+locals {
+  network_project_id = "moove-network-${var.environment}"
+}
+
 data "google_project" "build-project" {
   project_id = var.build_project
 }
 
 data "google_project" "project" {
-  for_each   = var.environments
-  project_id = each.value.project_id
+  project_id = var.project_id
 }
 
-resource "google_project_iam_member" "artifact_registry_reader" {
-  for_each = var.environments
-  project  = "moove-build"
-  role     = "roles/artifactregistry.reader"
-  member   = "serviceAccount:service-${data.google_project.project[each.key].number}@serverless-robot-prod.iam.gserviceaccount.com"
-}
-
-resource "google_storage_bucket_iam_member" "cloud-run-reader" {
-  for_each = var.environments
-  bucket   = "artifacts.${data.google_project.build-project.project_id}.appspot.com"
-  role     = "roles/storage.objectViewer"
-  member   = "serviceAccount:service-${data.google_project.project[each.key].number}@serverless-robot-prod.iam.gserviceaccount.com"
+data "google_service_account" "deployer" {
+  project    = var.build_project
+  account_id = var.build_sa_name
 }
 
 resource "google_service_account" "runner" {
-  for_each     = var.environments
   account_id   = var.service_account_id != "" ? var.service_account_id : var.application_name
-  project      = each.value.project_id
+  project      = var.project_id
   display_name = var.service_account_display_name
   description  = var.service_account_description
 }
 
 
 resource "google_service_account_iam_member" "deployer-act-as" {
-  for_each           = var.environments
-  service_account_id = google_service_account.runner[each.key].name
+  service_account_id = google_service_account.runner.name
   role               = "roles/iam.serviceAccountUser"
-  member             = "serviceAccount:deployer@moove-build.iam.gserviceaccount.com"
+  member             = data.google_service_account.deployer.member
 }
 
 resource "google_pubsub_topic" "topic" {
-  for_each                   = var.pubsub_enabled ? var.environments : {}
-  project                    = each.value.project_id
+  count = var.pubsub_enabled ? 1 : 0
+
+  project                    = var.project_id
   name                       = var.pubsub_topic_name != "" ? var.pubsub_topic_name : var.application_name
   message_retention_duration = var.pubsub_topic_message_retention_duration
 
   labels = {
-    environment = each.key
+    environment = var.environment
     function    = var.application_name
   }
 }
 
 resource "google_pubsub_subscription" "subscription" {
-  for_each = var.pubsub_enabled ? var.environments : {}
-  name     = var.pubsub_subscription_name != "" ? var.pubsub_subscription_name : "${var.application_name}-subscription"
-  topic    = google_pubsub_topic.topic[each.key].name
+  count = var.pubsub_enabled ? 1 : 0
+
+  name  = var.pubsub_subscription_name != "" ? var.pubsub_subscription_name : "${var.application_name}-subscription"
+  topic = google_pubsub_topic.topic[0].name
 
   labels = {
-    environment = each.key
+    environment = var.environment
     function    = var.application_name
   }
 
@@ -82,43 +76,56 @@ resource "google_pubsub_subscription" "subscription" {
 }
 
 resource "google_pubsub_subscription_iam_member" "publisher" {
-  for_each     = var.pubsub_enabled ? var.environments : {}
-  subscription = google_pubsub_subscription.subscription[each.key].name
+  count        = var.pubsub_enabled ? 1 : 0
+  subscription = google_pubsub_subscription.subscription[0].name
   role         = "roles/pubsub.publisher"
-  member       = "serviceAccount:${google_service_account.runner[each.key].email}"
+  member       = "serviceAccount:${google_service_account.runner.email}"
 }
 
 resource "google_pubsub_subscription_iam_member" "subscriber" {
-  for_each     = var.pubsub_enabled ? var.environments : {}
-  subscription = google_pubsub_subscription.subscription[each.key].name
+  count = var.pubsub_enabled ? 1 : 0
+
+  subscription = google_pubsub_subscription.subscription[0].name
   role         = "roles/pubsub.subscriber"
-  member       = "serviceAccount:${google_service_account.runner[each.key].email}"
+  member       = "serviceAccount:${google_service_account.runner.email}"
 }
 
 resource "google_project_iam_member" "service-network-user" {
-  for_each = var.environments
-  project  = each.value.network_project_id
-  role     = "roles/compute.networkUser"
-  member   = "serviceAccount:service-${data.google_project.project[each.key].number}@serverless-robot-prod.iam.gserviceaccount.com"
+  count = var.vpc_connector != "" ? 1 : 0
+
+  project = var.project_id
+  role    = "roles/compute.networkUser"
+  member  = "serviceAccount:service-${data.google_project.project.number}@serverless-robot-prod.iam.gserviceaccount.com"
 }
 
 resource "google_project_iam_member" "runner-network-user" {
-  for_each = var.environments
-  project  = each.value.network_project_id
-  role     = "roles/compute.networkUser"
-  member   = "serviceAccount:${google_service_account.runner[each.key].email}"
+  count = var.vpc_connector != "" ? 1 : 0
+
+  project = local.network_project_id
+  role    = "roles/compute.networkUser"
+  member  = "serviceAccount:${google_service_account.runner.email}"
 }
 
 resource "google_project_iam_member" "service-vpc-user" {
-  for_each = var.environments
-  project  = each.value.network_project_id
-  role     = "roles/vpcaccess.user"
-  member   = "serviceAccount:service-${data.google_project.project[each.key].number}@serverless-robot-prod.iam.gserviceaccount.com"
+  count = var.vpc_connector != "" ? 1 : 0
+
+  project = local.network_project_id
+  role    = "roles/vpcaccess.user"
+  member  = "serviceAccount:service-${data.google_project.project.number}@serverless-robot-prod.iam.gserviceaccount.com"
 }
 
 resource "google_project_iam_member" "runner-vpc-user" {
-  for_each = var.environments
-  project  = each.value.network_project_id
-  role     = "roles/vpcaccess.user"
-  member   = "serviceAccount:${google_service_account.runner[each.key].email}"
+  count = var.vpc_connector != "" ? 1 : 0
+
+  project = local.network_project_id
+  role    = "roles/vpcaccess.user"
+  member  = "serviceAccount:${google_service_account.runner.email}"
+}
+
+resource "google_artifact_registry_repository_iam_member" "cloud_run_artifact_registry_reader" {
+  project    = var.build_project
+  location   = "us"
+  repository = "docker-us"
+  role       = "roles/artifactregistry.reader"
+  member     = google_service_account.runner.member
 }
