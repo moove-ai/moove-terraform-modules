@@ -1,14 +1,17 @@
+variable "project_id" {
+  type        = string
+  description = "The project ID running the application"
+}
+
 variable "build_project" {
   description = "The project ID to build the container image"
   type        = string
   default     = "moove-build"
 }
 
-variable "environments" {
-  type = map(object({
-    project_id         = string
-    network_project_id = string
-  }))
+variable "environment" {
+  type        = string
+  description = "The environment to deploy the cloud run service"
 }
 
 variable "service_account_id" {
@@ -138,4 +141,14 @@ variable "create_external_load_balancer" {
   type        = bool
   description = "Set to true to create external load balancer resources"
   default     = false
+}
+
+variable "log_metrics" {
+  description = "Map of log metrics configuration"
+  type = map(object({
+    metric_name        = string
+    metric_description = string
+    metric_kind        = string
+    value_type         = string
+  }))
 }
