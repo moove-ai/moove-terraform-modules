@@ -174,4 +174,11 @@ variable "monitoring_project_id" {
 variable "service_name" {
   description = "The name of the service"
   type        = string
+  default     = ""
+}
+
+variable "gke_project_id" {
+  description = "The name of the service"
+  type        = string
+  default     = ""
 }

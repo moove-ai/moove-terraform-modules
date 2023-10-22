@@ -129,3 +129,13 @@ resource "google_artifact_registry_repository_iam_member" "cloud_run_artifact_re
   role       = "roles/artifactregistry.reader"
   member     = google_service_account.runner.member
 }
+
+resource "google_service_account_iam_binding" "workload_identity_binding" {
+  count = var.gke_project_id != "" ? 1 : 0
+
+  service_account_id = google_service_account.runner.name
+  role               = "roles/iam.workloadIdentityUser"
+  members = [
+    "serviceAccount:${var.gke_project_id}.svc.id.goog[${var.environment}/contextualization-api]"
+  ]
+}
