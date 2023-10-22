@@ -1,14 +1,23 @@
+variable "project_id" {
+  type        = string
+  description = "The project ID running the application"
+}
+
 variable "build_project" {
   description = "The project ID to build the container image"
   type        = string
   default     = "moove-build"
 }
 
-variable "environments" {
-  type = map(object({
-    project_id         = string
-    network_project_id = string
-  }))
+variable "build_sa_name" {
+  type        = string
+  description = "The name of the service account used to build the container image"
+  default     = "deployer"
+}
+
+variable "environment" {
+  type        = string
+  description = "The environment to deploy the cloud run service"
 }
 
 variable "service_account_id" {
@@ -134,8 +143,35 @@ variable "dns_name" {
   default     = ""
 }
 
-variable "create_external_load_balancer" {
+variable "log_metrics" {
+  description = "Map of log metrics configuration"
+  type = map(object({
+    metric_name        = string
+    metric_description = string
+    metric_kind        = string
+    value_type         = string
+  }))
+}
+
+variable "vpc_connector" {
+  description = "Set to true if the cloud run service is connected to a VPC"
   type        = bool
-  description = "Set to true to create external load balancer resources"
   default     = false
+}
+
+variable "network_project_id" {
+  description = "The name of the network project ID"
+  type        = string
+  default     = ""
+}
+
+variable "monitoring_project_id" {
+  description = "The name of the network project ID"
+  type        = string
+  default     = ""
+}
+
+variable "service_name" {
+  description = "The name of the service"
+  type        = string
 }
