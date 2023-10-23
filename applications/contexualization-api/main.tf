@@ -1,13 +1,14 @@
 module "gke-app" {
-  source = "../gke-app"
+  source = "../../gke-app"
 
-  create_serviceaccount       = var.create_serviceaccount
-  serviceaccount_display_name = var.serviceaccount_display_name
-  serviceaccount_description  = var.serviceaccount_description
-  serviceaccount_id           = var.serviceaccount_id
-  gke_project_id              = var.gke_project_id
-  environment                 = var.environment
-  gke_serviceaccount_name     = var.gke_serviceaccount_name
+  create_service_account       = var.create_service_account
+  service_account_display_name = var.service_account_display_name
+  service_account_description  = var.service_account_description
+  service_account_id           = var.service_account_id
+  gke_project_id               = var.gke_project_id
+  environment                  = var.environment
+  gke_service_account_name     = var.gke_service_account_name
+  project_id                   = var.project_id
 }
 
 resource "google_bigtable_instance_iam_member" "user" {
