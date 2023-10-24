@@ -28,7 +28,7 @@ resource "google_secret_manager_secret" "client_secrets" {
   for_each = toset(local.transformed_client_list)
 
   project   = var.project_id
-  secret_id = "contextualization_${each.key}"
+  secret_id = "contextualization_key_${each.key}"
 
   replication {
     auto {}
@@ -39,6 +39,10 @@ resource "google_secret_manager_secret" "client_secrets" {
     application = "contextualization-api"
 
   }
+
+  lifecycle {
+    prevent_destroy = false
+  }
 }
 
 resource "google_secret_manager_secret_version" "client_secret_versions" {
@@ -47,12 +51,16 @@ resource "google_secret_manager_secret_version" "client_secret_versions" {
   secret          = google_secret_manager_secret.client_secrets[each.key].name
   secret_data     = "{\"${each.key}\": \"${random_shuffle.api_key_shuffled[each.key].result[0]}\"}"
   deletion_policy = "DISABLE"
+
 }
 
 # Fetch individual secrets for each client
 data "google_secret_manager_secret_version" "client_secret_versions" {
-  depends_on = [google_secret_manager_secret.client_secrets]
-  for_each   = toset(local.transformed_client_list)
+  for_each = toset(local.transformed_client_list)
+  depends_on = [
+    google_secret_manager_secret.client_secrets,
+    google_secret_manager_secret_version.client_secret_versions,
+  ]
 
   secret  = google_secret_manager_secret.client_secrets[each.key].name
   version = "latest"
@@ -70,6 +78,10 @@ resource "google_secret_manager_secret" "aggregated_secret" {
   labels = {
     application = "contextualization-api"
     function    = "main-api-key-dictionary"
+  }
+
+  lifecycle {
+    prevent_destroy = true
   }
 }
 
