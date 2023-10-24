@@ -1,5 +1,13 @@
+locals {
+  transformed_client_list = [for client in var.client_list : replace(replace(client, "@", "-"), ".", "_")]
+  aggregated_secrets = {
+    for client in var.client_list :
+    client => jsondecode(data.google_secret_manager_secret_version.client_secret_versions[client].secret_data)[client]
+  }
+}
+
 resource "random_password" "api_key" {
-  for_each = toset(var.client_list)
+  for_each = toset(local.transformed_client_list)
 
   length  = 40
   special = false
@@ -9,7 +17,7 @@ resource "random_password" "api_key" {
 }
 
 resource "random_shuffle" "api_key_shuffled" {
-  for_each = toset(var.client_list)
+  for_each = toset(local.transformed_client_list)
 
   input        = [random_password.api_key[each.key].result]
   result_count = 1
@@ -17,7 +25,7 @@ resource "random_shuffle" "api_key_shuffled" {
 
 
 resource "google_secret_manager_secret" "client_secrets" {
-  for_each = toset(var.client_list)
+  for_each = toset(local.transformed_client_list)
 
   project   = var.project_id
   secret_id = "contextualization_${each.key}"
@@ -34,7 +42,7 @@ resource "google_secret_manager_secret" "client_secrets" {
 }
 
 resource "google_secret_manager_secret_version" "client_secret_versions" {
-  for_each = toset(var.client_list)
+  for_each = toset(local.transformed_client_list)
 
   secret          = google_secret_manager_secret.client_secrets[each.key].name
   secret_data     = "{\"${each.key}\": \"${random_shuffle.api_key_shuffled[each.key].result[0]}\"}"
@@ -43,18 +51,11 @@ resource "google_secret_manager_secret_version" "client_secret_versions" {
 
 # Fetch individual secrets for each client
 data "google_secret_manager_secret_version" "client_secret_versions" {
-  for_each = toset(var.client_list)
+  depends_on = [google_secret_manager_secret.client_secrets]
+  for_each   = toset(local.transformed_client_list)
 
   secret  = google_secret_manager_secret.client_secrets[each.key].name
   version = "latest"
-}
-
-# Construct aggregated secret dictionary
-locals {
-  aggregated_secrets = {
-    for client in var.client_list :
-    client => jsondecode(data.google_secret_manager_secret_version.client_secret_versions[client].secret_data)[client]
-  }
 }
 
 # Create main aggregated secret
