@@ -36,8 +36,9 @@ resource "google_secret_manager_secret" "client_secrets" {
 resource "google_secret_manager_secret_version" "client_secret_versions" {
   for_each = toset(var.client_list)
 
-  secret      = google_secret_manager_secret.client_secrets[each.key].name
-  secret_data = "{\"${each.key}\": \"${random_shuffle.api_key_shuffled[each.key].result[0]}\"}"
+  secret          = google_secret_manager_secret.client_secrets[each.key].name
+  secret_data     = "{\"${each.key}\": \"${random_shuffle.api_key_shuffled[each.key].result[0]}\"}"
+  deletion_policy = "DISABLE"
 }
 
 # Fetch individual secrets for each client
@@ -73,8 +74,11 @@ resource "google_secret_manager_secret" "aggregated_secret" {
 
 # Store aggregated secret dictionary into the main secret
 resource "google_secret_manager_secret_version" "aggregated_secret_version" {
-  secret      = google_secret_manager_secret.aggregated_secret.name
-  secret_data = jsonencode(local.aggregated_secrets)
+  depends_on = [google_secret_manager_secret.client_secrets]
+
+  secret          = google_secret_manager_secret.aggregated_secret.name
+  secret_data     = jsonencode(local.aggregated_secrets)
+  deletion_policy = "DISABLE"
 }
 
 resource "google_secret_manager_secret_iam_member" "aggregated_secret_iam" {
