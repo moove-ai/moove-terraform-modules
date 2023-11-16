@@ -15,7 +15,7 @@ resource "google_secret_manager_secret" "gcs-access-key" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -30,7 +30,7 @@ resource "google_secret_manager_secret" "gcs-secret-key" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -45,7 +45,7 @@ resource "google_secret_manager_secret" "aws-access-key" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -60,7 +60,7 @@ resource "google_secret_manager_secret" "aws-secret-key" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -138,4 +138,31 @@ resource "google_project_iam_member" "function-invoker" {
   project = var.project_id
   role    = "roles/cloudfunctions.invoker"
   member  = "serviceAccount:${var.create_service_account ? google_service_account.runner[0].email : data.google_service_account.runner[0].email}"
+}
+
+resource "google_pubsub_topic" "topic" {
+  project = var.project_id
+  name    = "blue-owl-aws-transfer-${var.environment}"
+
+  labels = {
+    environment = var.environment
+    function    = "blue-owl-aws-transfer"
+    client      = "blue-owl"
+  }
+}
+
+resource "google_pubsub_topic_iam_member" "publisher-iam" {
+  project = var.project_id
+
+  topic  = google_pubsub_topic.topic.name
+  role   = "roles/pubsub.publisher"
+  member = var.create_service_account ? google_service_account.runner[0].member : data.google_service_account.runner[0].member
+}
+
+resource "google_pubsub_topic_iam_member" "subscriber-iam" {
+  project = var.project_id
+
+  topic  = google_pubsub_topic.topic.name
+  role   = "roles/pubsub.subscriber"
+  member = var.create_service_account ? google_service_account.runner[0].member : data.google_service_account.runner[0].member
 }
