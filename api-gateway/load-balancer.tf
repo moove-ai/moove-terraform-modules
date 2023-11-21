@@ -75,7 +75,7 @@ resource "google_compute_target_https_proxy" "default" {
 }
 
 resource "google_compute_global_forwarding_rule" "gateway_forwarding_rule" {
-  name                  = "apigateway-forwarding-rule"
+  name                  = var.app_id
   project               = var.project_id
   ip_protocol           = "TCP"
   port_range            = "443"
@@ -88,7 +88,7 @@ data "google_dns_managed_zone" "zone" {
   project = var.dns_project
 }
 
-resource "google_dns_record_set" "example_a_record" {
+resource "google_dns_record_set" "dns_record" {
   name         = "${var.domain_name}."
   type         = "A"
   ttl          = 300
