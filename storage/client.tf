@@ -39,7 +39,7 @@ resource "google_secret_manager_secret" "client-hmac-key" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -60,7 +60,7 @@ resource "google_secret_manager_secret" "client-sa-key" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 

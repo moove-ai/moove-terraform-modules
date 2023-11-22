@@ -23,7 +23,7 @@ resource "google_secret_manager_secret" "build-tests" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 

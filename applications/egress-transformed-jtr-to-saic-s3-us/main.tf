@@ -4,7 +4,7 @@ resource "google_secret_manager_secret" "aws-access-key" {
   labels    = var.labels
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -14,7 +14,7 @@ resource "google_secret_manager_secret" "aws-secret-access-key" {
   labels    = var.labels
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -24,7 +24,7 @@ resource "google_secret_manager_secret" "gcp-access-key" {
   labels    = var.labels
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -34,7 +34,7 @@ resource "google_secret_manager_secret" "gcp-secret-access-key" {
   labels    = var.labels
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 

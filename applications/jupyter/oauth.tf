@@ -27,6 +27,6 @@ resource "google_secret_manager_secret" "hub-config" {
   secret_id = "jupyter-hub_config"
 
   replication {
-    automatic = true
+    auto {}
   }
 }

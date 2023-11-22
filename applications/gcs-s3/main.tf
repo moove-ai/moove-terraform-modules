@@ -19,7 +19,7 @@ resource "google_secret_manager_secret" "client-id" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -44,7 +44,7 @@ resource "google_secret_manager_secret" "client-key" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
