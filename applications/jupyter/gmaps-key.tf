@@ -8,7 +8,7 @@ resource "google_secret_manager_secret" "googlemaps-api-key" {
   secret_id = "jupyter-google_maps_api_key"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 

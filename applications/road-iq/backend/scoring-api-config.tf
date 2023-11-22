@@ -23,7 +23,9 @@ resource "google_secret_manager_secret" "scoring-api-config" {
   secret_id = "scoring-api-config"
 
   replication {
-    automatic = true
+    auto {
+    
+  }
   }
 
   labels = {

@@ -12,7 +12,7 @@ resource "google_secret_manager_secret" "cicd-slack-hook" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -36,7 +36,7 @@ resource "google_secret_manager_secret" "grafana-api-key" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -53,6 +53,6 @@ resource "google_secret_manager_secret" "github-token" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }

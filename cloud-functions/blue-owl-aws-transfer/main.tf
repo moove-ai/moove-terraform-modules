@@ -15,7 +15,7 @@ resource "google_secret_manager_secret" "gcs-access-key" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -30,7 +30,7 @@ resource "google_secret_manager_secret" "gcs-secret-key" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -45,7 +45,7 @@ resource "google_secret_manager_secret" "aws-access-key" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -60,7 +60,7 @@ resource "google_secret_manager_secret" "aws-secret-key" {
   }
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 

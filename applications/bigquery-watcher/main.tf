@@ -8,7 +8,7 @@
  * Written by Alex Merenda for moove.ai
  */
 
-esource "google_project_service" "memorystore" {
+resource "google_project_service" "memorystore" {
   project = var.project_id
   service = "redis.googleapis.com"
 }
