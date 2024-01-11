@@ -5,7 +5,7 @@ resource "google_secret_manager_secret" "access" {
 
   replication {
     auto {
-      
+
     }
   }
 }
@@ -16,7 +16,7 @@ resource "google_secret_manager_secret" "secret" {
   labels    = var.labels
 
   replication {
-  auto {
-  }
+    auto {
+    }
   }
 }
