@@ -39,38 +39,38 @@ variable "gke_service_account_name" {
 }
 
 variable "pubsub_topic_name" {
-  type = string
+  type        = string
   description = "The name of the pubsub topic to persist the contextualization data"
-  default = "contextualization-store"
+  default     = "contextualization-store"
 }
 
 variable "pubsub_subscription_name" {
-  type = string
+  type        = string
   description = "The name of the pubsub subscription the application should listen on"
-  default = "contextualization-store-subscription"
+  default     = "contextualization-store-subscription"
 }
 
 variable "contextualization_service_account_name" {
   type        = string
   description = "The name of the contextualization service account"
-  default = "contextualization"
+  default     = "contextualization"
 }
 
 variable "contextualization_service_account_project" {
   type        = string
   description = "The name of the contextualization service account"
-  default = ""
+  default     = ""
 }
 
 variable "contextualization_store_bucket" {
-  type = string
+  type        = string
   description = "The GCS bucket used to store the contextaulization data"
 }
 
 variable "contextualization_store_location" {
-  type = string
+  type        = string
   description = "The location of the GCS bucket used to store the contextaulization data"
-  default = "us-central1"
+  default     = "us-central1"
 }
 
 variable "lifecycle_rules" {
@@ -79,7 +79,7 @@ variable "lifecycle_rules" {
 }
 
 variable "ack_deadline_seconds" {
-  type = number
+  type        = number
   description = "The number of seconds the subscriber has to acknowledge each message pulled from the subscription"
-  default = 40
+  default     = 40
 }

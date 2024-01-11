@@ -5,7 +5,7 @@ locals {
 
 # The contextualization service account
 data "google_service_account" "contextualization-service-account" {
-  project = local.contextualization_service_account_project
+  project    = local.contextualization_service_account_project
   account_id = var.contextualization_service_account_name
 }
 
@@ -38,8 +38,8 @@ resource "google_pubsub_topic" "topic" {
 resource "google_pubsub_topic_iam_member" "topic-iam" {
   project = google_pubsub_topic.topic.project
 
-  topic = google_pubsub_topic.topic.name
-  role = "roles/pubsub.publisher"
+  topic  = google_pubsub_topic.topic.name
+  role   = "roles/pubsub.publisher"
   member = data.google_service_account.contextualization-service-account.member
 }
 
@@ -47,8 +47,8 @@ resource "google_pubsub_topic_iam_member" "topic-iam" {
 resource "google_pubsub_topic_iam_member" "gke-topic-iam" {
   project = google_pubsub_topic.topic.project
 
-  topic = google_pubsub_topic.topic.name
-  role = "roles/pubsub.publisher"
+  topic  = google_pubsub_topic.topic.name
+  role   = "roles/pubsub.publisher"
   member = module.gke-app.service_account_member
 }
 
@@ -56,8 +56,8 @@ resource "google_pubsub_topic_iam_member" "gke-topic-iam" {
 resource "google_pubsub_subscription" "subscription" {
   project = var.project_id
 
-  name = var.pubsub_subscription_name
-  topic = google_pubsub_topic.topic.name
+  name                 = var.pubsub_subscription_name
+  topic                = google_pubsub_topic.topic.name
   ack_deadline_seconds = var.ack_deadline_seconds
   labels = {
     environment = var.environment
@@ -70,15 +70,15 @@ resource "google_pubsub_subscription_iam_member" "subscription-iam" {
   project = google_pubsub_subscription.subscription.project
 
   subscription = google_pubsub_subscription.subscription.name
-  role = "roles/pubsub.subscriber"
-  member = module.gke-app.service_account_member
+  role         = "roles/pubsub.subscriber"
+  member       = module.gke-app.service_account_member
 }
 
 # The storage bucket where the contextualization data will be stored
 resource "google_storage_bucket" "bucket" {
   project = var.project_id
 
-  name = var.contextualization_store_bucket
+  name     = var.contextualization_store_bucket
   location = var.contextualization_store_location
 
   dynamic "lifecycle_rule" {
@@ -117,6 +117,6 @@ resource "google_storage_bucket_iam_member" "bucket-iam" {
 
 resource "google_project_iam_member" "legacy-bucket-iam" {
   project = var.project_id
-  role   = "roles/viewer"
-  member = module.gke-app.service_account_member
+  role    = "roles/viewer"
+  member  = module.gke-app.service_account_member
 }
