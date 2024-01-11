@@ -40,11 +40,26 @@ resource "google_bigquery_table" "view" {
 resource "google_bigquery_dataset_access" "dataset-access" {
   project    = var.shared_dataset_project
   for_each   = local.views
-  dataset_id = var.shared_dataset
+  dataset_id = var.source_dataset
   view {
     project_id = google_bigquery_table.view[each.key].project
     dataset_id = google_bigquery_table.view[each.key].dataset_id
     table_id   = google_bigquery_table.view[each.key].table_id
   }
-  depends_on = [google_bigquery_table.view]
+  depends_on = [
+    google_bigquery_table.view,
+    google_bigquery_dataset.dataset,
+  ]
+}
+
+resource "google_bigquery_dataset_access" "access" {
+  for_each      = toset(var.email_list)
+  project       = var.project_id
+  dataset_id    = var.shared_dataset
+  role          = "roles/bigquery.dataViewer"
+  user_by_email = each.key
+  depends_on = [
+    google_bigquery_table.view,
+    google_bigquery_dataset.dataset,
+  ]
 }
