@@ -7,9 +7,15 @@ variable "shared_dataset" {
   type        = string
   description = "The name of the dataset (to be created) which will hold views of the source_project"
 }
+
 variable "shared_dataset_project" {
   type        = string
   description = "The project the dataset being shared is located in."
+}
+
+variable "source_dataset" {
+  type        = string
+  description = "The internal dataset being shared."
 }
 
 variable "views" {
