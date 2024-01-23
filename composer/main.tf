@@ -31,6 +31,7 @@ module "composer" {
   worker                   = var.worker_resources
   image_version            = var.image_version
   pypi_packages            = var.pypi_packages
+  env_variables            = var.env_variables
   depends_on = [
     google_service_account.serviceaccount,
     google_project_service.composer,
@@ -125,31 +126,14 @@ resource "google_project_iam_member" "worker" {
     google_service_account.serviceaccount
   ]
 }
-resource "google_secret_manager_secret" "pagerduty-key" {
+data "google_secret_manager_secret" "pagerduty-key" {
+  project   = var.secret_project_id
   secret_id = var.composer_alerts_secret_id
-
-  labels = {
-    terraformed = "true"
-    function = "composer-alerts"
-    application = "composer"
-    vendor = "pagerduty"
-  }
-
-  replication {
-    auto {}
-  }
-}
-
-resource "google_secret_manager_secret_version" "composer_alerts_secret_id_help" {
-  secret = google_secret_manager_secret.composer_alerts_secret_id
-
-  secret_data = "REPLACE ME. Get the API key from: https://moove-ai.pagerduty.com/service-directory/PGGZWMC/integrations"
-  deletion_policy = "DISABLE"
 }
 
 resource "google_secret_manager_secret_iam_member" "member" {
-  project = google_secret_manager_secret.composer_alerts_secret_id.project
-  secret_id = google_secret_manager_secret.composer_alerts_secret_id.secret_id
-  role = "roles/secretmanager.secretAccessor"
-  member = google_service_account.serviceaccount.member
+  project   = data.google_secret_manager_secret.pagerduty-key.project
+  secret_id = data.google_secret_manager_secret.pagerduty-key.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${var.create_service_account == false ? data.google_service_account.serviceaccount[0].email : google_service_account.serviceaccount[0].email}"
 }
