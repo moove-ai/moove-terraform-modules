@@ -31,6 +31,7 @@ module "composer" {
   worker                   = var.worker_resources
   image_version            = var.image_version
   pypi_packages            = var.pypi_packages
+  env_variables            = var.env_variables
   depends_on = [
     google_service_account.serviceaccount,
     google_project_service.composer,
@@ -124,4 +125,15 @@ resource "google_project_iam_member" "worker" {
     google_project_service.composer,
     google_service_account.serviceaccount
   ]
+}
+data "google_secret_manager_secret" "pagerduty-key" {
+  project   = var.secret_project_id
+  secret_id = var.composer_alerts_secret_id
+}
+
+resource "google_secret_manager_secret_iam_member" "member" {
+  project   = data.google_secret_manager_secret.pagerduty-key.project
+  secret_id = data.google_secret_manager_secret.pagerduty-key.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${var.create_service_account == false ? data.google_service_account.serviceaccount[0].email : google_service_account.serviceaccount[0].email}"
 }

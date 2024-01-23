@@ -123,3 +123,20 @@ variable "pypi_packages" {
   type        = map(string)
   description = "Map of python packages and versions to install"
 }
+
+variable "composer_alerts_secret_id" {
+  type        = string
+  description = "The secret id for the composer alerts secret"
+  default     = "monitoring_pagerduty-airflow-alerts-key"
+}
+
+variable "secret_project_id" {
+  type        = string
+  description = "The project id where the secret is stored"
+  default     = "moove-secrets"
+}
+
+variable "env_variables" {
+  type        = map(string)
+  description = "Map of environment variables to set on the composer environment"
+}
