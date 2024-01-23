@@ -69,7 +69,7 @@ variable "create_mgmt_peer" {
 }
 
 variable "min_ports_per_vm" {
-  type = numeric 
+  type =  number
   description = "Minimum ports per VM"
   default = 64
 }
