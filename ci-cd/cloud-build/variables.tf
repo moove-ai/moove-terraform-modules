@@ -53,3 +53,8 @@ variable "substitutions" {
   description = "values to substitute into the build config file"
   default     = {}
 }
+
+variable "trigger_type" {
+  description = "Type of trigger: push or pull_request"
+  type        = string
+}

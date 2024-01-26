@@ -13,8 +13,20 @@ resource "google_cloudbuild_trigger" "build" {
   github {
     owner = "moove-ai"
     name  = var.github_repo
-    push {
-      branch = var.build_branch_pattern
+
+    dynamic "push" {
+      for_each = var.trigger_type == "push" ? [1] : []
+      content {
+        branch = var.build_branch_pattern
+      }
+    }
+
+    dynamic "pull_request" {
+      for_each = var.trigger_type == "pull_request" ? [1] : []
+      content {
+        branch = var.build_branch_pattern
+        comment_control = "COMMENTS_ENABLED"
+      }
     }
   }
 
