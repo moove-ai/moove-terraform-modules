@@ -36,7 +36,7 @@ resource "google_secret_manager_secret" "client_secrets" {
 
   labels = {
     client      = each.key
-    application = "contextualization-api"
+    application = "moove-webserivce"
 
   }
 
@@ -76,8 +76,8 @@ resource "google_secret_manager_secret" "aggregated_secret" {
   }
 
   labels = {
-    application = "contextualization-api"
-    function    = "main-api-key-dictionary"
+    application = "moove-webserivce"
+    function    = "contextualization-main-api-key-dictionary"
   }
 
   lifecycle {

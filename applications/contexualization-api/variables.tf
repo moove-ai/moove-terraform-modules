@@ -38,15 +38,14 @@ variable "gke_service_account_name" {
   description = "The name of the GKE service account"
 }
 
-variable "bigtable_instance_name" {
-  type        = string
-  description = "The name of the Bigtable instance"
-  default     = "contextualization"
+variable "bigtable_instance_names" {
+  type        = list(string)
+  description = "The names of the Bigtable instances"
+  default     = ["contextualization", "join-to-roads"]
 }
 
 variable "client_list" {
   type = list(string)
-
 }
 
 variable "api_key_main_secret_name" {

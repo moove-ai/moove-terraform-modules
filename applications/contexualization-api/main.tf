@@ -12,37 +12,45 @@ module "gke-app" {
 }
 
 resource "google_bigtable_instance_iam_member" "user" {
-  depends_on = [module.gke-app]
+  for_each = toset(var.bigtable_instance_names)
 
-  instance = var.bigtable_instance_name
+  instance = each.key
   project  = var.project_id
   role     = "roles/bigtable.user"
   member   = module.gke-app.service_account_member
+
+  depends_on = [module.gke-app]
 }
 
 resource "google_bigtable_instance_iam_member" "reader" {
-  depends_on = [module.gke-app]
+  for_each = toset(var.bigtable_instance_names)
 
-  instance = var.bigtable_instance_name
+  instance = each.key
   project  = var.project_id
   role     = "roles/bigtable.reader"
   member   = module.gke-app.service_account_member
+
+  depends_on = [module.gke-app]
 }
 
 resource "google_bigtable_instance_iam_member" "gke-user" {
-  depends_on = [module.gke-app]
+  for_each = toset(var.bigtable_instance_names)
 
-  instance = var.bigtable_instance_name
+  instance = each.key
   project  = var.project_id
   role     = "roles/bigtable.user"
   member   = module.gke-app.service_account_member
+
+  depends_on = [module.gke-app]
 }
 
 resource "google_bigtable_instance_iam_member" "gke-reader" {
-  depends_on = [module.gke-app]
+  for_each = toset(var.bigtable_instance_names)
 
-  instance = var.bigtable_instance_name
+  instance = each.key
   project  = var.project_id
   role     = "roles/bigtable.reader"
   member   = module.gke-app.service_account_member
+
+  depends_on = [module.gke-app]
 }
