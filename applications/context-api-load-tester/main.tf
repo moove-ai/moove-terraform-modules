@@ -3,6 +3,10 @@ data "google_secret_manager_secret" "secret" {
   secret_id = var.api_key_secret_id
 }
 
+data "google_storage_bucket" "store" {
+  name = "moove-contextualization-store"
+}
+
 resource "google_service_account" "sa" {
   project = var.project_id
 
@@ -28,4 +32,10 @@ resource "google_project_iam_member" "sa_container_developer" {
   project = var.k8s_cluster_project_id
   role    = "roles/container.developer"
   member  = "serviceAccount:${google_service_account.sa.email}"
+}
+
+resource "google_storage_bucket_iam_member" "store-iam" {
+  bucket = data.google_storage_bucket.store.name
+  role = "roles/storage.objectViewer"
+  member = google_service_account.sa.member
 }
